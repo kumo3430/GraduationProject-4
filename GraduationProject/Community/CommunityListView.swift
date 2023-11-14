@@ -19,129 +19,11 @@ extension Color {
     static let color2 = Color("Color2")
 }
 
-//struct Community: Identifiable {
-//    enum Category: String, CaseIterable {
-//        case 學習, 運動, 作息, 飲食
-//    }
-//
-//    var id = UUID()
-//    var name: String
-//    var description: String
-//    var memberCount: Int
-//    var image: String
-//    var category: Category
-//}
-
 extension Color {
     static let morandiPink = Color(red: 180/255, green: 120/255, blue: 140/255)
     static let morandiBlue = Color(red: 100/255, green: 120/255, blue: 140/255)
     static let morandiGreen = Color(red: 172/255, green: 210/255, blue: 194/255)
     static let morandiBackground = Color(hex: "#F5F3F0")
-}
-
-struct CommunityIntroView: View {
-    @Binding var isShowing: Bool
-    @State private var dontShowAgain: Bool = false
-    
-    var body: some View {
-        ZStack {
-            Color(hex: "#A8A39D")
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                Text("歡迎來到我們的社群！")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .shadow(color: Color.black.opacity(0.3), radius: 5)
-                    .padding([.top, .bottom])
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("1️⃣ 自我覺察與成長")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Text("在這裡，你可以探索自我，察覺自身的變化，並在支持性的環境中成長。")
-                        .font(.body)
-                        .foregroundColor(.white)
-                    
-                    Text("2️⃣ 團體的支持與鼓勵")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Text("分享你的感受和經驗，並從社群的反饋中學習和進步。")
-                        .font(.body)
-                        .foregroundColor(.white)
-                    
-                    Text("3️⃣ 社會互動與學習")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Text("通過互動，學習新的社會技能，並從他人的經驗中獲得啟示。")
-                        .font(.body)
-                        .foregroundColor(.white)
-                    
-                    Text("4️⃣ 團體規範與從眾效應")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Text("一同創造有益的社群規範，並遵循正向的團體力量，共同達成目標。")
-                        .font(.body)
-                        .foregroundColor(.white)
-                }
-                .padding()
-                .background(Color.white.opacity(0.1))
-                .cornerRadius(15)
-                .shadow(color: Color.black.opacity(0.3), radius: 5, x: 0, y: 5)
-                
-                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/) {
-                    Text("立即加入")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                }
-                .padding(.top, 20)
-                
-                HStack {
-                    Image(systemName: dontShowAgain ? "checkmark.square.fill" : "square")
-                        .foregroundColor(.white)
-                        .onTapGesture {
-                            dontShowAgain.toggle()
-                        }
-                    Text("不再顯示")
-                        .foregroundColor(.white)
-                }
-                .padding(.top, 20)
-                
-                Spacer()
-            }
-            .padding([.horizontal, .bottom])
-            
-            VStack {
-                HStack {
-                    Spacer()
-                    Button(action: closeIntro) {
-                        Image(systemName: "xmark")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding(10)
-                            .background(Color.black.opacity(0.6))
-                            .clipShape(Circle())
-                    }
-                }
-                Spacer()
-            }
-            .padding()
-        }
-    }
-    
-    func closeIntro() {
-        if dontShowAgain {
-            UserDefaults.standard.set(true, forKey: "dontShowIntroAgain")
-        }
-        isShowing = false
-    }
 }
 
 struct CommunityListView: View {
@@ -198,35 +80,11 @@ struct CommunityListView: View {
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         .padding(.horizontal)
-                        
-                        if selectedCategory == 0 {
-                            //                            ForEach(recommendedCommunities.filter {
-                            //                                searchText.isEmpty ? true : $0.name.contains(searchText)
-                            //                            }) { community in
-                            //                                CommunityCard(community: community)
-                            //                            }
-                        } else if selectedCategory == 1 {
-                            //                            ForEach(popularCommunities.filter {
-                            //                                searchText.isEmpty ? true : $0.name.contains(searchText)
-                            //                            }) { community in
-                            //                                CommunityCard(community: community)
-                            //                            }
-                        } else {
-                            //                            ForEach(availableCommunities.filter {
-                            //                                searchText.isEmpty ? true : $0.name.contains(searchText)
-                            //                            }) { community in
-                            //                                CommunityCard(community: community)
-                            //                            }
-                        }
                     }
                 }
             }
             .navigationBarItems(
                 leading: NotificationButtonView(showingNotifications: $showingNotifications),
-//                trailing: NavigationLink(destination: AddCommunityView()) {
-//                    Text("創建")
-//                        .foregroundColor(Color.morandiBlue)
-//                }
                 trailing:  Button("創建") {
                     showingSheet.toggle()
                 }
@@ -347,64 +205,9 @@ struct NotificationButtonView: View {
     }
 }
 
-struct SectionView: View {
-    let title: String
-    let communities: [Community]
-    @Binding var searchText: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text(title)
-                .font(.title2)
-                .padding(.leading)
-                .padding(.top)
-            //            ForEach(communities.filter {
-            //                searchText.isEmpty ? true : $0.name.contains(searchText)
-            //            }) { community in
-            //                CommunityCard(community: community)
-            //            }
-        }
-        .padding(.bottom)
-        .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5))
-    }
-}
 
-struct NotificationView: View {
-    let notifications = [
-        ("徒步探險", "GP1", "王小明在「徒步探險」回覆了您的貼文"),
-        ("冥想與平靜", "GP2", "李小芬在「冥想與平靜」發表了一篇新貼文"),
-        ("膳食多元化", "GP3", "張大偉在「膳食多元化」說您的貼文讚"),
-        ("日常瑜伽", "GP4", "陳小英剛加入了「日常瑜伽」"),
-        // ... 以此類推，您可以添加更多的通知
-    ]
-    
-    var body: some View {
-        List(notifications, id: \.0) { (communityName, communityImageName, message) in
-            HStack {
-                Image(communityImageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .background(Color.morandiGreen)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(Color.morandiPink, lineWidth: 2))
-                    .shadow(radius: 5)
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(communityName)
-                        .font(.headline)
-                        .foregroundColor(Color.morandiBlue)
-                    Text(message)
-                        .font(.subheadline)
-                        .foregroundColor(Color.morandiPink)
-                }
-                Spacer()
-            }
-            .padding()
-            .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 10))
-        }
-    }
-}
+
+
 
 struct SearchBar: View {
     @Binding var text: String
@@ -476,10 +279,6 @@ struct AddCommunityView: View {
     @Environment(\.presentationMode) var presentationMode
     let Category = ["學習", "運動", "作息", "飲食"]
     var body: some View {
-//        VStack{
-//            Text("Hello world")
-//        }
-        
         Form {
             Section(header: Text("基本資訊").foregroundColor(Color.morandiBlue)) {
                 TextField("社群名稱", text: $name)
