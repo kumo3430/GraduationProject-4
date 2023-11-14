@@ -6,10 +6,10 @@ $data = json_decode($input_data, true);
 
 $uid = $data['uid'];
 $_SESSION['uid'] = $uid;
-$ticker_id = array();
-$name = array();
-$deadline = array();
-$exchange = array();
+$community_id = array();
+$communityName = array();
+$communityDescription = array();
+$communityCategory = array();
 $message = "";
 
 
@@ -24,25 +24,25 @@ if ($conn->connect_error) {
 }
 
 // $sql = "SELECT * FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = '$uid';";
-$sql = "SELECT tickers.id,tickers.exchange_time,voucher.name,voucher.deadline FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = '30';";
+$sql = "SELECT * FROM community WHERE id IN (SELECT community_members.community_id FROM community_members WHERE user_id = 30);";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $ticker_id[] = $row['id'];
-        $name[] = $row['name'];
-        $deadline[] = $row['deadline'];
-        $exchange[] = $row['exchange_time'];
+        $community_id[] = $row['id'];
+        $communityName[] = $row['communityName'];
+        $communityDescription[] = $row['communityDescription'];
+        $communityCategory[] = $row['communityCategory'];
     }
 } else {
     $message = "no such Todo";
 }
 
 $userData = array(
-    'ticker_id' => $ticker_id,
+    'community_id' => $community_id,
     'userId' => $uid,
-    'name' => $name,
-    'deadline' => $deadline,
-    'exchange' => $exchange,
+    'communityName' => $communityName,
+    'communityDescription' => $communityDescription,
+    'communityCategory' => $communityCategory,
     'message' => $message
 );
 echo json_encode($userData);

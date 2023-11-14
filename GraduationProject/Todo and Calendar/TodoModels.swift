@@ -28,6 +28,8 @@ struct Task: Identifiable {
 
 
 struct Todo: Identifiable {
+//    var id: ObjectIdentifier
+    
     var id: Int
     var label: String
     var title: String
@@ -45,6 +47,10 @@ struct Todo: Identifiable {
     var dueDateTime: Date
     var reminderTime: Date
     var todoNote: String
+    
+    var RecurringStartDate: Date
+    var RecurringEndDate: Date
+    var completeValue: Float
 }
 
 struct Sport: Identifiable {
@@ -66,6 +72,11 @@ struct Sport: Identifiable {
     var dueDateTime: Date
     var reminderTime: Date
     var todoNote: String
+    
+    var RecurringStartDate: Date
+    var RecurringEndDate: Date
+    var completeValue: Float
+
 }
 
 struct Diet: Identifiable {
@@ -86,25 +97,56 @@ struct Diet: Identifiable {
     var dueDateTime: Date
     var reminderTime: Date
     var todoNote: String
+    
+    var RecurringStartDate: Date
+    var RecurringEndDate: Date
+    var completeValue: Float
 }
 
-struct Sleep: Identifiable {
+//struct Sleep: Identifiable {
+//    var id: Int
+//    var label: String
+//    var title: String
+//    var description: String
+//
+//    var bedtime: Date // 睡覺時間
+//    var wakeTime: Date // 起床時間
+//    var mode: SleepMode
+//    var sleepGoalHours: Double? // 如果選擇了「睡滿N小時」模式，這將是目標小時數
+//    var reminderTime: Date
+//    var sleepNote: String
+//}
+//
+//enum SleepMode: String, CaseIterable {
+//    case earlyToBed = "早睡"
+//    case earlyToRise = "早起"
+//    case sleepFullHours = "睡滿N小時"
+//}
+
+struct Routine: Identifiable {
     var id: Int
     var label: String
     var title: String
     var description: String
-    var bedtime: Date // 睡覺時間
-    var wakeTime: Date // 起床時間
-    var mode: SleepMode
-    var sleepGoalHours: Double? // 如果選擇了「睡滿N小時」模式，這將是目標小時數
+    var startDateTime: Date
+    
+    var selectedRoutines: String
+    var routineValue: Int
+    var routineTime: Date
+    // 週期選擇
+//    var recurringUnit: String
+    // 是否有結束日期
+    var recurringOption: Int
+    var todoStatus: Bool
+    var dueDateTime: Date
     var reminderTime: Date
-    var sleepNote: String
-}
-
-enum SleepMode: String, CaseIterable {
-    case earlyToBed = "早睡"
-    case earlyToRise = "早起"
-    case sleepFullHours = "睡滿N小時"
+    var todoNote: String
+    
+    var RecurringStartDate: Date
+    var RecurringEndDate: Date
+    var sleepTime: Date?
+    var wakeUpTime: Date?
+//    var completeValue: Float
 }
 
 struct Ticker: Identifiable {
@@ -114,6 +156,15 @@ struct Ticker: Identifiable {
     var deadline: Date
 //    var exchage: Date
     var exchage: String
+}
+
+struct Community: Identifiable {
+    var id: Int
+//    var ticker_id: String
+    var communityName: String
+    var communityDescription: String
+//    var exchage: Date
+    var communityCategory: Int
 }
 
 extension Color {

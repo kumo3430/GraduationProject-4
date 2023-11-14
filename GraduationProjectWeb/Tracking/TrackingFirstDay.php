@@ -4,12 +4,7 @@ session_start();
 $input_data = file_get_contents("php://input");
 $data = json_decode($input_data, true);
 
-$uid = $_SESSION['uid'];
-
 $todo_id = $data['id'];
-$label = $data['label'];
-$reminderTime = $data['reminderTime'];
-$message = "";
 
 $servername = "localhost"; // 資料庫伺服器名稱
 $user = "kumo"; // 資料庫使用者名稱
@@ -23,21 +18,22 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$TodoSql = "UPDATE Todo 
-SET `label` = '$label',`reminderTime` = '$reminderTime'
-WHERE `id` = '$todo_id' ;";
+$TodoSELSql = "SELECT * FROM `RecurringInstance` WHERE todo_id = '$todo_id' ORDER by id DESC limit 1;";
 
-if ($conn->query($TodoSql) === TRUE) {
-        $message = "User revise Space successfully";
+$result = $conn->query($TodoSELSql);
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $RecurringStartDate = $row['RecurringStartDate'];
+    $id = $row['id'];
+    $message = "User TrackingFirstDay successfully";
 } else {
-    $message = $message . 'User revise Study - Error: ' . $sql . '<br>' . $conn->error;
-    $conn->error;
+    $message = "No results found";
 }
 
 $userData = array(
-    'todo_id' => $todo_id,
-    'label' => $label,
-    'reminderTime' => $reminderTime,
+    'id' => intval($id),
+    'todo_id' => intval($todo_id),
+    'RecurringStartDate' => $RecurringStartDate,
     'message' => $message
 );
 echo json_encode($userData);

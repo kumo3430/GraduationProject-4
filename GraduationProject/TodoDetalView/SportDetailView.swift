@@ -139,7 +139,7 @@ struct DetailSportView: View {
             .navigationBarTitle("運動修改")
             .navigationBarItems(
                                 trailing:  Button(action: {
-                reviseSport()
+                                    reviseSport{_ in }
                 if sport.label == "" {
                     sport.label = "notSet"
                 }
@@ -149,34 +149,8 @@ struct DetailSportView: View {
             })
         }
     }
-    
-    func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        return formatter.string(from: date)
-    }
-    
-    func formattedTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:MM"
-        return formatter.string(from: date)
-    }
-    
-    func reviseSport() {
-        class URLSessionSingleton {
-            static let shared = URLSessionSingleton()
-            let session: URLSession
-            private init() {
-                let config = URLSessionConfiguration.default
-                config.httpCookieStorage = HTTPCookieStorage.shared
-                config.httpCookieAcceptPolicy = .always
-                session = URLSession(configuration: config)
-            }
-        }
-        
-        let url = URL(string: "http://127.0.0.1:8888/reviseTask/reviseStudy.php")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+
+    func reviseSport(completion: @escaping (String) -> Void) {
         let body: [String: Any] = [
             "id": sport.id,
             "label": sport.label,
@@ -184,49 +158,14 @@ struct DetailSportView: View {
             "dueDateTime": formattedDate(sport.dueDateTime),
             "todoNote": sport.todoNote
         ]
-        
-        print("reviseSport - body:\(body)")
-        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
-        request.httpBody = jsonData
-        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("reviseSport - Connection error: \(error)")
-            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                print("reviseSport - HTTP error: \(httpResponse.statusCode)")
+        phpUrl(php: "reviseStudy" ,type: "reviseTask",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            DispatchQueue.main.async {
+                presentationMode.wrappedValue.dismiss()
             }
-            else if let data = data{
-                let decoder = JSONDecoder()
-                do {
-                    print("reviseSport - Data : \(String(data: data, encoding: .utf8)!)")
-                    let todoData = try decoder.decode(TodoData.self, from: data)
-                    if (todoData.message == "User revise Study successfully") {
-                        print("============== reviseSport ==============")
-                        print(String(data: data, encoding: .utf8)!)
-                        print("addSport - userDate:\(todoData)")
-                        print("事件id為：\(todoData.todo_id)")
-                        print("事件種類為：\(todoData.label)")
-                        print("提醒時間為：\(todoData.reminderTime)")
-                        print("結束日期為：\(todoData.dueDateTime)")
-                        print("事件備註為：\(todoData.todoNote)")
-                        print("reviseSport - message：\(todoData.message)")
-                        isError = false
-                        DispatchQueue.main.async {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                        
-                        print("============== reviseSport ==============")
-                    } else {
-                        isError = true
-                        print("reviseSport - message：\(todoData.message)")
-                        messenge = "建立失敗，請重新建立"                    }
-                } catch {
-                    isError = true
-                    print("reviseSport - 解碼失敗：\(error)")
-                    messenge = "建立失敗，請重新建立"
-                }
-            }
+//            completion(message[0])
+            completion(message["message"]!)
         }
-        .resume()
     }
 }
 struct DetailSportView_Previews: PreviewProvider {
@@ -244,7 +183,10 @@ struct DetailSportView_Previews: PreviewProvider {
                                  todoStatus: false,
                                  dueDateTime: Date(),
                                  reminderTime: Date(),
-                                 todoNote: "我是備註")
+                                 todoNote: "我是備註",
+                                 RecurringStartDate: Date(),
+                                 RecurringEndDate: Date(),
+                                 completeValue:  0)
         DetailSportView(sport: $sport)
     }
 }

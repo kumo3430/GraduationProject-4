@@ -11,23 +11,26 @@ import Combine
 struct CheckStudyView: View {
     @State var studyValue: Float = 0.0
     @State var accumulatedValue: Float = 0.0
-    @Binding var isTaskCompleted: Bool
+    //    @Binding var isTaskCompleted: Bool
+    @State var isTaskCompleted: Bool = false
     @State private var isCompleted: Bool = false
-    @Binding var remainingValue: Float
-
+    //    @Binding var remainingValue: Float
+    
     let studyUnits = ["次", "小時"]
     let studyUnit: String = "次"
     let habitType: String = "一般學習"
     
     let titleColor = Color(red: 229/255, green: 86/255, blue: 4/255)
     let customBlue = Color(red: 175/255, green: 168/255, blue: 149/255)
-    var task: DailyTask
-    static let remainingValuePublisher = PassthroughSubject<(taskId: Int, remainingValue: Float), Never>()
-
+    var task: Todo
+    @EnvironmentObject var todoStore: TodoStore
+    //    static let remainingValuePublisher = PassthroughSubject<(taskId: Int, remainingValue: Float), Never>()
+    static let remainingValuePublisher = PassthroughSubject<(Bool), Never>()
+    
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 5) {
-                Text(task.name)
+                Text(task.title)
                     .font(.system(size: 22, weight: .bold, design: .rounded))
                     .foregroundColor(titleColor)
                     .padding(.bottom, 1)
@@ -43,7 +46,7 @@ struct CheckStudyView: View {
                             .font(.system(size: 12, weight: .medium, design: .serif))
                             .foregroundColor(Color.secondary)
                         
-                        Text("\(task.targetValue, specifier: "%.1f") \(studyUnit)")
+                        Text("\(task.studyValue, specifier: "%.1f") \(task.studyUnit)")
                             .font(.system(size: 16, weight: .semibold, design: .default))
                             .foregroundColor(customBlue)
                     }
@@ -55,7 +58,7 @@ struct CheckStudyView: View {
                             .font(.system(size: 12, weight: .medium, design: .serif))
                             .foregroundColor(Color.secondary)
                         
-                        Text("\(accumulatedValue, specifier: "%.1f") \(studyUnit)")
+                        Text("\(accumulatedValue, specifier: "%.1f") \(task.studyUnit)")
                             .font(.system(size: 16, weight: .semibold, design: .default))
                             .foregroundColor(customBlue)
                     }
@@ -64,39 +67,42 @@ struct CheckStudyView: View {
                 
                 HStack {
                     TextField("數值", value: $studyValue, format: .number)
-                                            .keyboardType(.decimalPad)
-                                            .frame(width: 70, height: 35)
-                                            .padding(6)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(isTaskCompleted ? Color.gray : Color.white) // Change background color based on completion status
-                                                    .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 3)
-                                            )
-                                            .cornerRadius(8)
-                                            .font(.system(size: 18, weight: .regular, design: .monospaced))
-                                            .disabled(isTaskCompleted)
+                        .keyboardType(.decimalPad)
+                        .frame(width: 70, height: 35)
+                        .padding(6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(isTaskCompleted ? Color.gray : Color.white) // Change background color based on completion status
+                                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 3)
+                        )
+                        .cornerRadius(8)
+                        .font(.system(size: 18, weight: .regular, design: .monospaced))
+                        .disabled(isTaskCompleted)
                     
-                    Text(studyUnit)
+                    Text(task.studyUnit)
                         .font(.system(size: 18, weight: .regular, design: .monospaced))
                         .foregroundColor(customBlue)
                         .frame(width: 100, alignment: .trailing)
                     
                     Button(action: {
-                                            accumulatedValue += studyValue
-                                            let remaining = task.targetValue - accumulatedValue
-                                            remainingValue = remaining
-                                            CheckStudyView.remainingValuePublisher.send((taskId: task.id, remainingValue: remaining))
-                                            if accumulatedValue >= task.targetValue {
-                                                isTaskCompleted = true
-                                            }
-                                        }) {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(isTaskCompleted ? Color.gray : Color.white)
-                                                .padding(6)
-                                                .background(Capsule().fill(customBlue).shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2))
-                                                .font(.system(size: 16))
-                                        }
-                                        .disabled(isTaskCompleted)
+                        accumulatedValue += studyValue
+                        todoStore.updateCompleteValue(withID: task.id, newValue: accumulatedValue)
+                        if accumulatedValue >= task.studyValue {
+                            isCompleted = true
+                            isTaskCompleted = true
+//                                CheckSportView.remainingValuePublisher.send( isCompleted)
+                        }
+//                        CheckSportView.remainingValuePublisher.send( isCompleted)
+                        CheckSportView.remainingValuePublisher.send( isTaskCompleted)
+                        upDateCompleteValue{_ in }
+                    }) {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(isTaskCompleted ? Color.gray : Color.white)
+                            .padding(6)
+                            .background(Capsule().fill(customBlue).shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2))
+                            .font(.system(size: 16))
+                    }
+                    .disabled(isTaskCompleted || studyValue <= 0)
                 }
                 .padding(.horizontal, 10)
             }
@@ -111,16 +117,53 @@ struct CheckStudyView: View {
             }
         }
         .background(isTaskCompleted ? Color.gray : Color.clear)
+        .onAppear() {
+            accumulatedValue = task.completeValue
+            if accumulatedValue >= task.studyValue {
+                isTaskCompleted = true
+            }
+        }
+    }
+    func upDateCompleteValue(completion: @escaping (String) -> Void) {
+        let body: [String: Any] = [
+            "id": task.id,
+            "RecurringStartDate": formattedDate(task.RecurringStartDate),
+            "RecurringEndDate": formattedDate(task.RecurringEndDate),
+            "completeValue": studyValue,
+            "isComplete": isTaskCompleted,
+        ]
+        phpUrl(php: "upDateCompleteValue" ,type: "reviseTask",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+//            completion(message[0])
+            completion(message["message"]!)
+        }
     }
 }
 
 struct CheckStudyView_Previews: PreviewProvider {
-    @State static var isTaskCompletedPreview: Bool = false
-    @State static var remainingValuePreview: Float = 0.0
-    static var taskPreview = DailyTask(id: 1, name: "學習SwiftUI", type: .study, isCompleted: false, targetValue: 5.0)
-    
+//    @State static var isTaskCompletedPreview: Bool = false
+//    @State static var remainingValuePreview: Float = 0.0
+//    static var taskPreview = DailyTask(id: 1, name: "學習SwiftUI", type: .study, isCompleted: false, targetValue: 5.0)
+    @State static var  sampleTodo = Todo(
+        id: 1,
+        label: "SampleLabel",
+        title: "SampleTitle",
+        description: "SampleDescription",
+        startDateTime: Date(),
+        studyValue: 5.0,
+        studyUnit: "times",
+        recurringUnit: "daily",
+        recurringOption: 1,
+        todoStatus: false,
+        dueDateTime: Date(),
+        reminderTime: Date(),
+        todoNote: "SampleNote",
+        RecurringStartDate: Date(),
+        RecurringEndDate: Date(),
+        completeValue: 0.0
+    )
     static var previews: some View {
-        CheckStudyView(isTaskCompleted: $isTaskCompletedPreview, remainingValue: $remainingValuePreview, task: taskPreview)
+        CheckStudyView(task: sampleTodo)
             .environmentObject(TaskService.shared)
     }
 }

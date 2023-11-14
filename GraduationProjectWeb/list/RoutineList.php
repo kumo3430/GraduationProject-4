@@ -16,10 +16,11 @@ $TodoIntroduction = array();
 $TodoLabel = array();
 $StartDateTime = array();
 
-$dietsType = array();
-$dietsValue = array();
+$routinesType = array();
+$routinesValue = array();
+$routinesTime = array();
 
-$frequency = array();
+// $frequency = array();
 $ReminderTime = array();
 $todo_id = array();
 $todoStatus = array();
@@ -28,7 +29,9 @@ $todoNote = array();
 
 $RecurringStartDate = array();
 $RecurringEndDate = array();
-$completeValue = array();
+$sleepTime = array();
+$wakeUpTime = array();
+// $completeValue = array();
 
 $servername = "localhost"; // 資料庫伺服器名稱
 $user = "kumo"; // 資料庫使用者名稱
@@ -43,7 +46,9 @@ if ($conn->connect_error) {
 }
 
 // $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN Diet D ON T.id = D.todo_id WHERE T.uid = '$uid' && T.category_id = '5';";
-$TodoSELSql = "SELECT T.*, RI.*, D.* FROM Todo T LEFT JOIN Diet D ON T.id = D.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id WHERE T.uid = 30 AND t.category_id = 5 AND RI.isOver = 0;";
+// $TodoSELSql = "SELECT T.*, RI.*, R.* FROM Todo T LEFT JOIN Routine R ON T.id = R.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id WHERE T.uid = 30 AND t.category_id = 4 AND RI.isOver = 0;";
+$TodoSELSql = "SELECT R.*,T.*, RI.RecurringStartDate,RI.RecurringEndDate, RC.sleepTime,RC.wakeUpTime FROM Todo T LEFT JOIN Routine R ON T.id = R.todo_id LEFT JOIN RecurringInstance RI ON T.id = RI.todo_id LEFT JOIN RecurringCheck RC ON RI.id = RC.Instance_id WHERE T.uid = 30 AND T.category_id = 4 AND RI.isOver = 0 UNION SELECT R.*,T.*, RI.RecurringStartDate,RI.RecurringEndDate, RC.sleepTime,RC.wakeUpTime FROM Todo T RIGHT JOIN Routine R ON T.id = R.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id RIGHT JOIN RecurringCheck RC ON RI.id = RC.Instance_id WHERE T.uid = 30 AND T.category_id = 4 AND RI.isOver = 0;
+";
 
 $result = $conn->query($TodoSELSql);
 if ($result->num_rows > 0) {
@@ -53,10 +58,11 @@ if ($result->num_rows > 0) {
         $TodoLabel[] = $row['label'];
         $StartDateTime[] = $row['startDateTime'];
 
-        $dietsType[] = $row['dietType'];
-        $dietsValue[] = $row['dietValue'];
+        $routinesType[] = $row['routineType'];
+        $routinesValue[] = $row['routineValue'];
+        $routinesTime[] = $row['routineTime'];
 
-        $frequency[] = $row['frequency'];
+        // $frequency[] = $row['frequency'];
         $ReminderTime[] = $row['reminderTime'];
         $todo_id[] = $row['todo_id'];
         $todoStatus[] = $row['todoStatus'];
@@ -65,7 +71,9 @@ if ($result->num_rows > 0) {
 
         $RecurringStartDate[] = $row['RecurringStartDate'];
         $RecurringEndDate[] = $row['RecurringEndDate'];
-        $completeValue[] = $row['completeValue'];
+        $sleepTime[] = $row['sleepTime'];
+        $wakeUpTime[] = $row['wakeUpTime'];
+        // $completeValue[] = $row['completeValue'];
     }
 } else {
     $message = "no such Todo";
@@ -78,8 +86,9 @@ $userData = array(
     'todoLabel' => $TodoLabel,
     'startDateTime' => $StartDateTime,
 
-    'dietsType' => $dietsType,
-    'dietsValue' => $dietsValue,
+    'routinesType' => $routinesType,
+    'routinesValue' => $routinesValue,
+    'routinesTime' => $routinesTime,
 
     'frequency' => $frequency,
     'reminderTime' => $ReminderTime,
@@ -90,7 +99,9 @@ $userData = array(
 
     'RecurringStartDate' => $RecurringStartDate,
     'RecurringEndDate' => $RecurringEndDate,
-    'completeValue' => $completeValue,
+    'sleepTime' => $sleepTime,
+    'wakeUpTime' => $wakeUpTime,
+    // 'completeValue' => $completeValue,
 
     'message' => ""
 );

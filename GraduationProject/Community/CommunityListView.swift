@@ -6,6 +6,12 @@
 //
 
 import SwiftUI
+import SafariServices
+
+struct communityPostData: Encodable {
+    var userID: String
+    var Community: String
+}
 
 extension Color {
     static let color = Color("Color")
@@ -13,18 +19,18 @@ extension Color {
     static let color2 = Color("Color2")
 }
 
-struct Community: Identifiable {
-    enum Category: String, CaseIterable {
-        case 學習, 運動, 作息, 飲食
-    }
-    
-    var id = UUID()
-    var name: String
-    var description: String
-    var memberCount: Int
-    var image: String
-    var category: Category
-}
+//struct Community: Identifiable {
+//    enum Category: String, CaseIterable {
+//        case 學習, 運動, 作息, 飲食
+//    }
+//
+//    var id = UUID()
+//    var name: String
+//    var description: String
+//    var memberCount: Int
+//    var image: String
+//    var category: Category
+//}
 
 extension Color {
     static let morandiPink = Color(red: 180/255, green: 120/255, blue: 140/255)
@@ -144,67 +150,10 @@ struct CommunityListView: View {
     @State private var searchText: String = ""
     @State private var showingNotifications = false
     @State private var isCommunityIntroShowing = true
-    
-    // Sample data for the joined communities
-    let joinedCommunities: [Community] = [
-        Community(name: "徒步探險", description: "一起徒步，感受大自然", memberCount: 41, image: "GP1", category: .運動),
-        Community(name: "冥想與平靜", description: "冥想帶來內心平靜", memberCount: 36, image: "GP2", category: .作息),
-        Community(name: "膳食多元化", description: "嘗試各種健康飲食", memberCount: 34, image: "GP3", category: .飲食),
-        Community(name: "日常瑜伽", description: "瑜伽成為日常一部分", memberCount: 45, image: "GP4", category: .運動),
-        Community(name: "放鬆舒眠", description: "學習放鬆，享受深眠", memberCount: 47, image: "GP5", category: .作息),
-    ]
-    
-    // Sample data for available communities
-    let availableCommunities: [Community] = [
-        Community(name: "騎行樂趣", description: "騎自行車，保持活力", memberCount: 48, image: "GP6", category: .運動),
-        Community(name: "夜晚冥想", description: "深夜冥想，平靜思緒", memberCount: 40, image: "GP7", category: .作息),
-        Community(name: "健康飲食家族", description: "家庭共享健康飲食", memberCount: 50, image: "GP8", category: .飲食),
-        Community(name: "健走社團", description: "一起健走，健康生活", memberCount: 44, image: "GP9", category: .運動),
-        Community(name: "靈感早晨", description: "清晨靈感，創造力無限", memberCount: 49, image: "GP10", category: .作息),
-        Community(name: "烤食探索", description: "烤食愛好者的聚會", memberCount: 33, image: "GP11", category: .飲食),
-        Community(name: "健康生活愛好者", description: "探索健康生活的愛好者", memberCount: 47, image: "GP12", category: .飲食),
-        Community(name: "自然愛好者", description: "尋找大自然的美麗", memberCount: 45, image: "naturelover", category: .作息),
-        Community(name: "水果嘗試者", description: "品味各種水果的美味", memberCount: 41, image: "fruitexplorer", category: .飲食),
-        Community(name: "日常鍛鍊", description: "持之以恆的運動", memberCount: 43, image: "dailyexercise", category: .運動),
-        Community(name: "睡前冥想", description: "準備好入眠的冥想", memberCount: 39, image: "bedtimemeditation", category: .作息),
-        Community(name: "營養健康分享", description: "分享營養知識和食譜", memberCount: 50, image: "nutritionhealth", category: .飲食),
-        Community(name: "團隊運動", description: "一起挑戰，團結力量大", memberCount: 46, image: "teamsports", category: .運動),
-        Community(name: "輕食探索者", description: "探索輕食的多樣性", memberCount: 47, image: "lighteats", category: .飲食),
-        Community(name: "早晨靈感創作", description: "早晨創意發想的好時光", memberCount: 44, image: "morningcreativity", category: .作息),
-        Community(name: "戶外冒險家", description: "冒險愛好者的聚會", memberCount: 49, image: "outdooradventures", category: .作息),
-        Community(name: "休息日放鬆", description: "休息日輕鬆，保持活力", memberCount: 48, image: "relaxationday", category: .作息),
-    ]
-    // Sample data for recommended communities
-    let recommendedCommunities: [Community] = [
-        Community(name: "跑步愛好者", description: "一起鍛煉身體，激發活力", memberCount: 45, image: "GP13", category: .運動),
-        Community(name: "健康飲食分享", description: "探討營養均衡的飲食方式", memberCount: 38, image: "GP14", category: .飲食),
-        Community(name: "早鳥學習團", description: "清晨學習，提升自己", memberCount: 48, image: "GP15", category: .學習),
-        Community(name: "冥想心靈", description: "學習冥想，平靜內心", memberCount: 40, image: "GP16", category: .作息),
-        Community(name: "健身新手村", description: "健身入門，互相鼓勵", memberCount: 50, image: "GP17", category: .運動),
-        Community(name: "健康烹飪秘笈", description: "健康飲食的烹飪技巧", memberCount: 32, image: "GP18", category: .飲食),
-        Community(name: "早起早睡", description: "培養良好的生活習慣", memberCount: 46, image: "GP19", category: .作息),
-        Community(name: "瑜伽之旅", description: "探索身心平衡的旅程", memberCount: 44, image: "GP20", category: .運動),
-        Community(name: "均衡生活分享", description: "分享維持均衡生活的方法", memberCount: 39, image: "balancedlife", category: .作息),
-        Community(name: "蔬食愛好者", description: "推崇蔬食生活方式", memberCount: 47, image: "vegetarian", category: .飲食),
-        Community(name: "每日小步走", description: "每天行走，保持健康", memberCount: 42, image: "dailywalks", category: .運動),
-        Community(name: "心靈鍛鍊", description: "提升內在力量和平靜", memberCount: 37, image: "mindtraining", category: .作息),
-        Community(name: "瑜伽愛好者", description: "練習瑜伽，活力滿滿", memberCount: 49, image: "yogalove", category: .運動),
-        Community(name: "健康生活分享", description: "分享促進健康的生活方式", memberCount: 35, image: "healthyliving", category: .飲食),
-        Community(name: "早安好習慣", description: "建立美好的早晨習慣", memberCount: 43, image: "goodmorninghabits", category: .作息),
-    ]
-    
-    // Sample data for popular communities
-    let popularCommunities: [Community] = [
-        Community(name: "均衡飲食計畫", description: "打造均衡飲食計畫", memberCount: 43, image: "GP21", category: .飲食),
-        Community(name: "團體瑜伽", description: "共同練習瑜伽的樂趣", memberCount: 50, image: "GP22", category: .運動),
-        Community(name: "健康心靈", description: "注重心靈健康", memberCount: 42, image: "GP23", category: .作息),
-        Community(name: "夜間散步", description: "夜晚散步，享受寧靜", memberCount: 46, image: "GP24", category: .作息),
-        Community(name: "瑜伽冥想聚會", description: "瑜伽和冥想的完美結合", memberCount: 45, image: "GP25", category: .運動),
-        Community(name: "健身達人", description: "健身達人的聚會", memberCount: 40, image: "GP26", category: .運動),
-        Community(name: "食材探索", description: "探索各種美味食材", memberCount: 42, image: "GP27", category: .飲食),
-        Community(name: "天然飲食方式", description: "崇尚天然飲食方式", memberCount: 48, image: "GP28", category: .飲食),
-        Community(name: "規律運動", description: "堅持規律運動", memberCount: 44, image: "GP29", category: .運動),]
-    
+    @AppStorage("userName") private var userName:String = ""
+    @State var verify: String = ""
+    @State private var showingSheet = false
+    @EnvironmentObject var communityStore: CommunityStore
     var body: some View {
         
         NavigationView {
@@ -220,10 +169,22 @@ struct CommunityListView: View {
                     ScrollView {
                         SearchBar(text: $searchText, placeholder: "搜索社群")
                             .padding(.vertical, 5)
-                        ForEach(joinedCommunities.filter {
-                            searchText.isEmpty ? true : $0.name.contains(searchText)
-                        }) { community in
-                            CommunityCard(community: community)
+                        ForEach(communityStore.communitys) { community in
+                            Button(action: {
+                                print("我是社群")
+                                postCommunity(community:community) { verify, error in
+                                    if let error = error {
+                                        // 处理错误
+                                        print("Error: \(error.localizedDescription)")
+                                    } else if let verify = verify {
+                                        // 处理成功的情况
+                                        openSafariView(verify)
+                                    }
+                                }
+                                
+                            }){
+                                CommunityCard(community: community)
+                            }
                         }
                     }
                 } else {
@@ -239,40 +200,47 @@ struct CommunityListView: View {
                         .padding(.horizontal)
                         
                         if selectedCategory == 0 {
-                            ForEach(recommendedCommunities.filter {
-                                searchText.isEmpty ? true : $0.name.contains(searchText)
-                            }) { community in
-                                CommunityCard(community: community)
-                            }
+                            //                            ForEach(recommendedCommunities.filter {
+                            //                                searchText.isEmpty ? true : $0.name.contains(searchText)
+                            //                            }) { community in
+                            //                                CommunityCard(community: community)
+                            //                            }
                         } else if selectedCategory == 1 {
-                            ForEach(popularCommunities.filter {
-                                searchText.isEmpty ? true : $0.name.contains(searchText)
-                            }) { community in
-                                CommunityCard(community: community)
-                            }
+                            //                            ForEach(popularCommunities.filter {
+                            //                                searchText.isEmpty ? true : $0.name.contains(searchText)
+                            //                            }) { community in
+                            //                                CommunityCard(community: community)
+                            //                            }
                         } else {
-                            ForEach(availableCommunities.filter {
-                                searchText.isEmpty ? true : $0.name.contains(searchText)
-                            }) { community in
-                                CommunityCard(community: community)
-                            }
+                            //                            ForEach(availableCommunities.filter {
+                            //                                searchText.isEmpty ? true : $0.name.contains(searchText)
+                            //                            }) { community in
+                            //                                CommunityCard(community: community)
+                            //                            }
                         }
                     }
                 }
             }
             .navigationBarItems(
                 leading: NotificationButtonView(showingNotifications: $showingNotifications),
-                trailing: NavigationLink(destination: AddCommunityView()) {
-                    Text("創建")
-                        .foregroundColor(Color.morandiBlue)
+//                trailing: NavigationLink(destination: AddCommunityView()) {
+//                    Text("創建")
+//                        .foregroundColor(Color.morandiBlue)
+//                }
+                trailing:  Button("創建") {
+                    showingSheet.toggle()
+                }
+                .sheet(isPresented: $showingSheet) {
+                    AddCommunityView()
+                        .presentationDetents([ .large, .large])
                 }
             )
-            .sheet(isPresented: $showingNotifications) {
-                NotificationView()
-            }
-            if isCommunityIntroShowing {
-                CommunityIntroView(isShowing: $isCommunityIntroShowing)
-            }
+//            .sheet(isPresented: $showingNotifications) {
+//                NotificationView()
+//            }
+//            if isCommunityIntroShowing {
+//                CommunityIntroView(isShowing: $isCommunityIntroShowing)
+//            }
         }
         .background(
             ZStack {
@@ -284,6 +252,83 @@ struct CommunityListView: View {
             }
         )
     }
+    func openSafariView(_ verify: String) {
+        print("VERIFY: \(verify)")
+        let stringWithoutQuotes = verify.replacingOccurrences(of: "\"", with: "") // 去掉双引号的字符串
+        print("stringWithoutQuotes: \(stringWithoutQuotes)")
+            guard let url = URL(string: "http://163.17.136.73/web/login.aspx?\(stringWithoutQuotes)") else {
+            print("无法构建有效的 URL-http://163.17.136.73/web_login.aspx?\(stringWithoutQuotes)")
+            return
+        }
+        // 建立 SFSafariViewController 實例
+        let safariViewController = SFSafariViewController(url: url)
+        // 取得目前的 UIWindowScene
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            // 取得目前的 UIWindow
+            if let mainWindow = windowScene.windows.first {
+                // 以全屏方式彈出 SFSafariViewController
+                DispatchQueue.main.async {
+                   // 在主线程上执行与界面相关的操作，包括打开 Safari 视图控制器
+//                    SFSafariViewController(url: url).present(safariViewController, animated:true, completion:nil)
+                    mainWindow.rootViewController?.present(safariViewController, animated: true, completion: nil)
+//                    communityStore.clearTodos()
+                }
+            }else{
+                print("無法顯示2")
+            }
+        }else{
+            print("無法顯示")
+        }
+    }
+    
+    private func postCommunity(community: Community,completion: @escaping (String?, Error?) -> Void) {
+//            private func postTicker() {
+            UserDefaults.standard.synchronize()
+            class URLSessionSingleton {
+                static let shared = URLSessionSingleton()
+                let session: URLSession
+                private init() {
+                    let config = URLSessionConfiguration.default
+                    config.httpCookieStorage = HTTPCookieStorage.shared
+                    config.httpCookieAcceptPolicy = .always
+                    session = URLSession(configuration: config)
+                }
+            }
+
+            let url = URL(string: "http://163.17.136.73/api/values/community")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let body = communityPostData(userID: userName, Community: String(community.id))
+            let jsonData = try! JSONEncoder().encode(body)
+
+            request.httpBody = jsonData
+            print("body:\(body)")
+            print("jsonData:\(jsonData)")
+            URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("StudySpaceList - Connection error: \(error)")
+                } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                    if let responseData = data {
+                                   // 解析伺服器端返回的錯誤信息
+                                   let errorString = String(data: responseData, encoding: .utf8)
+                                   print("Server Error: \(errorString ?? "")")
+                               }
+                    print("StudySpaceList - HTTP error: \(httpResponse.statusCode)")
+                }
+                else if let data = data{
+                    print(data)
+                    let decoder = JSONDecoder()
+                    print(String(data: data, encoding: .utf8)!)
+                    verify = String(data: data, encoding: .utf8)!
+                    DispatchQueue.main.async {
+                        completion(verify, nil) // 传递成功的数据
+                    }
+                }
+            }
+            .resume()
+        }
 }
 
 struct NotificationButtonView: View {
@@ -313,11 +358,11 @@ struct SectionView: View {
                 .font(.title2)
                 .padding(.leading)
                 .padding(.top)
-            ForEach(communities.filter {
-                searchText.isEmpty ? true : $0.name.contains(searchText)
-            }) { community in
-                CommunityCard(community: community)
-            }
+            //            ForEach(communities.filter {
+            //                searchText.isEmpty ? true : $0.name.contains(searchText)
+            //            }) { community in
+            //                CommunityCard(community: community)
+            //            }
         }
         .padding(.bottom)
         .background(RoundedRectangle(cornerRadius: 15).fill(Color.white).shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5))
@@ -382,34 +427,34 @@ struct CommunityCard: View {
     let community: Community
     
     var body: some View {
-        NavigationLink(destination: Text(community.name)) {
+//        NavigationLink(destination: Text(community.communityName)) {
             HStack(spacing: 15) {
-                Image(community.image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 60, height: 60)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(Color.morandiPink, lineWidth: 2))
-                    .shadow(radius: 5)
+                //                Image(community.image)
+                //                    .resizable()
+                //                    .scaledToFit()
+                //                    .frame(width: 60, height: 60)
+                //                    .clipShape(Circle())
+                //                    .overlay(Circle().stroke(Color.morandiPink, lineWidth: 2))
+                //                    .shadow(radius: 5)
                 
                 VStack(alignment: .leading) {
-                    Text(community.name)
+                    Text(community.communityName)
                         .font(.headline)
                         .foregroundColor(Color.morandiBlue)
                     
-                    Text(community.description)
+                    Text(community.communityDescription)
                         .font(.subheadline)
                         .foregroundColor(Color.morandiGreen)
                         .lineLimit(1)
                         .truncationMode(.tail)
                     
-                    HStack {
-                        Image(systemName: "person.2.fill")
-                            .foregroundColor(Color.morandiPink)
-                        Text("\(community.memberCount) members")
-                            .font(.footnote)
-                            .foregroundColor(Color.morandiPink)
-                    }
+                    //                    HStack {
+                    //                        Image(systemName: "person.2.fill")
+                    //                            .foregroundColor(Color.morandiPink)
+                    //                        Text("\(community.memberCount) members")
+                    //                            .font(.footnote)
+                    //                            .foregroundColor(Color.morandiPink)
+                    //                    }
                 }
                 Spacer()
             }
@@ -417,38 +462,47 @@ struct CommunityCard: View {
             .background(RoundedRectangle(cornerRadius: 15)
                 .fill(Color.morandiBackground)
                 .shadow(color: Color.gray.opacity(0.2), radius: 5, x: 0, y: 5))
-        }
-        .buttonStyle(PlainButtonStyle())
+//        }
+//        .buttonStyle(PlainButtonStyle())
     }
 }
 
 struct AddCommunityView: View {
     @State private var name: String = ""
     @State private var description: String = ""
-    @State private var selectedCategory: Community.Category = .學習  // Use picker for category
+    @State private var selectedCategory: Int = 0 // Use picker for category
+    @EnvironmentObject var communityStore: CommunityStore
     @State private var coverPhoto: Image? = nil
-    
+    @Environment(\.presentationMode) var presentationMode
+    let Category = ["學習", "運動", "作息", "飲食"]
     var body: some View {
+//        VStack{
+//            Text("Hello world")
+//        }
+        
         Form {
             Section(header: Text("基本資訊").foregroundColor(Color.morandiBlue)) {
                 TextField("社群名稱", text: $name)
                 TextField("描述", text: $description)
             }
             
+
             Section(header: Text("分類").foregroundColor(Color.morandiBlue)) {
                 Picker("選擇分類", selection: $selectedCategory) {
-                    ForEach(Community.Category.allCases, id: \.self) {
-                        Text($0.rawValue)
+                    ForEach(Category.indices) { index in
+                        Text(Category[index])
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
             }
-            
+
             Section(header: Text("封面照片").foregroundColor(Color.morandiBlue)) {
                 Text("選擇封面照片")
             }
             
-            Button(action: {}) {
+            Button(action: {
+                addCommunity{_ in }
+            }) {
                 Text("新增社群")
                     .frame(maxWidth: .infinity, minHeight: 50)
                     .background(LinearGradient(gradient: Gradient(colors: [Color.morandiPink, Color.morandiBlue]), startPoint: .leading, endPoint: .trailing))
@@ -457,6 +511,24 @@ struct AddCommunityView: View {
             }
             .buttonStyle(PlainButtonStyle())
             .padding(.top)
+        }
+        
+    }
+    
+    func addCommunity(completion: @escaping (String) -> Void) {
+        let category = selectedCategory + 1
+        var body: [String: Any] = [
+            "communityName": name,
+            "communityDescription": description,
+            "communityCategory": selectedCategory + 1,
+        ]
+
+        print("body:\(body)")
+
+        phpUrl(php: "addCommunity" ,type: "addTask",body:body,store: communityStore) { message in
+            presentationMode.wrappedValue.dismiss()
+//            completion(message[0])
+            completion(message["message"]!)
         }
     }
 }

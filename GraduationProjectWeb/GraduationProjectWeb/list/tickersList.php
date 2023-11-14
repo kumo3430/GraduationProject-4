@@ -13,10 +13,10 @@ $exchange = array();
 $message = "";
 
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "heonrim"; // 資料庫使用者名稱
-$pass = "22042205"; // 資料庫使用者密碼
-$dbname = "GraduationProject"; // 資料庫名稱
+$servername = "localhost";
+$user = "kumo";
+$pass = "coco3430";
+$dbname = "spaced";
 
 $conn = new mysqli($servername, $user, $pass, $dbname);
 if ($conn->connect_error) {

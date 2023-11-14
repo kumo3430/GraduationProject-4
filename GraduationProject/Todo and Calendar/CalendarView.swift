@@ -32,6 +32,7 @@ struct CalendarView: View {
     @EnvironmentObject var todoStore: TodoStore
     @EnvironmentObject var sportStore: SportStore
     @EnvironmentObject var dietStore: DietStore
+    @EnvironmentObject var routineStore: RoutineStore
     @EnvironmentObject var mockData: MockData
     @State private var showingActionSheet = false
     @State private var action: Action? = nil
@@ -108,9 +109,12 @@ struct CalendarView: View {
                 case .diet:
                     AddDietView()
                 default:
-                    AddSleepView() //修改此
+                    AddRoutineView()
                 }
             }
+        }
+        .onAppear() {
+            print("todoList: \(todoStore.todos)")
         }
     }
     
@@ -144,6 +148,7 @@ struct CalendarView: View {
         let filteredTodos = todoStore.todosForDate(selectedDate)
         let filteredSports = sportStore.sportsForDate(selectedDate)
         let filteredDiets = dietStore.dietForDate(selectedDate)
+        let filteredRoutines = routineStore.routineForDate(selectedDate)
         
         return VStack(spacing: 20) {
             //要修改畫面的時候再打開
@@ -201,6 +206,17 @@ struct CalendarView: View {
                     ModernEventRow(eventTitle: diet.title, eventSubtitle: diet.description, eventRecurringUnit: diet.recurringUnit, eventValue: String(diet.dietsValue), eventUnit: "", eventSelectType: diet.selectedDiets, icon: "fork.knife")
                 }
             }
+            
+            Group {
+                Text("作息")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach(filteredRoutines) { routine in
+                    ModernEventRow(eventTitle: routine.title, eventSubtitle: routine.description, eventRecurringUnit: "", eventValue: String(routine.routineValue), eventUnit: formattedTime(routine.routineTime), eventSelectType: routine.selectedRoutines, icon: "bed.double.fill")
+                }
+            }
         }
         .padding(.horizontal, 15)
     }
@@ -244,86 +260,88 @@ struct CalendarView: View {
                         .frame(minWidth: 250)
                     
                     HStack {
-                        // 間隔
-                        if (eventRecurringUnit.isEmpty) {
-                            Text(eventSubtitle)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-//                                .multilineTextAlignment(.leading)
-//                                .frame(minWidth: 250)
-                            
-                        } else {
-                            // 學習 運動
-                            if (eventSelectType.isEmpty) {
-                                // 一般學習
-                                Text(eventRecurringUnit)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-//                                    .multilineTextAlignment(.leading)
-//                                    .frame(minWidth: 250)
-                                Text(eventValue)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-//                                    .multilineTextAlignment(.leading)
-//                                    .frame(minWidth: 250)
-                                Text(eventUnit)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-//                                    .multilineTextAlignment(.leading)
-//                                    .frame(minWidth: 250)
-                            } else {
-                                if (!eventUnit.isEmpty) {
-                                    // 運動
-                                    Text(eventSelectType)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-//                                        .multilineTextAlignment(.leading)
-//                                        .frame(minWidth: 250)
-                                    Text(eventRecurringUnit)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-//                                        .multilineTextAlignment(.leading)
-//                                        .frame(minWidth: 250)
-                                    Text(eventValue)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-//                                        .multilineTextAlignment(.leading)
-//                                        .frame(minWidth: 250)
-                                    Text(eventUnit)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-//                                        .multilineTextAlignment(.leading)
-//                                        .frame(minWidth: 250)
-                                } else {
-                                    // 飲食
-                                    Text(eventSelectType)
-                                        .foregroundColor(Color.gray)
-                                    Text(eventRecurringUnit)
-                                        .foregroundColor(Color.gray)
+                        if (icon == "calendar") {
+                              // 間隔
+                              Text(eventSubtitle)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              
+                          } else if (icon == "book") {
+                              // 一般學習
+                              Text(eventRecurringUnit)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              Text(eventValue)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              Text(eventUnit)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              
+                          } else if (icon == "figure.walk") {
+                               // 運動
+                              Text(eventSelectType)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              Text(eventRecurringUnit)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              Text(eventValue)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              Text(eventUnit)
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
+                              
+                          } else if (icon == "fork.knife") {
+                              // 飲食
+                              Text(eventSelectType)
+                                  .foregroundColor(Color.gray)
+                              Text(eventRecurringUnit)
+                                  .foregroundColor(Color.gray)
+                              
+                              if let preText = dietsPreTextByType[eventSelectType] {
+                                  Text(preText)
+                                      .font(.subheadline)
+                                      .foregroundColor(Color.gray)
+                              } else {
+                                  Text("少於")
+                                      .font(.subheadline)
+                                      .foregroundColor(Color.gray)
+                              }
+                              Text(eventValue)
+                                  .foregroundColor(Color.gray)
+                              if let primaryUnits = dietsUnitsByType[eventSelectType] {
+                                  Text(primaryUnits.first!)
+                                      .font(.subheadline)
+                                      .foregroundColor(Color.gray)
+                              } else {
+                                  Text("次")
+                                      .font(.subheadline)
+                                      .foregroundColor(Color.gray)
+                              }
+                          } else {
+                              // 作息
+                              Text("每日")
+                                  .font(.subheadline)
+                                  .foregroundColor(.gray)
 
-                                    if let preText = dietsPreTextByType[eventSelectType] {
-                                        Text(preText)
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.gray)
-                                    } else {
-                                        Text("少於")
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.gray)
-                                    }
-                                    Text(eventValue)
-                                        .foregroundColor(Color.gray)
-                                    if let primaryUnits = dietsUnitsByType[eventSelectType] {
-                                        Text(primaryUnits.first!)
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.gray)
-                                    } else {
-                                        Text("次")
-                                            .font(.subheadline)
-                                            .foregroundColor(Color.gray)
-                                    }
-                                }
-                            }
-                        }
+                              if (eventSelectType == "睡眠時長") {
+                                  Text("睡滿")
+                                      .font(.subheadline)
+                                      .foregroundColor(.gray)
+                                  Text("\(eventValue) 小時")
+                                      .font(.subheadline)
+                                      .foregroundColor(.gray)
+                              } else {
+                                  Text("\(eventUnit) 前")
+                                      .font(.subheadline)
+                                      .foregroundColor(.gray)
+                                  Text(eventSelectType)
+                                      .font(.subheadline)
+                                      .foregroundColor(.gray)
+                              }
+                          }
                     }
                     
                 }

@@ -8,7 +8,7 @@ $data = json_decode($input_data, true);
 // $userName = $data['userName'];
 // $uid = $_SESSION['uid'];
 $uid = $data['uid'];
-$_SESSION['uid'] = $uid ;
+$_SESSION['uid'] = $uid;
 $category_id = 1;
 
 $TodoTitle = array();
@@ -28,9 +28,9 @@ $repetition3Count = array();
 $repetition4Count = array();
 
 $servername = "localhost"; // 資料庫伺服器名稱
-$user = "heonrim"; // 資料庫使用者名稱
-$pass = "22042205"; // 資料庫使用者密碼
-$dbname = "GraduationProject"; // 資料庫名稱
+$user = "kumo"; // 資料庫使用者名稱
+$pass = "coco3430"; // 資料庫使用者密碼
+$dbname = "spaced"; // 資料庫名稱
 
 // 建立與 MySQL 資料庫的連接
 $conn = new mysqli($servername, $user, $pass, $dbname);

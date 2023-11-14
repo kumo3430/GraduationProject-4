@@ -67,7 +67,7 @@ struct CommunityDetailView: View {
                 .onPreferenceChange(ViewOffsetKey.self) { self.scrollOffset = $0 }
                 .onPreferenceChange(ViewHeightKey.self) { self.headerHeight = $0 }
             }
-            .navigationBarTitle(community.name, displayMode: .inline)
+            .navigationBarTitle(community.communityName, displayMode: .inline)
         }
     }
 }
@@ -86,22 +86,22 @@ struct CommunityDetailHeader: View {
                 .shadow(radius: 10)
                 .padding(.top)
             
-            Text(community.name)
+            Text(community.communityName)
                 .font(.title)
                 .bold()
             
-            Text(community.description)
+            Text(community.communityDescription)
                 .padding(.top, 8)
             
-            HStack(spacing: 40) {
-                VStack {
-                    Text("成員數")
-                        .font(.subheadline)
-                    Text("\(community.memberCount)")
-                        .font(.headline)
-                }
-            }
-            .padding(.top, 16)
+//            HStack(spacing: 40) {
+//                VStack {
+//                    Text("成員數")
+//                        .font(.subheadline)
+//                    Text("\(community.memberCount)")
+//                        .font(.headline)
+//                }
+//            }
+//            .padding(.top, 16)
         }
         .padding()
     }
@@ -110,7 +110,7 @@ struct CommunityDetailHeader: View {
 
 struct CommunityDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        let sampleCommunity = Community(name: "每日冥想", description: "專注於冥想的社群", memberCount: 1234, image: "meditation", category: .作息)
+        let sampleCommunity = Community(id: 1, communityName: "每日冥想", communityDescription: "專注於冥想的社群", communityCategory: 1)
         CommunityDetailView(community: sampleCommunity)
     }
 }

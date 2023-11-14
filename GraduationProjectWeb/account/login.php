@@ -10,9 +10,9 @@ $email = $requestData['email'];
 $password = $requestData['password'];
 
 $servername = "localhost"; // 資料庫伺服器名稱
-$user = "heonrim"; // 資料庫使用者名稱
-$pass = "22042205"; // 資料庫使用者密碼
-$dbname = "GraduationProject"; // 資料庫名稱
+$user = "kumo"; // 資料庫使用者名稱
+$pass = "coco3430"; // 資料庫使用者密碼
+$dbname = "spaced"; // 資料庫名稱
 
 // 建立與 MySQL 資料庫的連接
 $conn = new mysqli($servername, $user, $pass, $dbname);
@@ -39,7 +39,9 @@ if (mysqli_num_rows($result) > 0) {
             $uid = $row['id'];
             $userData = array(
                 'id' => $uid,
+                'userName' => $row["userName"],
                 'email' => $row["email"],
+                'create_at' => $row["create_at"],
                 'message' => 'User login successfully'
             );
             $jsonData = json_encode($userData);
@@ -53,7 +55,9 @@ if (mysqli_num_rows($result) > 0) {
     // 登錄失敗
     $userData = array(
         'id' => "null",
+        'userName' => "null",
         'email' => "null",
+        'create_at' => "null",
         'message' => "no such account"
     );
     // $userData = array('message' => "no such account");

@@ -7,8 +7,9 @@ $data = json_decode($input_data, true);
 $uid = $_SESSION['uid'];
 
 $todo_id = $data['id'];
-$label = $data['label'];
-$reminderTime = $data['reminderTime'];
+$value = $data['value'];
+$status = "repetition". $value ."Status";
+
 $message = "";
 
 $servername = "localhost"; // 資料庫伺服器名稱
@@ -23,21 +24,19 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$TodoSql = "UPDATE Todo 
-SET `label` = '$label',`reminderTime` = '$reminderTime'
-WHERE `id` = '$todo_id' ;";
+
+$TodoSql = "UPDATE StudySpacedRepetition SET $status = 1 WHERE `todo_id` = '$todo_id' ";
 
 if ($conn->query($TodoSql) === TRUE) {
-        $message = "User revise Space successfully";
+        $message = "User upDateSpaced successfully";
 } else {
-    $message = $message . 'User revise Study - Error: ' . $sql . '<br>' . $conn->error;
+    $message = $message . 'User upDateSpaced - Error: ' . $sql . '<br>' . $conn->error;
     $conn->error;
 }
 
 $userData = array(
     'todo_id' => $todo_id,
-    'label' => $label,
-    'reminderTime' => $reminderTime,
+    'status' => $status,
     'message' => $message
 );
 echo json_encode($userData);

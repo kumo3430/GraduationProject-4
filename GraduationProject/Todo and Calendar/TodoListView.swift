@@ -11,6 +11,8 @@ struct TodoListView: View {
     @EnvironmentObject var taskStore: TaskStore
     @EnvironmentObject var todoStore: TodoStore
     @EnvironmentObject var sportStore: SportStore
+    @EnvironmentObject var dietStore: DietStore
+    @EnvironmentObject var routineStore: RoutineStore
     @AppStorage("uid") private var uid: String = ""
     @State private var showingActionSheet = false
     @State private var action: Action? = nil
@@ -52,6 +54,18 @@ struct TodoListView: View {
                                     ItemView(title: sportStore.sports[index].title, description: sportStore.sports[index].description, date: sportStore.sports[index].startDateTime)
                                 }
                             }
+                            SectionHeaderView(title: "飲食")
+                            ForEach(dietStore.diets.indices, id: \.self) { index in
+                                NavigationLink(destination: DietDetailView(diet: $dietStore.diets[index])) {
+                                    ItemView(title: dietStore.diets[index].title, description: dietStore.diets[index].description, date: dietStore.diets[index].startDateTime)
+                                }
+                            }
+//                            SectionHeaderView(title: "作息")
+//                            ForEach(routineStore.routines.indices, id: \.self) { index in
+//                                NavigationLink(destination: DetailSportView(sport: $routineStore.routines[index])) {
+//                                    ItemView(title: sportStore.sports[index].title, description: sportStore.sports[index].description, date: sportStore.sports[index].startDateTime)
+//                                }
+//                            }
                         }
                         .padding()
                     }

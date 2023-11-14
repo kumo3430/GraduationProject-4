@@ -196,7 +196,7 @@ struct Login : View {
                 if mail.isEmpty || pass.isEmpty {
                     errorMessage1 = "請確認帳號密碼都有輸入"
                 } else {
-                    login()
+                    login{_ in }
                 }
             }) {
                 Text("LOGIN")
@@ -216,72 +216,15 @@ struct Login : View {
 //            .disabled(mail.isEmpty || pass.isEmpty)
         }
     }
-    private func login() {
-        
-        class URLSessionSingleton {
-            static let shared = URLSessionSingleton()
-            let session: URLSession
-            private init() {
-                let config = URLSessionConfiguration.default
-                config.httpCookieStorage = HTTPCookieStorage.shared
-                config.httpCookieAcceptPolicy = .always
-                session = URLSession(configuration: config)
-            }
-        }
-
-//        let url = URL(string: "http://localhost:8888/account/login.php")!
-        let url = URL(string: "http://172.20.10.3:8888/account/login.php")!
-//        let url = URL(string: "https://163.17.136.73:443/account/login.php")!
-        var request = URLRequest(url: url)
-        //        request.cachePolicy = .reloadIgnoringLocalCacheData
-        request.httpMethod = "POST"
+    
+    func login(completion: @escaping (String) -> Void) {
         let body = ["email": mail, "password": pass]
-        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
-        request.httpBody = jsonData
-        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Connection error: \(error)")
-            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                print("HTTP error: \(httpResponse.statusCode)")
-            }
-            else if let data = data{
-                let decoder = JSONDecoder()
-                do {
-                    print(String(data: data, encoding: .utf8)!)
-                    let userData = try decoder.decode(UserData.self, from: data)
-                    if userData.message == "no such account" {
-                        print("============== loginView ==============")
-                        print("login - userDate:\(userData)")
-                        print(userData.message)
-                        print("帳號或密碼輸入錯誤")
-                        errorMessage1 = "帳號或密碼輸入錯誤"
-                        print("============== loginView ==============")
-                    } else {
-                        print("============== loginView ==============")
-                        print("login - userDate:\(userData)")
-                        print("使用者ID為：\(userData.id)")
-                        print("使用者帳號為：\(userData.email)")
-                        UserDefaults.standard.set(true, forKey: "signIn")
-                        UserDefaults.standard.set("\(userData.id)", forKey: "uid")
-                        UserDefaults.standard.set("\(userData.email)", forKey: "userName")
-                        print("============== loginView ==============")
-                        UserDefaults.standard.set(true, forKey: "signIn")
-                    }
-                } catch {
-                    print("解碼失敗：\(error)")
-                    errorMessage1 = "登入有誤"
-                }
-            }
-            // 測試
-            //            guard let data = data else {
-            //                print("No data returned from server.")
-            //                return
-            //            }
-            //            if let content = String(data: data, encoding: .utf8) {
-            //                print(content)
-            //            }
+        phpUrl(php: "login" ,type: "account",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+//            completion(message[0])
+            completion(message["message"]!)
+//            completion(message.values)
         }
-        .resume()
     }
 }
 
@@ -290,7 +233,7 @@ struct SignUp : View {
     @State var mail = ""
     @State var pass = ""
     @State var repass = ""
-    @State private var verify = 0
+    @State private var verify = ""
     @State var isPasswordVisible1 = false
     @State var isPasswordVisible2 = false
     @Binding var errorMessage2: String
@@ -405,13 +348,33 @@ struct SignUp : View {
             .cornerRadius(10)
             .padding(.top, 25)
             
+//            Button(action: {
+//                // 我要輸入註冊的function
+//                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
+//                    errorMessage2 = "請確認帳號密碼都有輸入"
+//                } else {
+//                    if !isSendingMail { // 避免重複發送郵件
+//                        mix()
+//                    }
+//                    isShowingVerifyRegister = true
+//                }
+//            }) {
             Button(action: {
                 // 我要輸入註冊的function
                 if mail.isEmpty || pass.isEmpty || repass.isEmpty {
                     errorMessage2 = "請確認帳號密碼都有輸入"
                 } else {
                     if !isSendingMail { // 避免重複發送郵件
-                        mix()
+                        sendEmail(verify: verify,mail: mail) { v,m in
+                            if (m == "Success") {
+                                isSendingMail = true
+                                verify = v
+                                print("loginVerify - \(m)")
+                            } else {
+                                isSendingMail = false
+                                print("regiest - \(m)")
+                            }
+                        }
                     }
                     isShowingVerifyRegister = true
                 }
@@ -429,72 +392,72 @@ struct SignUp : View {
             .padding(.bottom, -40)
             .shadow(radius: 15)
             .sheet(isPresented: $isShowingVerifyRegister) {
-                verifyRegister(verify: $verify, mail: $mail, pass: $pass)
+                verifyRegister(verify: $verify, mail: $mail, pass: $pass, isSendingMail: $isSendingMail)
             }
         }
     }
-    
-    
-    public func mix() {
-//        Task {
-//            await Random()
-//            await sendMail()
+//
+//
+//    public func mix() {
+////        Task {
+////            await Random()
+////            await sendMail()
+////        }
+//        DispatchQueue.global().async {
+//            Random()
+//            sendMail()
 //        }
-        DispatchQueue.global().async {
-            Random()
-            sendMail()
-        }
-    }
-    
-//    private func Random() async {
-    private func Random() {
-        self.verify = Int.random(in: 1..<99999999)
-        print("regiest - 隨機變數為：\(self.verify)")
-    }
-    
-//    public func sendMail() async {
-    public func sendMail() {
-        isSendingMail = true
-        let smtp = SMTP(
-            hostname: "smtp.gmail.com",     // SMTP server address
-            email: "3430yun@gmail.com",        // username to login
-            password: "knhipliavnpqxwty"            // password to login
-        )
-        
-        //        let megaman = Mail.User(name: "coco", email: "3430coco@gmail.com")
-        print("mail:\(mail)")
-        let megaman = Mail.User(name: "我習慣了使用者", email: mail)
-        let drLight = Mail.User(name: "Yun", email: "3430yun@gmail.com")
-        
-        
-        let mail = Mail(
-            from: drLight,
-            to: [megaman],
-            subject: "歡迎使用我習慣了！這是您的驗證信件",
-            text: "以下是您的驗證碼： \(String(self.verify))"
-        )
-        
-        smtp.send(mail) { (error) in
-            if let error = error {
-                isSendingMail = false
-                print("regiest - \(error)")
-            } else {
-                isSendingMail = true
-                print("SEND: SUBJECT: \(mail.subject)")
-                print("SEND: SUBJECT: \(mail.text)")
-                //                           print("MESSAGE-ID: \(mail.messageID)")
-                print("FROM: \(mail.from)")
-                print("TO: \(mail.to)")
-                //                           print("DATE: \(mail.date)")
-                //                           print("MIME-VERSION: \(mail.mimeVersion)")
-                //                           print("SEND: \(mail.content.contentType ?? "")")
-                //                           print("CONTENT-TRANSFER-ENCODING: \(mail.content.transferEncoding ?? "")")
-                //                           print("CONTENT-DISPOSITION: \(mail.content.disposition ?? "")")
-                print("Send email successful")
-                print("---------------------------------")
-            }
-        }
-    }
+//    }
+//
+////    private func Random() async {
+//    private func Random() {
+//        self.verify = Int.random(in: 1..<99999999)
+//        print("regiest - 隨機變數為：\(self.verify)")
+//    }
+//
+////    public func sendMail() async {
+//    public func sendMail() {
+//        isSendingMail = true
+//        let smtp = SMTP(
+//            hostname: "smtp.gmail.com",     // SMTP server address
+//            email: "3430yun@gmail.com",        // username to login
+//            password: "knhipliavnpqxwty"            // password to login
+//        )
+//
+//        //        let megaman = Mail.User(name: "coco", email: "3430coco@gmail.com")
+//        print("mail:\(mail)")
+//        let megaman = Mail.User(name: "我習慣了使用者", email: mail)
+//        let drLight = Mail.User(name: "Yun", email: "3430yun@gmail.com")
+//
+//
+//        let mail = Mail(
+//            from: drLight,
+//            to: [megaman],
+//            subject: "歡迎使用我習慣了！這是您的驗證信件",
+//            text: "以下是您的驗證碼： \(String(self.verify))"
+//        )
+//
+//        smtp.send(mail) { (error) in
+//            if let error = error {
+//                isSendingMail = false
+//                print("regiest - \(error)")
+//            } else {
+//                isSendingMail = true
+//                print("SEND: SUBJECT: \(mail.subject)")
+//                print("SEND: SUBJECT: \(mail.text)")
+//                //                           print("MESSAGE-ID: \(mail.messageID)")
+//                print("FROM: \(mail.from)")
+//                print("TO: \(mail.to)")
+//                //                           print("DATE: \(mail.date)")
+//                //                           print("MIME-VERSION: \(mail.mimeVersion)")
+//                //                           print("SEND: \(mail.content.contentType ?? "")")
+//                //                           print("CONTENT-TRANSFER-ENCODING: \(mail.content.transferEncoding ?? "")")
+//                //                           print("CONTENT-DISPOSITION: \(mail.content.disposition ?? "")")
+//                print("Send email successful")
+//                print("---------------------------------")
+//            }
+//        }
+//    }
 }
 
 struct LoginView_Previews: PreviewProvider {

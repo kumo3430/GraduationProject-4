@@ -12,8 +12,9 @@ struct TodayTasksView: View {
     @State private var previousCompletionStatus: [Int: Bool] = [:]
     @State private var remainingValues: [Int: Float] = [:]
     @ObservedObject private var taskService = TaskService.shared
-    @ObservedObject var sleepTracker = SleepActionTracker()
+//    @ObservedObject var sleepTracker = SleepActionTracker()
     @State private var selectedTaskId: Int?
+    
     @State private var playAnimation1: Bool = false //完成
     let animation1: String = "animation_lmvsn755"
     @State private var playAnimation2: Bool = false //繼續加油
@@ -24,101 +25,184 @@ struct TodayTasksView: View {
     let animation4: String = "Animation - 1696502129829"
     @State private var playAnimation5: Bool = false //失敗
     let animation5: String = "Animation - 1696509680179"
+    
     @EnvironmentObject var tabBarSettings: TabBarSettings
-    
+    @EnvironmentObject var taskStore: TaskStore
+    @EnvironmentObject var todoStore: TodoStore
+    @EnvironmentObject var sportStore: SportStore
+    @EnvironmentObject var dietStore: DietStore
+    @EnvironmentObject var routineStore: RoutineStore
+    //    @ObservedObject var sportStore: SportStore
+    @State private var filteredSports: [Sport] = []
+    @State var tasksForToday: [Task] = []
     var cardSpacing: CGFloat = 5
-    
+    var  sampleSport = Sport(
+        id: 1,
+        label: "SampleLabel",
+        title: "SampleTitle",
+        description: "SampleDescription",
+        startDateTime: Date(),
+        selectedSport: "Running",
+        sportValue: 5.0,
+        sportUnits: "times",
+        recurringUnit: "daily",
+        recurringOption: 1,
+        todoStatus: false,
+        dueDateTime: Date(),
+        reminderTime: Date(),
+        todoNote: "SampleNote",
+        RecurringStartDate: Date(),
+        RecurringEndDate: Date(),
+        completeValue: 0.0
+    )
     var body: some View {
         NavigationView {
             ZStack {
                 ScrollView {
                     LazyVStack(spacing: cardSpacing) {
-                        ForEach(taskService.tasks, id: \.id) { task in
-                            ZStack {
-                                getTaskView(for: task)
+//                        ForEach(taskStore.tasksForDate(Date()), id: \.id) { task in
+//                        ForEach(Array(taskStore.tasksForDate(Date()).enumerated()), id: \.element.id) { index, task in
+                        ForEach(Array(tasksForToday.enumerated()), id: \.element.id) { index, task in
+                            //                        ForEach(filteredSports, id: \.id) { task in
+                            HStack{
+                                getTaskView(task: task,type: "spaced")
                                     .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
                                     .cornerRadius(10)
-                                    .onReceive(task.$isCompleted) { newValue in
-                                        if newValue && !previousCompletionStatus[task.id, default: false] && !task.animationPlayed {
-                                            print("\(task.name) has been completed!")
-                                            taskService.updateTask(task)
-                                            withAnimation {
-                                                playAnimation1 = true
-                                            }
-                                            task.animationPlayed = true
-                                        }
-                                        previousCompletionStatus[task.id] = newValue
-                                    }
-                                    .onReceive(CheckStudyView.remainingValuePublisher) { (taskId, remainingValue) in
-                                        if taskId == task.id {
-                                            print("Received remainingValue: \(remainingValue) for task \(task.name)")
-                                            if remainingValue > 0.0 && remainingValue < task.targetValue {
-                                                print("Setting playAnimation to true")
-                                                playAnimation2 = true
-                                            }
-                                        }
-                                    }
-                                    .onReceive(CheckSportView.remainingValuePublisher) { (taskId, remainingValue) in
-                                        if taskId == task.id {
-                                            print("Received remainingValue: \(remainingValue) for task \(task.name)")
-                                            if remainingValue > 0.0 && remainingValue < task.targetValue {
-                                                print("Setting playAnimation to true")
-                                                playAnimation2 = true
-                                            }
-                                        }
-                                    }
-                                    .onReceive(task.$isSuccess) { isSuccess in
-                                        guard let isSuccess = isSuccess else { return }
-                                        if isSuccess {
-                                            print("\(task.name) has been successfully completed!")
-                                        } else {
-                                            print("\(task.name) has failed!")
-                                        }
-                                    }
-                                    .onReceive(sleepTracker.$lastAction) { action in
-                                        guard task.type == .sleep && !task.animationPlayed else { return } // Only handle sleep type tasks
-                                        if let action = action {
-                                            switch action {
-                                            case .sleep:
-                                                withAnimation {
-                                                    playAnimation3 = true
-                                                }
-                                                task.animationPlayed = true
-                                                print("Received sleep action: \(action)")
-                                            case .wakeUp:
-                                                withAnimation {
-                                                    playAnimation4 = true
-                                                }
-                                                task.animationPlayed = true
-                                                print("Received sleep action: \(action)")
-                                            }
-                                        } else {
-                                            print("No sleep action recorded.")
-                                        }
-                                    }
-                                    .onReceive(task.$isSuccess) { isSuccess in
-                                        guard let isSuccess = isSuccess else { return }
-                                        if isSuccess {
-                                            print("[Success Notification] \(task.name) was successfully achieved!")
-                                        } else {
-                                            print("[Failure Notification] \(task.name) was not completed successfully.")
-                                            if !task.animationPlayed {
-                                                withAnimation {
-                                                    playAnimation5 = true
-                                                }
-                                                task.animationPlayed = true
-                                            }
+                                    .onReceive(CheckSpaceView.remainingValuePublisher) { isCompleted in
+                                        
+                                        if isCompleted == true {
+                                            print("Setting playAnimation to true")
+                                            playAnimation1 = true
                                         }
                                     }
                             }
                             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
                             .padding(EdgeInsets(top: 15, leading: 25, bottom: 15, trailing: 25))
-                            .onTapGesture {
-                                withAnimation(.spring()) {
-                                    self.selectedTaskId = self.selectedTaskId == task.id ? nil : task.id
-                                }
-                            }
                         }
+                        
+                        ForEach(todoStore.todosForDate(Date()), id: \.id) { task in
+                            //                        ForEach(filteredSports, id: \.id) { task in
+                            HStack{
+                                getTaskView(task: task,type: "study")
+                                    .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
+                                    .cornerRadius(10)
+                                    .onReceive(CheckStudyView.remainingValuePublisher) { (isCompleted) in
+                                        
+                                        if isCompleted == true {
+                                            print("Setting playAnimation to true")
+                                            playAnimation1 = true
+                                        } else {
+                                            playAnimation2 = true
+                                        }
+                                    }
+                            }
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                            .padding(EdgeInsets(top: 15, leading: 25, bottom: 15, trailing: 25))
+                        }
+                        
+                        ForEach(sportStore.sportsForDate(Date()), id: \.id) { task in
+                            //                        ForEach(filteredSports, id: \.id) { task in
+                            HStack{
+                                getTaskView(task: task,type: "sport")
+                                    .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
+                                    .cornerRadius(10)
+                                    .onReceive(CheckSportView.remainingValuePublisher) { (isCompleted) in
+                                        
+                                        if isCompleted == true {
+                                            print("Setting playAnimation to true")
+                                            playAnimation1 = true
+                                        } else {
+                                            playAnimation2 = true
+                                        }
+                                    }
+                            }
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                            .padding(EdgeInsets(top: 15, leading: 25, bottom: 15, trailing: 25))
+                        }
+                        
+                        ForEach(dietStore.dietForDate(Date()), id: \.id) { task in
+                            //                        ForEach(filteredSports, id: \.id) { task in
+                            HStack{
+                                getTaskView(task: task,type: "diet")
+                                    .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
+                                    .cornerRadius(10)
+                                    .onReceive(CheckDietView.remainingValuePublisher) { isCompleted,isFail,dietType in
+      
+                                        switch dietType {
+                                        case "減糖", "少油炸":
+                                            if isCompleted == true {
+                                                playAnimation2 = true
+                                            } else {
+                                                print("Setting playAnimation to true")
+                                                playAnimation5 = true
+                                            }
+                                        case "多喝水", "多吃蔬果":
+                                            if isCompleted == true {
+                                                print("Setting playAnimation to true")
+                                                playAnimation1 = true
+                                            } else {
+                                                playAnimation2 = true
+                                            }
+                                        default:
+                                            break
+                                        }
+                                    }
+                            }
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                            .padding(EdgeInsets(top: 15, leading: 25, bottom: 15, trailing: 25))
+                        }
+                        ForEach(routineStore.routineForDate(Date()), id: \.id) { task in
+                            //                        ForEach(filteredSports, id: \.id) { task in
+                            HStack{
+                                getTaskView(task: task,type: "routine")
+                                    .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
+                                    .cornerRadius(10)
+                                    .onReceive(CheckSleepView.remainingValuePublisher) { isCompleted,routineType in
+      
+                                        switch routineType {
+                                        case 0:
+                                            if isCompleted == true {
+                                                playAnimation3 = true
+                                            } else {
+                                                print("Setting playAnimation to true")
+                                                playAnimation5 = true
+                                            }
+                                        case 1:
+                                            if isCompleted == true {
+                                                playAnimation4 = true
+                                            } else {
+                                                print("Setting playAnimation to true")
+                                                playAnimation5 = true
+                                            }
+                                        case 2:
+                                            if isCompleted == true {
+                                                print("Setting playAnimation to true")
+                                                playAnimation1 = true
+                                            } else {
+                                                playAnimation2 = true
+                                            }
+                                        case 3:
+                                            if isCompleted == true {
+                                                print("睡眠時長")
+                                                playAnimation1 = true
+                                            } else {
+                                                print("睡眠時長")
+                                                playAnimation5 = true
+                                            }
+                                        default:
+                                            break
+                                        }
+                                    }
+                            }
+                            .onAppear() {
+                                print("RoutineStore: \(task)")
+                            }
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                            .padding(EdgeInsets(top: 15, leading: 25, bottom: 15, trailing: 25))
+                        }
+                    }
+                    .onAppear() {
+                    tasksForToday = taskStore.tasksForDate(Date())
                     }
                     .padding(.horizontal, 15)
                 }
@@ -231,47 +315,28 @@ struct TodayTasksView: View {
                 }
             }
             .onAppear {
-                        tabBarSettings.isHidden = true
-                    }
-                    .onDisappear {
-                        tabBarSettings.isHidden = false
-                    }
+                tabBarSettings.isHidden = true
+                self.filteredSports = sportStore.sportsForDate(Date())
+            }
+            .onDisappear {
+                tabBarSettings.isHidden = false
+            }
         }
     }
-    
-    func getTaskView(for task: DailyTask) -> some View {
-        let isTaskCompletedBinding = Binding<Bool>(
-            get: { task.isCompleted },
-            set: {
-                task.isCompleted = $0
-                taskService.updateTask(task)
-            }
-        )
-        
-        let isSuccessBinding = Binding<Bool?>(
-            get: { task.isSuccess },
-            set: { task.isSuccess = $0 }
-        )
-        
-        
-        let remainingValueBinding = Binding<Float>(
-            get: { self.remainingValues[task.id, default: task.targetValue] },
-            set: { self.remainingValues[task.id] = $0 }
-        )
-        
+
+    func getTaskView(task: Any, type: String) -> some View {
         let taskView: AnyView
-        
-        switch task.type {
-        case .sport:
-            taskView = AnyView(CheckSportView(isTaskCompleted: isTaskCompletedBinding, remainingValue: remainingValueBinding, task: task))
-        case .study:
-            taskView = AnyView(CheckStudyView(isTaskCompleted: isTaskCompletedBinding, remainingValue: remainingValueBinding, task: task))
-        case .space:
-            taskView = AnyView(CheckSpaceView(isTaskCompleted: isTaskCompletedBinding, task: task))
-        case .diet:
-            taskView = AnyView(CheckDietView(isTaskSuccess: isSuccessBinding,  remainingValue: remainingValueBinding, task: task))
-        case .sleep:
-            taskView = AnyView(CheckSleepView(isTaskCompleted: isTaskCompletedBinding, isTaskSuccess: isSuccessBinding, task: task, sleepTracker: sleepTracker))
+        switch type {
+        case "spaced":
+            taskView = AnyView(CheckSpaceView(task: task as! Task))
+        case "study":
+            taskView = AnyView(CheckStudyView(task: task as! Todo))
+        case "sport":
+            taskView =  AnyView(CheckSportView( completeValue: 0.0, task: task as! Sport))
+        case "diet":
+            taskView =  AnyView(CheckDietView( task: task as! Diet))
+        default:
+            taskView =  AnyView(CheckSleepView( task: task as! Routine))
         }
         
         return taskView

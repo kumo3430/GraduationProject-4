@@ -8,7 +8,7 @@ $data = json_decode($input_data, true);
 // $userName = $data['userName'];
 // $uid = $_SESSION['uid'];
 $uid = $data['uid'];
-$_SESSION['uid'] = $uid ;
+$_SESSION['uid'] = $uid;
 $category_id = 0;
 
 $TodoTitle = array();
@@ -26,10 +26,14 @@ $todoStatus = array();
 $dueDateTime = array();
 $todoNote = array();
 
+$RecurringStartDate = array();
+$RecurringEndDate = array();
+$completeValue = array();
+
 $servername = "localhost"; // 資料庫伺服器名稱
-$user = "heonrim"; // 資料庫使用者名稱
-$pass = "22042205"; // 資料庫使用者密碼
-$dbname = "GraduationProject"; // 資料庫名稱
+$user = "kumo"; // 資料庫使用者名稱
+$pass = "coco3430"; // 資料庫使用者密碼
+$dbname = "spaced"; // 資料庫名稱
 
 // 建立與 MySQL 資料庫的連接
 $conn = new mysqli($servername, $user, $pass, $dbname);
@@ -38,7 +42,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudyGeneral SG ON T.id = SG.todo_id WHERE T.uid = '$uid' && T.category_id = '0';";
+// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudyGeneral SG ON T.id = SG.todo_id WHERE T.uid = '$uid' && T.category_id = '0';";
+$TodoSELSql = "SELECT T.*, RI.*, SG.* FROM Todo T LEFT JOIN StudyGeneral SG ON T.id = SG.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id WHERE T.uid = 30 AND t.category_id = 0 AND RI.isOver = 0;";
 
 $result = $conn->query($TodoSELSql);
 if ($result->num_rows > 0) {
@@ -57,6 +62,11 @@ if ($result->num_rows > 0) {
         $todoStatus[] = $row['todoStatus'];
         $dueDateTime[] = $row['dueDateTime'];
         $todoNote[] = $row['todoNote'];
+
+        $RecurringStartDate[] = $row['RecurringStartDate'];
+        $RecurringEndDate[] = $row['RecurringEndDate'];
+        $completeValue[] = $row['completeValue'];
+
     }
 } else {
     $message = "no such Todo";
@@ -78,6 +88,11 @@ $userData = array(
     'todoStatus' => $todoStatus,
     'dueDateTime' => $dueDateTime,
     'todoNote' => $todoNote,
+
+    'RecurringStartDate' => $RecurringStartDate,
+    'RecurringEndDate' => $RecurringEndDate,
+    'completeValue' => $completeValue,
+
     'message' => ""
 );
 echo json_encode($userData);

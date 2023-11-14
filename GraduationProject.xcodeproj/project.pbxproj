@@ -10,6 +10,10 @@
 		13AD35D42A70BB880003FF1B /* TodoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D32A70BB880003FF1B /* TodoListView.swift */; };
 		13AD35D62A70BC0D0003FF1B /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D52A70BC0D0003FF1B /* CalendarView.swift */; };
 		13D0E0972AFFDCB0005EC8AB /* account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E0962AFFDCB0005EC8AB /* account.swift */; };
+		13D0E0992B00987F005EC8AB /* AddTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E0982B00987F005EC8AB /* AddTask.swift */; };
+		13D0E09B2B009895005EC8AB /* ReviseTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E09A2B009895005EC8AB /* ReviseTask.swift */; };
+		13D0E09D2B0098DC005EC8AB /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E09C2B0098DC005EC8AB /* Check.swift */; };
+		13D0E09F2B00DCEC005EC8AB /* AddRoutineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E09E2B00DCEC005EC8AB /* AddRoutineView.swift */; };
 		13D6E1E62A710D480049E5A5 /* verifyRegister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D6E1E52A710D480049E5A5 /* verifyRegister.swift */; };
 		13D6E1E92A710DA50049E5A5 /* SwiftSMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 13D6E1E82A710DA50049E5A5 /* SwiftSMTP */; };
 		3B01AF142AC0709500321E35 /* CheckSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B01AF132AC0709500321E35 /* CheckSpaceView.swift */; };
@@ -130,6 +134,10 @@
 		13AD35D32A70BB880003FF1B /* TodoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListView.swift; sourceTree = "<group>"; };
 		13AD35D52A70BC0D0003FF1B /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		13D0E0962AFFDCB0005EC8AB /* account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = account.swift; sourceTree = "<group>"; };
+		13D0E0982B00987F005EC8AB /* AddTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTask.swift; sourceTree = "<group>"; };
+		13D0E09A2B009895005EC8AB /* ReviseTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviseTask.swift; sourceTree = "<group>"; };
+		13D0E09C2B0098DC005EC8AB /* Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Check.swift; sourceTree = "<group>"; };
+		13D0E09E2B00DCEC005EC8AB /* AddRoutineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRoutineView.swift; sourceTree = "<group>"; };
 		13D6E1E52A710D480049E5A5 /* verifyRegister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = verifyRegister.swift; sourceTree = "<group>"; };
 		3B01AF132AC0709500321E35 /* CheckSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckSpaceView.swift; sourceTree = "<group>"; };
 		3B05FB162A949EFB00540463 /* AddDietView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDietView.swift; sourceTree = "<group>"; };
@@ -428,6 +436,7 @@
 				3B2EF2DD2A7FF3C200FC021A /* AddSpaceView.swift */,
 				3B0A5DB12A81D6B600283B40 /* AddSportView.swift */,
 				3B05FB162A949EFB00540463 /* AddDietView.swift */,
+				13D0E09E2B00DCEC005EC8AB /* AddRoutineView.swift */,
 				3B421BE22AAFF730000255BA /* AddSleepView.swift */,
 			);
 			path = AddTodoView;
@@ -439,6 +448,9 @@
 				3BBBF4C32A847B4A0077B3E6 /* TodoModels.swift */,
 				3BBBF4C52A847B5E0077B3E6 /* TodoManager.swift */,
 				13AD35D32A70BB880003FF1B /* TodoListView.swift */,
+				13D0E0982B00987F005EC8AB /* AddTask.swift */,
+				13D0E09A2B009895005EC8AB /* ReviseTask.swift */,
+				13D0E09C2B0098DC005EC8AB /* Check.swift */,
 				13AD35D52A70BC0D0003FF1B /* CalendarView.swift */,
 				13D0E0962AFFDCB0005EC8AB /* account.swift */,
 				3BAE3CB02AB9F9740079464F /* WeeklyReportView_Previews.swift */,
@@ -682,6 +694,7 @@
 				3B4A8FD82AA6E78B00C4E0AF /* SportDetailView.swift in Sources */,
 				3BBBF4C82A8483C10077B3E6 /* LoadingView.swift in Sources */,
 				3B1D98582ADE7E440053EF84 /* RegistrationView.swift in Sources */,
+				13D0E09F2B00DCEC005EC8AB /* AddRoutineView.swift in Sources */,
 				3B35DAAF2AEF9389008C3D2F /* PostList.swift in Sources */,
 				3B5A47EB2A889C520022D796 /* StudyDetailView.swift in Sources */,
 				3B17F3B32ABF0ED500AFF7F5 /* CheckSportView.swift in Sources */,
@@ -689,6 +702,7 @@
 				3BB6D17F2ACA9523005D3EE7 /* List.swift in Sources */,
 				3B6975C92A7B7D1E00513302 /* HomeView.swift in Sources */,
 				3B01AF142AC0709500321E35 /* CheckSpaceView.swift in Sources */,
+				13D0E0992B00987F005EC8AB /* AddTask.swift in Sources */,
 				3B35DAA72AEEC68A008C3D2F /* SettingsView.swift in Sources */,
 				3B31C0962ACEE0D600A2529D /* CheckDietView.swift in Sources */,
 				3B8CBB1F2AB2D75E004E5A26 /* TaskCompletionTimeBasedView.swift in Sources */,
@@ -710,6 +724,7 @@
 				3B9E09FA2AD5297B0059F116 /* TaskService.swift in Sources */,
 				3B35DAAD2AEF9377008C3D2F /* PostView.swift in Sources */,
 				3B8CBB1D2AB2D6B5004E5A26 /* TimeExtensions.swift in Sources */,
+				13D0E09B2B009895005EC8AB /* ReviseTask.swift in Sources */,
 				3B4A8FDC2AA7213100C4E0AF /* CommunityCardView.swift in Sources */,
 				3BB30CB62A5FF26800036987 /* TestView.swift in Sources */,
 				3B9497952A9C410000BD885F /* QuoteCardView.swift in Sources */,
@@ -731,6 +746,7 @@
 				3B37A8D12A188BA6009BB504 /* GraduationProjectApp.swift in Sources */,
 				3B8647CF2A8DB83300555A9E /* QuoteView.swift in Sources */,
 				3BA700532A1CC5820096B2FF /* +View.swift in Sources */,
+				13D0E09D2B0098DC005EC8AB /* Check.swift in Sources */,
 				3B2EF2DE2A7FF3C200FC021A /* AddSpaceView.swift in Sources */,
 				3B9498BB2AEB571800AB6902 /* RecommendedReadingView.swift in Sources */,
 				3BCECBA32AE68C690093F1BB /* DiaryView.swift in Sources */,

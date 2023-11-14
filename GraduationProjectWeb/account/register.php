@@ -13,9 +13,11 @@ $password = $data['password'];
 $create_at = $data['create_at'];
 
 $servername = "localhost"; // 資料庫伺服器名稱
-$user = "heonrim"; // 資料庫使用者名稱
-$pass = "22042205"; // 資料庫使用者密碼
-$dbname = "GraduationProject"; // 資料庫名稱
+
+$servername = "localhost"; // 資料庫伺服器名稱
+$user = "kumo"; // 資料庫使用者名稱
+$pass = "coco3430"; // 資料庫使用者密碼
+$dbname = "spaced"; // 資料庫名稱
 
 // 建立與 MySQL 資料庫的連接
 $conn = new mysqli($servername, $user, $pass, $dbname);
@@ -36,7 +38,7 @@ if ($emailExist) {
     $message = "name is registered";
 } else {
     if ($email != "" && $password != "") {
-        $sql = "INSERT INTO `User` (`email`, `password`, `create_at`) VALUES ('$email', '$password','$create_at')";
+        $sql = "INSERT INTO `User` (`userName`,`email`, `password`, `create_at`) VALUES ('$email','$email', '$password','$create_at')";
         if ($conn->query($sql) === TRUE) {
             // 註冊成功，回傳 JSON 格式的訊息
             $message = "User registered successfully";
@@ -60,9 +62,9 @@ if ($emailExist) {
 
 
 $userData = array(
-    'userId' => $uid,
+    'id' => strval($uid),
+    'userName' => $email,
     'email' => $email,
-    'password' => $password,
     'create_at' => $create_at,
     'message' => $message
 );
