@@ -27,7 +27,14 @@ func phpUrl(php: String,type: String,body: [String:Any],store: (any ObservableOb
     print("新的url\(String(describing: url))")
     var request = URLRequest(url: url!)
     request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
+    
+
+//    let body = PostData(userID: userName, TickerID: ticker.id)
+//    let jsonData = try! JSONEncoder().encode(body)
+
+    
     request.httpBody = jsonData
     
     URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
@@ -60,9 +67,20 @@ func convertToTime(_ timeString: String?) -> Date? {
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
     dateFormatter.dateFormat = "HH:mm:ss"
+//    dateFormatter.dateFormat = "HH:mm"
     return dateFormatter.date(from: timeString)
 }
-
+func convertToTimeM(_ timeString: String?) -> Date? {
+    guard let timeString = timeString else { return nil }
+    
+    let dateFormatter = DateFormatter()
+//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
+    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
+//    dateFormatter.dateFormat = "HH:mm:ss"
+    dateFormatter.dateFormat = "HH:mm"
+    return dateFormatter.date(from: timeString)
+}
 func convertToTimeHR(_ timeString: String?) -> Date? {
     guard let timeString = timeString else { return nil }
     

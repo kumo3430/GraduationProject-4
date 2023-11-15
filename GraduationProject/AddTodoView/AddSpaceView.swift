@@ -122,7 +122,7 @@ struct AddSpaceView: View {
             "nextReviewDate": formattedDate(nextReviewDate),"nextReviewTime": formattedTime(nextReviewTime),
             "First": formattedDate(nextReviewDates[0]),"third": formattedDate(nextReviewDates[1]),
             "seventh": formattedDate(nextReviewDates[2]),"fourteenth": formattedDate(nextReviewDates[3]) ]
-        
+        print("addStudySpaced:\(body)")
         phpUrl(php: "addStudySpaced" ,type: "addTask",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             presentationMode.wrappedValue.dismiss()

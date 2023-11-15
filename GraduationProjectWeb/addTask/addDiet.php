@@ -1,23 +1,18 @@
 <?php
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+require_once '../Database.php';
+
 session_start();
 // 獲取用戶提交的表單數據
 $input_data = file_get_contents("php://input");
 $data = json_decode($input_data, true);
 
 // 取得用戶名和密碼
-// $userName = $data['userName'];
 $uid = $_SESSION['uid'];
-// $uuid = $data['uuid'];
 $category_id = 5;
 $todoTitle = $data['todoTitle'];
 $todoIntroduction = $data['todoIntroduction'];
-
-
-// if ( $data['label'] == "") {
-//     $todoLabel = "notSet";
-// } else {
-//     $todoLabel= $data['label'];
-// }
 $todoLabel= $data['label'];
 $todoStatus= 0;
 $startDateTime = $data['startDateTime'];
@@ -31,115 +26,92 @@ $dueDateTime = $data['dueDateTime'];
 $todoNote = $data['todoNote'];
 $todo_id = 0;
 $message = "";
-$message1 = "";
-$message2 = "";
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "kumo"; // 資料庫使用者名稱
-$pass = "coco3430"; // 資料庫使用者密碼
-$dbname = "spaced"; // 資料庫名稱
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
-// 建立與 MySQL 資料庫的連接
-$conn = new mysqli($servername, $user, $pass, $dbname);
-// 檢查連接是否成功
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+function insertTodo($conn, $uid, $category_id, $studyValue, $studyUnit, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus)
+{
+    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `label`, `startDateTime`, `frequency`, `reminderTime`, `todoStatus`, `dueDateTime`, `todoNote`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
-$TodoSELSql = "SELECT * FROM `Todo` WHERE `uid` = '$uid' && `category_id` = '$category_id' && `todoTitle` = '$todoTitle' && `todoIntroduction` = '$todoIntroduction' && `label` = '$todoLabel'&& `todoNote` = '$todoNote';";
+    $stmt = $conn->prepare($TodoSql);
+    $stmt->bind_param("sissssisiss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $todoStatus, $dueDateTime, $todoNote);
 
-function insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime,$dietType, $dietValue ,$frequency, $reminderTime, $dueDateTime, $todoNote) {
-    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `label`, `startDateTime`, `frequency`, `reminderTime`, `todoStatus`, `dueDateTime`, `todoNote`) VALUES ('$uid', '$category_id','$todoTitle','$todoIntroduction','$todoLabel','$startDateTime','$frequency','$reminderTime','0','$dueDateTime','$todoNote')";
-    
-    if ($conn->query($TodoSql) === TRUE) {
-        $message = "User New Todo category_id = 0 successfully" . '<br>';
+    if ($stmt->execute() === TRUE) {
+        $todo_id = $conn->insert_id;
+        $message = "User New Todo successfully";
 
-        $TodoIdSql = "SELECT * FROM `Todo` WHERE `uid` = '$uid' && `category_id` = '$category_id' && `todoTitle` = '$todoTitle' && `todoIntroduction` = '$todoIntroduction' && `label` = '$todoLabel' && `todoNote` = '$todoNote';";
-
-        $result = $conn->query($TodoIdSql);
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $todo_id = $row['id'];
-                $SpacedSql = "INSERT INTO `Diet` (`todo_id`, `category_id`, `dietType`, `dietValue`) VALUES ('$todo_id', '$category_id','$dietType','$dietValue')";
-
-                if ($conn->query($SpacedSql) === TRUE) {
-                    $message = "User New diet successfully";
-                } else {
-                    $message = 'New diet - Error: ' . $SpacedSql . '<br>' . $conn->error;
-                }
-            }
-        } else {
-            $message = "no such StudyGeneralTodo" . '<br>';
-        }
     } else {
-        $message = 'New StudyGeneral Todo - Error: ' . $TodoSql . '<br>' . $conn->error;
-        if ($conn->connect_error) {
-            $message =  die("Connection failed: " . $conn->connect_error);
-        }
+        $message = "TodoSqlError: " . $stmt->error;
     }
-    
     // return $message;
     return array('message' => $message, 'todo_id' => $todo_id);
 }
+function insertDiet($conn, $todo_id, $category_id, $dietType, $dietValue)
+{
+    $SpacedSql = "INSERT INTO `Diet` (`todo_id`, `category_id`, `dietType`, `dietValue`) VALUES ('$todo_id', '$category_id','$dietType','$dietValue')";
 
-function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate) {
-    $InstanceSql = "INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES ('$todo_id', '$startDateTime', '$RecurringEndDate');";
+    $stmt = $conn->prepare($SpacedSql);
+    $stmt->bind_param("iisi", $todo_id, $category_id, $dietType, $dietValue);
 
-    if($conn->query($InstanceSql) === TRUE) {
-        $message = "User New first RecurringInstance successfully";
+    if($stmt->execute() === TRUE) {
+        $result = $stmt->get_result();
+        $message = "User New Diet successfully";
     } else {
-        $message = "New first RecurringInstance successfully - Error: " . $InstanceSql . '<br>' . $conn->error; 
-        if ($conn->connect_error) {
-            $message =  die("Connection failed: " . $conn->connect_error);
-        }
-        
+        $message = 'New Diet - Error: '. $stmt->error;
     }
     return $message;
 }
+function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate)
+{
+    $InstanceSql = "INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES (?, ?, ?);";
 
+    $stmt = $conn->prepare($InstanceSql);
+    $stmt->bind_param("iss", $todo_id, $startDateTime, $RecurringEndDate);
 
-$result = $conn->query($TodoSELSql);
-if ($result->num_rows == 0) {
-    if ($frequency == 0) {
-          // 不重複 只新增todo!
-        //   $message1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $result1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $dietType, $dietValue, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $message1 = $result1['message'];
-        $todo_id = $result1['todo_id'];
-    
-    } else if ($frequency == 1){
-        // 每天重複
-        // $message1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $result1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $dietType, $dietValue, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $message1 = $result1['message'];
-        $todo_id = $result1['todo_id'];
-
-        $RecurringEndDate = $startDateTime;
-        $message2 = insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
-
-    } else if ($frequency == 2){
-        // 每週重複
-        // $message1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $result1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $dietType, $dietValue, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $message1 = $result1['message'];
-        $todo_id = $result1['todo_id'];
-        $RecurringEndDate = date('Y-m-d', strtotime("$startDateTime +6 day"));
-
-        $message2 = insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
-
-    } else if ($frequency == 3){
-        // 每月重複
-        // $message1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $result1 = insertTodoAndDiet($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $dietType, $dietValue, $frequency, $reminderTime, $dueDateTime, $todoNote);
-        $message1 = $result1['message'];
-        $todo_id = $result1['todo_id'];
-        $RecurringEndDate = date('Y-m-d', strtotime("$startDateTime +1 month"));
-
-        $message2 = insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
+    if($stmt->execute() === TRUE) {
+        $message = "User New first RecurringInstance successfully";
+    } else {
+        $message = "InstanceSqlError" . $stmt->error;
     }
+    return $message;
+}
+$TodoIdSql = "SELECT * FROM `Todo` WHERE `uid` = ? AND `category_id` = ? AND `todoTitle` = ? AND `todoIntroduction` = ? AND `label` = ? AND `todoNote` = ? ";
 
+$stmt = $conn->prepare($TodoIdSql);
+if ($stmt === false) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("sissss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $todoNote);
+if($stmt->execute() === TRUE) {
+    $result = $stmt->get_result();
+    if ($result->num_rows == 0) {
+        // 不重複
+        $result1 = insertTodo($conn, $uid, $category_id, $studyValue, $studyUnit, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus);
+        $message = $message . $result1['message'];
+        $todo_id = $result1['todo_id'];
+        $result2 = insertDiet($conn, $todo_id, $category_id, $dietType, $dietValue);
+        $message = $message . $result2;
+        // 週期循環
+        if ($frequency != 0) {
+            if ($frequency == 1) {
+                // 每天重複
+                $RecurringEndDate = $startDateTime;
+            } else if ($frequency == 2) {
+                // 每週重複
+                $RecurringEndDate = date('Y-m-d', strtotime("$startDateTime +6 day"));
+            } else if ($frequency == 3) {
+                // 每月重複
+                $RecurringEndDate = date('Y-m-d', strtotime("$startDateTime +1 month"));
+            }
+            $message = $message . insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
+        }
+    }  else {
+        $message = "The Todo is repeated";
+    }
 } else {
-    $message = "The Todo is repeated";
+    error_log("SQL Error: " . $stmt->error);
+    $message = "TodoIdSqlError" . $stmt->error;
 }
 
 $userData = array(

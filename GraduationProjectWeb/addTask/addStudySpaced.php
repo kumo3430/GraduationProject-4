@@ -1,88 +1,90 @@
 <?php
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+require_once '../Database.php';
+
 session_start();
 // 獲取用戶提交的表單數據
 $input_data = file_get_contents("php://input");
 $data = json_decode($input_data, true);
 
 // 取得用戶名和密碼
-// $userName = $data['userName'];
 $uid = $_SESSION['uid'];
-// $uuid = $data['uuid'];
 $category_id = 1;
 $todoTitle = $data['title'];
 $todoIntroduction = $data['description'];
-
-
-// if ( $data['label'] == "") {
-//     $todoLabel = "notSet";
-// } else {
-//     $todoLabel= $data['label'];
-// }
-
+$todoLabel = $data['label'];
 $startDateTime = $data['nextReviewDate'];
 $reminderTime = $data['nextReviewTime'];
-
 $todo_id = 0;
 $repetition1Count = $data['First'];
 $repetition2Count = $data['third'];
 $repetition3Count = $data['seventh'];
 $repetition4Count = $data['fourteenth'];
+$frequency = 0;
+$todoStatus = 0;
+$todoNote = "";
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "kumo"; // 資料庫使用者名稱
-$pass = "coco3430"; // 資料庫使用者密碼
-$dbname = "spaced"; // 資料庫名稱
+function insertTodo($conn, $uid, $category_id, $studyValue, $studyUnit, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus)
+{
+    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `label`, `startDateTime`, `frequency`, `reminderTime`, `todoStatus`, `dueDateTime`, `todoNote`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
-// 建立與 MySQL 資料庫的連接
-$conn = new mysqli($servername, $user, $pass, $dbname);
-// 檢查連接是否成功
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    $stmt = $conn->prepare($TodoSql);
+    $stmt->bind_param("sissssisiss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $todoStatus, $dueDateTime, $todoNote);
 
-$TodoSELSql = "SELECT * FROM `Todo` WHERE `uid` = '$uid' && `category_id` = '$category_id' && `todoTitle` = '$todoTitle' && `todoIntroduction` = '$todoIntroduction' && `label` = '$todoLabel';";
-
-$result = $conn->query($TodoSELSql);
-if ($result->num_rows == 0) {
-
-    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `label`, `startDateTime`, `dueDateTime`, `reminderTime`) VALUES ('$uid', '$category_id','$todoTitle','$todoIntroduction','$todoLabel','$startDateTime','$repetition4Count','$reminderTime')";
-
-    if ($conn->query($TodoSql) === TRUE) {
-        $message = "User New Todo successfully" . '<br>';
-
-        // 如果成功新增Todo 就查詢此次建立的Todo table 的 id
-        $TodoIdSql = "SELECT * FROM `Todo` WHERE `uid` = '$uid' && `category_id` = '$category_id' && `todoTitle` = '$todoTitle' && `todoIntroduction` = '$todoIntroduction'&& `label` = '$todoLabel';";
-
-        $result = $conn->query($TodoIdSql);
-        if ($result->num_rows > 0) {
-            // 如果成功找到就把它存入 StudySpacedRepetition table 的 todo_id
-            // 並且在 StudySpacedRepetition table 新增一筆資料
-            while ($row = $result->fetch_assoc()) {
-                $todo_id = $row['id'];
-                // echo "todo_id : " . $todo_id . '<br>';
-                $SpacedSql = "INSERT INTO `StudySpacedRepetition` (`todo_id`, `repetition1Count`, `repetition2Count`, `repetition3Count`, `repetition4Count`, `repetition1Status`, `repetition2Status`, `repetition3Status`, `repetition4Status`) VALUES ('$todo_id', '$repetition1Count','$repetition2Count','$repetition3Count','$repetition4Count', 0, 0, 0, 0)";
-
-                if ($conn->query($SpacedSql) === TRUE) {
-                    $message = "User New StudySpaced successfully";
-                } else {
-                    $message = 'New StudySpaced - Error: ' . $sql . '<br>' . $conn->error;
-                }
-            }
-        } else {
-            $message = "no such Todo" . '<br>';
-        }
-
+    if ($stmt->execute() === TRUE) {
+        $todo_id = $conn->insert_id;
+        $message = "User New Todo successfully";
 
     } else {
-        $message = 'New Todo - Error: ' . $sql . '<br>' . $conn->error;
-        $conn->error;
+        $message = "TodoSqlError: " . $stmt->error;
     }
+    // return $message;
+    return array('message' => $message, 'todo_id' => $todo_id);
+}
+function insertStudySpacedRepetition($conn, $todo_id, $repetition1Count, $repetition2Count, $repetition3Count, $repetition4Count)
+{
+    $SpacedSql = "INSERT INTO `StudySpacedRepetition` (`todo_id`, `repetition1Count`, `repetition2Count`, `repetition3Count`, `repetition4Count`, `repetition1Status`, `repetition2Status`, `repetition3Status`, `repetition4Status`) VALUES (?, ?,?,?,?, 0, 0, 0, 0)";
 
-} else {
-    $message = "The Todo is repeated";
+    $stmt = $conn->prepare($SpacedSql);
+    $stmt->bind_param("issss", $todo_id, $repetition1Count, $repetition2Count, $repetition3Count, $repetition4Count);
+
+    if($stmt->execute() === TRUE) {
+        $result = $stmt->get_result();
+        $message = "User New StudySpacedRepetition successfully";
+    } else {
+        $message = 'New StudyGeneral - Error: '. $stmt->error;
+    }
+    return $message;
 }
 
+$TodoSELSql = "SELECT * FROM `Todo` WHERE `uid` = ? AND `category_id` = ? AND `todoTitle` = ? AND `todoIntroduction` = ? AND `label` = ? ;";
 
+$stmt = $conn->prepare($TodoSELSql);
+if ($stmt === false) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("sisss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel);
+
+if ($stmt->execute() === TRUE) {
+    $result = $stmt->get_result();
+    if ($result->num_rows == 0) {
+
+        $result1 = insertTodo($conn, $uid, $category_id, $studyValue, $studyUnit, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus);
+        $message = $message . $result1['message'];
+        $todo_id = $result1['todo_id'];
+
+        $result2 = insertStudySpacedRepetition($conn, $todo_id, $repetition1Count, $repetition2Count, $repetition3Count, $repetition4Count);
+        $message = $message . $result2;
+    }  else {
+        $message = "The Todo is repeated";
+    }
+} else {
+    echo "TodoSELSqlError" . $stmt->error;
+    $message = "TodoSELSqlError" . $stmt->error;
+}
 
 $userData = array(
     'userId' => $uid,

@@ -227,7 +227,7 @@ struct AddDietView: View {
                 // 選擇結束日期
                 body["dueDateTime"] = formattedDate(recurringEndDate)
             }
-        print("body:\(body)")
+        print("addDiet:\(body)")
         print("selectedTimeUnit:\(selectedTimeUnit)")
         phpUrl(php: "addDiet" ,type: "addTask",body:body,store: dietStore){ message in
             presentationMode.wrappedValue.dismiss()

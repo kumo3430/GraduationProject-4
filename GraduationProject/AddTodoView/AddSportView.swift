@@ -232,7 +232,7 @@ struct AddSportView: View {
             // 選擇結束日期
             body["dueDateTime"] = formattedDate(recurringEndDate)
         }
-        print("body:\(body)")
+        print("addSport:\(body)")
         print("selectedTimeUnit:\(selectedTimeUnit)")
         phpUrl(php: "addSport" ,type: "addTask",body:body,store: sportStore) { message in
             presentationMode.wrappedValue.dismiss()

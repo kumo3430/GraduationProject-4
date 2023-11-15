@@ -51,7 +51,7 @@ func convertTodoStatus(todoStatus: Int) -> Bool {
 
 func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addTaskData.self, data: data) { userData in
-        if (userData.message == "User New StudySpaced successfully") {
+        if (userData.message == "User New Todo successfullyUser New StudySpacedRepetition successfully") {
             let ReviewChecked0 = false
             let ReviewChecked1 = false
             let ReviewChecked2 = false
@@ -61,7 +61,7 @@ func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([St
                let repetition2Count = convertToDate(userData.repetition2Count),
                let repetition3Count = convertToDate(userData.repetition3Count),
                let repetition4Count = convertToDate(userData.repetition4Count),
-               let reminderTime = convertToTime(userData.reminderTime) {
+               let reminderTime = convertToTimeM(userData.reminderTime) {
                 
                 let taskId = Int(userData.todo_id)
                 let task = Task(id: taskId,
@@ -87,7 +87,7 @@ func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([St
 
 func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addTodoData.self, data: data) { userData in
-        if (userData.message == "User New StudyGeneral successfullyUser New first RecurringInstance successfully") {
+        if (userData.message == "User New Todo successfullyUser New StudyGeneral successfullyUser New first RecurringInstance successfully") {
             var studyUnit: String = ""
             if let startDate = convertToDate(userData.startDateTime),
                let dueDateTime = convertToDate(userData.dueDateTime),
@@ -138,11 +138,11 @@ func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([
 
 func handleSportAdd(data: Data,store: SportStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addSportData.self, data: data) { userData in
-        if (userData.message == "User New Sport successfullyUser New first RecurringInstance successfully") {
+        if (userData.message == "User New Todo successfullyUser New Sport successfullyUser New first RecurringInstance successfully") {
             var sportUnit: String = ""
             if let startDate = convertToDate(userData.startDateTime ),
                let dueDateTime = convertToDate(userData.dueDateTime ),
-               let reminderTime = convertToTime(userData.reminderTime ) {
+               let reminderTime = convertToTimeM(userData.reminderTime ) {
                 
                 let frequency = userData.frequency
                 let recurringUnit = convertFrequency(frequency: frequency)
@@ -191,11 +191,11 @@ func handleSportAdd(data: Data,store: SportStore, completion: @escaping ([String
 
 func handleDietAdd(data: Data,store: DietStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addDietData.self, data: data) { userData in
-        if (userData.message == "User New diet successfullyUser New first RecurringInstance successfully") {
+        if (userData.message == "User New Todo successfullyUser New Diet successfullyUser New first RecurringInstance successfully") {
             
             if let startDate = convertToDate(userData.startDateTime ),
                let dueDateTime = convertToDate(userData.dueDateTime ),
-               let reminderTime = convertToTime(userData.reminderTime ) {
+               let reminderTime = convertToTimeM(userData.reminderTime ) {
                 
                 let frequency = userData.frequency
                 let recurringUnit = convertFrequency(frequency: frequency)
@@ -234,7 +234,7 @@ func handleDietAdd(data: Data,store: DietStore, completion: @escaping ([String:S
 }
 func handleRoutineAdd(data: Data,store: RoutineStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addRoutineData.self, data: data) { userData in
-        if (userData.message == "User New routine successfullyUser New first RecurringInstance successfully") {
+        if (userData.message == "User New Todo successfullyUser New Sport successfullyUser New first RecurringInstance successfully") {
             
             if let startDate = convertToDate(userData.startDateTime ),
                let dueDateTime = convertToDate(userData.dueDateTime ),

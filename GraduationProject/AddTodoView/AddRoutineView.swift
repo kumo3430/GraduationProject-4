@@ -231,7 +231,7 @@ struct AddRoutineView: View {
             // 選擇結束日期
             body["dueDateTime"] = formattedDate(recurringEndDate)
         }
-        print("body:\(body)")
+        print("addRoutine:\(body)")
         phpUrl(php: "addRoutine" ,type: "addTask",body:body,store: routineStore){ message in
             presentationMode.wrappedValue.dismiss()
 //            completion(message[0])

@@ -175,7 +175,7 @@ struct AddStudyView: View {
             // 選擇結束日期
             body["dueDateTime"] = formattedDate(recurringEndDate)
         }
-
+        print("StudyGeneralAdd:\(body)")
         phpUrl(php: "addStudyGeneral" ,type: "addTask",body:body,store: todoStore) { message in
             presentationMode.wrappedValue.dismiss()
 //            completion(message[0])
