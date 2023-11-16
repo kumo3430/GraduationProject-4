@@ -17,7 +17,9 @@ struct YourApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage("signIn") var isSignIn = false
     @AppStorage("uid") private var uid:String = ""
-    @AppStorage("userName") private var userName:String = ""
+    @AppStorage("email") private var email:String = ""
+    @AppStorage("userName") private var userName:String = "尚未輸入"
+    @AppStorage("userDescription") private var userDescription:String = "尚未輸入"
     @AppStorage("password") private var password:String = ""
     @AppStorage("RegistrationView") var showRegistrationView: Bool = false
     

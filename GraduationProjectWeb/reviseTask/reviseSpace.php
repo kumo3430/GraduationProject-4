@@ -1,38 +1,31 @@
 <?php
-session_start();
-// 獲取用戶提交的表單數據
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+require_once '../common.php'; // 引用共通設定
 
-$uid = $_SESSION['uid'];
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $todo_id = $data['id'];
 $label = $data['label'];
 $reminderTime = $data['reminderTime'];
 $message = "";
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "kumo"; // 資料庫使用者名稱
-$pass = "coco3430"; // 資料庫使用者密碼
-$dbname = "spaced"; // 資料庫名稱
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
-// 建立與 MySQL 資料庫的連接
-$conn = new mysqli($servername, $user, $pass, $dbname);
-// 檢查連接是否成功
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$UpSql = "UPDATE Todo SET `label` = ? , `reminderTime` = ? WHERE `id` = ? ;";
+
+$stmt = $conn->prepare($UpSql);
+if ($stmt === false) {
+    die("Error preparing statement: " . $conn->error);
 }
-
-$TodoSql = "UPDATE Todo 
-SET `label` = '$label',`reminderTime` = '$reminderTime'
-WHERE `id` = '$todo_id' ;";
-
-if ($conn->query($TodoSql) === TRUE) {
-        $message = "User revise Space successfully";
+$stmt->bind_param("ssi", $label, $reminderTime, $todo_id);
+if($stmt->execute() === TRUE) {
+    $message = "User revise Space successfully";
 } else {
-    $message = $message . 'User revise Study - Error: ' . $sql . '<br>' . $conn->error;
-    $conn->error;
+    error_log("SQL Error: " . $stmt->error);
+    $message = "UpSqlError" . $stmt->error;
 }
+$stmt->close();
 
 $userData = array(
     'todo_id' => $todo_id,

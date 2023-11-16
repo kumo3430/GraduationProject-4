@@ -27,6 +27,7 @@ if ($result->num_rows > 0) {
         $_SESSION['uid'] = $row['id'];
         $uid = $row['id'];
         $userName = $row['userName'];
+        $userDescription = $row['userDescription'];
         $create_at = $row['create_at'];
         $message = "User login successfully";
     }
@@ -38,6 +39,7 @@ $userData = array(
     'id' => $uid,
     'userName' => $userName,
     'email' => $email,
+    'userDescription' => $userDescription,
     'create_at' => $create_at,
     'message' => $message
 );

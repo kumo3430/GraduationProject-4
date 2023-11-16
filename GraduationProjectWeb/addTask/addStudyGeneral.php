@@ -1,8 +1,4 @@
 <?php
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
-
-
 require_once '../common.php'; // 引用共通設定
 
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
@@ -41,6 +37,7 @@ function insertTodo($conn, $uid, $category_id, $studyValue, $studyUnit, $todoTit
         $message = "TodoSqlError: " . $stmt->error;
     }
     // return $message;
+    $stmt->close();
     return array('message' => $message, 'todo_id' => $todo_id);
 }
 function insertStudyGeneral($conn, $todo_id, $category_id, $studyValue, $studyUnit)
@@ -55,6 +52,7 @@ function insertStudyGeneral($conn, $todo_id, $category_id, $studyValue, $studyUn
     } else {
         $message = 'New StudyGeneral - Error: '. $stmt->error;
     }
+    $stmt->close();
     return $message;
 }
 function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate)
@@ -69,6 +67,7 @@ function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndD
     } else {
         $message = "InstanceSqlError" . $stmt->error;
     }
+    $stmt->close();
     return $message;
 }
 
@@ -109,7 +108,7 @@ if($stmt->execute() === TRUE) {
     error_log("SQL Error: " . $stmt->error);
     $message = "TodoIdSqlError" . $stmt->error;
 }
-
+$stmt->close();
 $userData = array(
     'todo_id' => intval($todo_id),
     'userId' => $uid,

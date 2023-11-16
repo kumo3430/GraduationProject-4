@@ -48,8 +48,9 @@ if ($result->num_rows > 0) {
 $userData = array(
     // 'id' => strval($uid),
     'id' => $uid,
-    'userName' => $email,
+    'userName' => "尚未輸入",
     'email' => $email,
+    'userDescription' => "尚未輸入",
     'create_at' => $create_at,
     'message' => $message
 );

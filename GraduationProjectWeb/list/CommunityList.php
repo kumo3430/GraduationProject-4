@@ -1,8 +1,7 @@
 <?php
-session_start();
+require_once '../common.php'; // 引用共通設定
 
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
 $uid = $data['uid'];
 $_SESSION['uid'] = $uid;
@@ -12,31 +11,32 @@ $communityDescription = array();
 $communityCategory = array();
 $message = "";
 
-
-$servername = "localhost";
-$user = "kumo";
-$pass = "coco3430";
-$dbname = "spaced";
-
-$conn = new mysqli($servername, $user, $pass, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
 // $sql = "SELECT * FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = '$uid';";
-$sql = "SELECT * FROM community WHERE id IN (SELECT community_members.community_id FROM community_members WHERE user_id = 30);";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $community_id[] = $row['id'];
-        $communityName[] = $row['communityName'];
-        $communityDescription[] = $row['communityDescription'];
-        $communityCategory[] = $row['communityCategory'];
+$TodoSELSql = "SELECT * FROM community WHERE id IN (SELECT community_members.community_id FROM community_members WHERE user_id = ? );";
+
+
+$stmt = $conn->prepare($TodoSELSql);
+$stmt->bind_param("s",$uid);
+if ($stmt->execute() === TRUE) {
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) { 
+        while ($row = $result->fetch_assoc()) {
+            $community_id[] = $row['id'];
+            $communityName[] = $row['communityName'];
+            $communityDescription[] = $row['communityDescription'];
+            $communityCategory[] = $row['communityCategory'];
+        }
+    } else {
+        $message = "no such Todo";
     }
 } else {
-    $message = "no such Todo";
+    error_log("SQL Error: " . $stmt->error);
+    $message = "TodoIdSqlError" . $stmt->error;
 }
-
+$stmt->close();
 $userData = array(
     'community_id' => $community_id,
     'userId' => $uid,

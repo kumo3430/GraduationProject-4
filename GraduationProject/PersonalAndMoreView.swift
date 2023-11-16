@@ -12,7 +12,7 @@ struct PersonalAndMoreView: View {
     @State private var userProfileImage: Image = Image("shinji")
     @State private var userDescription: String = "這是我的習慣養成之旅，與我一起進步吧!"
     @EnvironmentObject var tickerStore: TickerStore
-
+    @State private var showingSheet = false
     var body: some View {
         NavigationView {
             ScrollView {
@@ -35,10 +35,18 @@ struct PersonalAndMoreView: View {
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 20)
-                        
-                        NavigationLink("查看和編輯個人資料", destination: ProfileEditView(username: $username, userProfileImage: $userProfileImage, userDescription: $userDescription))
-                            .font(.footnote)
-                            .foregroundColor(.blue)
+                        Button("查看和編輯個人資料") {
+                           showingSheet.toggle()
+                       }
+                        .font(.footnote)
+                        .foregroundColor(.blue)
+                       .sheet(isPresented: $showingSheet) {
+                           ProfileEditView()
+                               .presentationDetents([ .large, .large])
+                       }
+//                        NavigationLink("查看和編輯個人資料", destination: ProfileEditView(username: $username, userProfileImage: $userProfileImage, userDescription: $userDescription))
+//                            .font(.footnote)
+//                            .foregroundColor(.blue)
                     }
                     .padding()
                     .background(Color.white)
@@ -55,6 +63,21 @@ struct PersonalAndMoreView: View {
                 .background(Color(hex: "#F5F3F0").edgesIgnoringSafeArea(.all))
             }
             .background(Color(hex: "#F5F3F0").edgesIgnoringSafeArea(.all))
+        }
+        .onAppear() {
+            if let name = UserDefaults.standard.string(forKey: "userName") ,
+               let description = UserDefaults.standard.string(forKey: "userDescription"){
+                // 在c画面中使用存储的userName值
+                username = name
+                userDescription = description
+                print("Stored userName: \(username)")
+                print("Stored userName: \(userDescription)")
+            } else {
+                // 如果没有找到存储的userName值，则使用默认值或采取其他适当的措施
+                print("Stored userName: \(username)")
+                print("Stored userName: \(userDescription)")
+            }
+
         }
     }
 

@@ -1,16 +1,9 @@
 <?php
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
-require_once '../Database.php';
+require_once '../common.php'; // 引用共通設定
 
-session_start();
-// 獲取用戶提交的表單數據
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
-// 取得用戶名和密碼
-$uid = $_SESSION['uid'];
-// $uuid = $data['uuid'];
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $category_id = 2;
 $todoTitle = $data['todoTitle'];
 $todoIntroduction = $data['todoIntroduction'];
@@ -47,6 +40,7 @@ function insertTodo($conn, $uid, $category_id, $studyValue, $studyUnit, $todoTit
         $message = "TodoSqlError: " . $stmt->error;
     }
     // return $message;
+    $stmt->close();
     return array('message' => $message, 'todo_id' => $todo_id);
 }
 function insertSport($conn, $todo_id, $category_id, $sportType, $sportValue, $sportUnit)
@@ -61,6 +55,7 @@ function insertSport($conn, $todo_id, $category_id, $sportType, $sportValue, $sp
     } else {
         $message = 'New Sport - Error: '. $stmt->error;
     }
+    $stmt->close();
     return $message;
 }
 function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate)
@@ -75,6 +70,7 @@ function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndD
     } else {
         $message = "InstanceSqlError" . $stmt->error;
     }
+    $stmt->close();
     return $message;
 }
 
@@ -115,7 +111,7 @@ if($stmt->execute() === TRUE) {
     error_log("SQL Error: " . $stmt->error);
     $message = "TodoIdSqlError" . $stmt->error;
 }
-
+$stmt->close();
 $userData = array(
     'todo_id' => intval($todo_id),
     'userId' => $uid,

@@ -19,8 +19,9 @@ enum Action: Int, Identifiable {
 struct UserData: Decodable {
     var id: String
     var userName: String
-    var email: String
-    var create_at: String
+    var email: String?
+    var userDescription: String
+    var create_at: String?
     var message: String
 }
 struct ReviseData: Decodable {
@@ -42,7 +43,7 @@ struct UpdateValueData: Decodable {
 }
 
 struct TaskData: Decodable {
-    var todo_id: [String]
+    var todo_id: [Int]    
     var userId: String?
     var category_id: Int
     var todoTitle: [String]
@@ -50,22 +51,21 @@ struct TaskData: Decodable {
     var todoLabel: [String?]
     var startDateTime: [String]
     var reminderTime: [String]
-    var repetition1Status: [String?]
-    var repetition2Status: [String?]
-    var repetition3Status: [String?]
-    var repetition4Status: [String?]
+    var repetition1Status: [Int?]
+    var repetition2Status: [Int?]
+    var repetition3Status: [Int?]
+    var repetition4Status: [Int?]
     var repetition1Count: [String]
     var repetition2Count: [String]
     var repetition3Count: [String]
     var repetition4Count: [String]
-    var todoStatus: [String]
+    var todoStatus: [Int]
     var message: String
 }
 
 struct TodoData: Decodable {
     var userId: String?
-    var todo_id: [String]
-    
+    var todo_id: [Int]    
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -73,25 +73,24 @@ struct TodoData: Decodable {
     var startDateTime: [String]
     
     var studyValue: [String]
-    var studyUnit: [String]
+    var studyUnit: [Int]
     
-    var frequency: [String]
+    var frequency: [Int]
     var reminderTime: [String]
-    var todoStatus: [String?]
+    var todoStatus: [Int?]
     var dueDateTime: [String]
     var todoNote: [String]
     
     var RecurringStartDate: [String]
     var RecurringEndDate: [String]
-    var completeValue: [String]
+    var completeValue: [Int]
     
     var message: String
 }
 
 struct SportData: Decodable {
     var userId: String?
-    var todo_id: [String]
-    
+    var todo_id: [Int]    
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -100,25 +99,24 @@ struct SportData: Decodable {
     
     var sportType: [String]
     var sportValue: [String]
-    var sportUnit: [String]
+    var sportUnit: [Int]
     
-    var frequency: [String]
+    var frequency: [Int]
     var reminderTime: [String]
-    var todoStatus: [String?]
+    var todoStatus: [Int?]
     var dueDateTime: [String]
     var todoNote: [String]
     
     var RecurringStartDate: [String]
     var RecurringEndDate: [String]
-    var completeValue: [String]
+    var completeValue: [Int]
     
     var message: String
 }
 
 struct DietData: Decodable {
     var userId: String?
-    var todo_id: [String]
-    
+    var todo_id: [Int]    
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -126,24 +124,23 @@ struct DietData: Decodable {
     var startDateTime: [String]
     
     var dietsType: [String]
-    var dietsValue: [String]
+    var dietsValue: [Int]
     
-    var frequency: [String]
+    var frequency: [Int]
     var reminderTime: [String]
-    var todoStatus: [String?]
+    var todoStatus: [Int?]
     var dueDateTime: [String]
     var todoNote: [String]
     
     var RecurringStartDate: [String]
     var RecurringEndDate: [String]
-    var completeValue: [String]
+    var completeValue: [Int]
     
     var message: String
 }
 struct RoutineData: Decodable {
     var userId: String?
-    var todo_id: [String]
-    
+    var todo_id: [Int]    
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -151,12 +148,12 @@ struct RoutineData: Decodable {
     var startDateTime: [String]
     
     var routinesType: [String]
-    var routinesValue: [String]
+    var routinesValue: [Int]
     var routinesTime: [String]
     
-//    var frequency: [String]
+//    var frequency: [Int]
     var reminderTime: [String]
-    var todoStatus: [String?]
+    var todoStatus: [Int?]
     var dueDateTime: [String]
     var todoNote: [String]
     
@@ -164,7 +161,7 @@ struct RoutineData: Decodable {
     var RecurringEndDate: [String]
     var sleepTime: [String?]
     var wakeUpTime: [String?]
-//    var completeValue: [String]
+//    var completeValue: [Int]
     
     var message: String
 }
@@ -180,10 +177,10 @@ struct TickerData: Decodable {
 
 struct CommunityData: Decodable {
     var userId: String?
-    var community_id: [String]
+    var community_id: [Int]
     var communityName: [String]
     var communityDescription: [String]
-    var communityCategory: [String?]
+    var communityCategory: [Int?]
     var message: String
 }
 
@@ -302,7 +299,7 @@ struct FirstDay: Decodable {
 
 struct CheckList: Decodable {
     var checkDate: [String]
-    var completeValue: [String]
+    var completeValue: [Int]
     var targetvalue: Float
     var message: String
 }

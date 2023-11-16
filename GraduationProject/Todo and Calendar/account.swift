@@ -14,7 +14,9 @@ enum Message: String {
     case notYetFilled = "not yet filled"
     case emailRegistered = "email is registered"
     case registrationFailed = "註冊失敗請重新註冊"
-    case revise = "User revise Study successfully"
+    case reviseStudy = "User revise Study successfully"
+    case reviseProfile = "User reviseProfile successfully"
+    case UpDateCompleteValue = "User UpDateCompleteValue successfully"
     case reviseSpace = "User revise Space successfully"
     case upDateCompleteValue = "User upDateCompleteValue successfully"
     case TrackingFirstDay = "User TrackingFirstDay successfully"
@@ -93,7 +95,10 @@ func handleUserData(data: Data, messageType: Message, completion: @escaping ([St
             print("\(messageType.rawValue) - userDate:\(userData)")
             UserDefaults.standard.set(true, forKey: "signIn")
             UserDefaults.standard.set("\(userData.id)", forKey: "uid")
-            UserDefaults.standard.set("\(userData.email)", forKey: "userName")
+            UserDefaults.standard.set("\(userData.email)", forKey: "email")
+            UserDefaults.standard.set("\(userData.userName)", forKey: "userName")
+            UserDefaults.standard.set("\(userData.userDescription)", forKey: "userDescription")
+//            UserDefaults.standard.set("\(userData.email)", forKey: "userName")
 //            completion([Message.success.rawValue])
             completion(["message":Message.success.rawValue])
             print("============== \(messageType.rawValue) ==============")

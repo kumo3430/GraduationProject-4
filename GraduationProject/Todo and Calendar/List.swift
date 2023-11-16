@@ -12,13 +12,13 @@ import Foundation
 //@EnvironmentObject var dietStore: DietStore
 
 // 定義一個通用的函數處理頻率轉換
-func ConvertFrequency(frequency: String) -> String {
+func ConvertFrequency(frequency: Int) -> String {
     switch frequency {
-    case "1":
+    case 1:
         return "每日"
-    case "2":
+    case 2:
         return "每週"
-    case "3":
+    case 3:
         return "每月"
     default:
         return ""
@@ -26,8 +26,8 @@ func ConvertFrequency(frequency: String) -> String {
 }
 
 // 定義一個通用的函數處理狀態轉換
-func ConvertTodoStatus(todoStatus: String) -> Bool {
-    return todoStatus != "0"
+func ConvertTodoStatus(todoStatus: Int) -> Bool {
+    return todoStatus != 0
 }
 
 //func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([String]) -> Void) {
@@ -42,13 +42,13 @@ func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([S
                let repetition4Count = convertToDate(userData.repetition4Count[index]),
                let reminderTime = convertToTime(userData.reminderTime[index]) {
                 
-                let ReviewChecked0 = userData.repetition1Status[index] == "1"
-                let ReviewChecked1 = userData.repetition2Status[index] == "1"
-                let ReviewChecked2 = userData.repetition3Status[index] == "1"
-                let ReviewChecked3 = userData.repetition4Status[index] == "1"
+                let ReviewChecked0 = userData.repetition1Status[index] == 1
+                let ReviewChecked1 = userData.repetition2Status[index] == 1
+                let ReviewChecked2 = userData.repetition3Status[index] == 1
+                let ReviewChecked3 = userData.repetition4Status[index] == 1
                 
                 let taskId = Int(userData.todo_id[index])
-                let task = Task(id: taskId!,label: userData.todoLabel[index]!, title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, repetition1Count: repetition1Count, repetition2Count: repetition2Count, repetition3Count: repetition3Count, repetition4Count: repetition4Count, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
+                let task = Task(id: userData.todo_id[index],label: userData.todoLabel[index]!, title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, repetition1Count: repetition1Count, repetition2Count: repetition2Count, repetition3Count: repetition3Count, repetition4Count: repetition4Count, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
                 DispatchQueue.main.async {
                     store.tasks.append(task)
                 }
@@ -74,9 +74,9 @@ func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping 
                let recurringEndDate = convertToDate(userData.RecurringEndDate[index]),
                let reminderTime = convertToTime(userData.reminderTime[index]) {
                 
-                if (userData.studyUnit[index] == "0" ){
+                if (userData.studyUnit[index] == 0 ){
                     studyUnit = "小時"
-                } else  if (userData.studyUnit[index] == "1" ) {
+                } else  if (userData.studyUnit[index] == 1 ) {
                     studyUnit = "次"
                 }
                 
@@ -84,10 +84,10 @@ func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping 
                 let recurringUnit = ConvertFrequency(frequency: frequency)
                 let recurringOption = calculateRecurringOption(dueDateTime: dueDateTime, startDate: startDate)
                 let todoStatus = userData.todoStatus[index]
-                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? "0")
+                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
                 let taskId = Int(userData.todo_id[index])
-                let todo = Todo(id: taskId!,
+                let todo = Todo(id: userData.todo_id[index],
                                 label: userData.todoLabel[index]!,
                                 title: userData.todoTitle[index],
                                 description: userData.todoIntroduction[index],
@@ -128,11 +128,11 @@ func handleSportList(data: Data,store: SportStore, completion: @escaping ([Strin
                let recurringEndDate = convertToDate(userData.RecurringEndDate[index]),
                let reminderTime = convertToTime(userData.reminderTime[index]) {
                 
-                if (userData.sportUnit[index] == "0" ){
+                if (userData.sportUnit[index] == 0 ){
                     sportUnit = "小時"
-                } else  if (userData.sportUnit[index] == "1" ) {
+                } else  if (userData.sportUnit[index] == 1 ) {
                     sportUnit = "次"
-                } else  if (userData.sportUnit[index] == "2" ) {
+                } else  if (userData.sportUnit[index] == 2 ) {
                     sportUnit = "卡路里"
                 }
                 
@@ -140,10 +140,10 @@ func handleSportList(data: Data,store: SportStore, completion: @escaping ([Strin
                 let recurringUnit = ConvertFrequency(frequency: frequency)
                 let recurringOption = calculateRecurringOption(dueDateTime: dueDateTime, startDate: startDate)
                 let todoStatus = userData.todoStatus[index]
-                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? "0")
+                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
                 let taskId = Int(userData.todo_id[index])
-                let sport = Sport(id: taskId!,
+                let sport = Sport(id: userData.todo_id[index],
                                   label: userData.todoLabel[index]!,
                                   title: userData.todoTitle[index],
                                   description: userData.todoIntroduction[index],
@@ -188,16 +188,16 @@ func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:
                 let recurringUnit = ConvertFrequency(frequency: frequency)
                 let recurringOption = calculateRecurringOption(dueDateTime: dueDateTime, startDate: startDate)
                 let todoStatus = userData.todoStatus[index]
-                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? "0")
+                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
                 let taskId = Int(userData.todo_id[index])
-                let diet = Diet(id: taskId!,
+                let diet = Diet(id: userData.todo_id[index],
                                 label: userData.todoLabel[index]!,
                                 title: userData.todoTitle[index],
                                 description: userData.todoIntroduction[index],
                                 startDateTime: startDate,
                                 selectedDiets: userData.dietsType[index],
-                                dietsValue: Int(userData.dietsValue[index])!,
+                                dietsValue: userData.dietsValue[index],
                                 recurringUnit: recurringUnit,
                                 recurringOption: recurringOption,
                                 todoStatus: isTodoStatus,
@@ -234,16 +234,16 @@ func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([S
                 //                let recurringUnit = ConvertFrequency(frequency: frequency)
                 let recurringOption = calculateRecurringOption(dueDateTime: dueDateTime, startDate: startDate)
                 let todoStatus = userData.todoStatus[index]
-                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? "0")
+                let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
                 let taskId = Int(userData.todo_id[index])
-                let routine = Routine(id: taskId!,
+                let routine = Routine(id: userData.todo_id[index],
                                       label: userData.todoLabel[index]!,
                                       title: userData.todoTitle[index],
                                       description: userData.todoIntroduction[index],
                                       startDateTime: startDate,
                                       selectedRoutines: userData.routinesType[index],
-                                      routineValue: Int(userData.routinesValue[index])!,
+                                      routineValue: userData.routinesValue[index],
                                       routineTime: routinesTime,
                                       recurringOption: recurringOption,
                                       todoStatus: isTodoStatus,
@@ -296,10 +296,10 @@ func handleCommunitysList(data: Data,store: CommunityStore, completion: @escapin
     handleDecodableData(CommunityData.self, data: data) { userData in
         for index in userData.community_id.indices {
             
-            let task = Community(id: Int(userData.community_id[index])!,
+            let task = Community(id: userData.community_id[index],
                                  communityName: userData.communityName[index],
                                  communityDescription: userData.communityDescription[index],
-                                 communityCategory: Int(userData.communityCategory[index]!)!)
+                                 communityCategory: userData.communityCategory[index]!)
             DispatchQueue.main.async {
                 store.communitys.append(task)
             }

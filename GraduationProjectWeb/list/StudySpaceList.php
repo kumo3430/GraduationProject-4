@@ -1,12 +1,8 @@
 <?php
-session_start();
-// 獲取用戶提交的表單數據
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+require_once '../common.php'; // 引用共通設定
 
-// 取得用戶名和密碼
-// $userName = $data['userName'];
-// $uid = $_SESSION['uid'];
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
+
 $uid = $data['uid'];
 $_SESSION['uid'] = $uid;
 $category_id = 1;
@@ -27,45 +23,43 @@ $repetition2Count = array();
 $repetition3Count = array();
 $repetition4Count = array();
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "kumo"; // 資料庫使用者名稱
-$pass = "coco3430"; // 資料庫使用者密碼
-$dbname = "spaced"; // 資料庫名稱
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
-// 建立與 MySQL 資料庫的連接
-$conn = new mysqli($servername, $user, $pass, $dbname);
-// 檢查連接是否成功
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
-// $TodoSELSql = "SELECT * FROM Todo WHERE uid = '$uid' && category_id = '1';";
-// $TodoSELSql = "SELECT * FROM Todo WHERE uid = '30' && category_id = '1';";
-// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '30' && category_id = '1';";
-$TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '$uid' && T.category_id = '1';";
+// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '$uid' AND T.category_id = '1';";
+$TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = ? AND T.category_id = '1';";
 
-$result = $conn->query($TodoSELSql);
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $TodoTitle[] = $row['todoTitle'];
-        $TodoIntroduction[] = $row['todoIntroduction'];
-        $TodoLabel[] = $row['label'];
-        $StartDateTime[] = $row['startDateTime'];
-        $ReminderTime[] = $row['reminderTime'];
-        $todoStatus[] = $row['todoStatus'];
-        $repetition1Status[] = $row['repetition1Status'];
-        $repetition2Status[] = $row['repetition2Status'];
-        $repetition3Status[] = $row['repetition3Status'];
-        $repetition4Status[] = $row['repetition4Status'];
-        $repetition1Count[] = $row['repetition1Count'];
-        $repetition2Count[] = $row['repetition2Count'];
-        $repetition3Count[] = $row['repetition3Count'];
-        $repetition4Count[] = $row['repetition4Count'];
-        $todo_id[] = $row['todo_id'];
+$stmt = $conn->prepare($TodoSELSql);
+$stmt->bind_param("s",$uid);
+if ($stmt->execute() === TRUE) {
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) { 
+        while ($row = $result->fetch_assoc()) {
+            $TodoTitle[] = $row['todoTitle'];
+            $TodoIntroduction[] = $row['todoIntroduction'];
+            $TodoLabel[] = $row['label'];
+            $StartDateTime[] = $row['startDateTime'];
+            $ReminderTime[] = $row['reminderTime'];
+            $todoStatus[] = $row['todoStatus'];
+            $repetition1Status[] = $row['repetition1Status'];
+            $repetition2Status[] = $row['repetition2Status'];
+            $repetition3Status[] = $row['repetition3Status'];
+            $repetition4Status[] = $row['repetition4Status'];
+            $repetition1Count[] = $row['repetition1Count'];
+            $repetition2Count[] = $row['repetition2Count'];
+            $repetition3Count[] = $row['repetition3Count'];
+            $repetition4Count[] = $row['repetition4Count'];
+            $todo_id[] = $row['todo_id'];
+        }
+    } else {
+        $message = "no such Todo";
     }
 } else {
-    $message = "no such Todo";
+    error_log("SQL Error: " . $stmt->error);
+    $message = "TodoIdSqlError" . $stmt->error;
 }
+$stmt->close();
 $userData = array(
     'userId' => $uid,
     'category_id' => $category_id,

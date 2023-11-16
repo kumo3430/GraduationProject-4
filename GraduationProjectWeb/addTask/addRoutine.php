@@ -1,15 +1,9 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-require_once '../Database.php';
+require_once '../common.php'; // 引用共通設定
 
-session_start();
-// 獲取用戶提交的表單數據
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
-// 取得用戶名和密碼
-$uid = $_SESSION['uid'];
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $category_id = 4;
 $todoTitle = $data['todoTitle'];
 $todoIntroduction = $data['todoIntroduction'];
@@ -44,6 +38,7 @@ function insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $t
         $message = "TodoSqlError: " . $stmt->error;
     }
     // return $message;
+    $stmt->close();
     return array('message' => $message, 'todo_id' => $todo_id);
 }
 function insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValue, $routineTime)
@@ -58,6 +53,7 @@ function insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValu
     } else {
         $message = 'New Sport - Error: '. $stmt->error;
     }
+    $stmt->close();
     return $message;
 }
 function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate)
@@ -72,26 +68,37 @@ function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndD
     } else {
         $message = "InstanceSqlError" . $stmt->error;
     }
+    $stmt->close();
     return $message;
 }
 
-$TodoSELSql = "SELECT * FROM `Todo` WHERE `uid` = '$uid' && `category_id` = '$category_id' && `todoTitle` = '$todoTitle' && `todoIntroduction` = '$todoIntroduction' && `label` = '$todoLabel'&& `todoNote` = '$todoNote';";
+$TodoIdSql = "SELECT * FROM `Todo` WHERE `uid` = ? AND `category_id` = ? AND `todoTitle` = ? AND `todoIntroduction` = ? AND `label` = ? AND `todoNote` = ? ";
 
-$result = $conn->query($TodoSELSql);
-if ($result->num_rows == 0) {
-
-    $result1 = insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus);
-    $message = $message . $result1['message'];
-    $todo_id = $result1['todo_id'];
-    $result2 = insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValue, $routineTime);
-    $message = $message . $result2;
-
-    $RecurringEndDate = $startDateTime;
-    $message = $message .  insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
+$stmt = $conn->prepare($TodoIdSql);
+if ($stmt === false) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("sissss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $todoNote);
+if($stmt->execute() === TRUE) {
+    $result = $stmt->get_result();
+    if ($result->num_rows == 0) {
+        $result1 = insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus);
+        $message = $message . $result1['message'];
+        $todo_id = $result1['todo_id'];
+        $result2 = insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValue, $routineTime);
+        $message = $message . $result2;
+    
+        $RecurringEndDate = $startDateTime;
+        $message = $message .  insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
+    }  else {
+        $message = "The Todo is repeated";
+    }
 } else {
-    $message = "The Todo is repeated";
+    error_log("SQL Error: " . $stmt->error);
+    $message = "TodoIdSqlError" . $stmt->error;
 }
 
+$stmt->close();
 $userData = array(
     'todo_id' => intval($todo_id),
     'userId' => $uid,

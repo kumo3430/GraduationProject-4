@@ -1,13 +1,10 @@
 <?php
-session_start();
-// 獲取用戶提交的表單數據
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+// 沒有使用
+require_once '../common.php'; // 引用共通設定
 
-// 取得用戶名和密碼
-// $userName = $data['userName'];
-$uid = $_SESSION['uid'];
-// $uuid = $data['uuid'];
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
+
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $category_id = 1;
 $todoTitle = $data['title'];
 $todoIntroduction = $data['description'];
@@ -20,17 +17,8 @@ $repetition2Status = $data['repetition2Status'];
 $repetition3Status = $data['repetition3Status'];
 $repetition4Status = $data['repetition4Status'];
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "kumo"; // 資料庫使用者名稱
-$pass = "coco3430"; // 資料庫使用者密碼
-$dbname = "spaced"; // 資料庫名稱
-
-// 建立與 MySQL 資料庫的連接
-$conn = new mysqli($servername, $user, $pass, $dbname);
-// 檢查連接是否成功
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
 $TodoSql = "UPDATE Todo 
 SET `todoTitle` = '$todoTitle',`todoIntroduction` = '$todoIntroduction',`reminderTime` = '$reminderTime'

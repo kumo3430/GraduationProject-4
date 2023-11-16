@@ -197,6 +197,8 @@ func handleDataForPHP(php: String, data: Data,store: (any ObservableObject)? = n
         handleStudySpaceRevise(data: data, completion: completion)
     case "reviseStudy","reviseSport","reviseDiet":
         handleGeneralRevise(data: data, completion: completion)
+    case "reviseProfile":
+        handleReviseProfile(data: data, completion: completion)
         
     case "upDateCompleteValue":
         handleUpDateCompleteValue(data: data, completion: completion)

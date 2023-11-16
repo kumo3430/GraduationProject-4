@@ -1,13 +1,9 @@
 <?php
-session_start();
-// 獲取用戶提交的表單數據
-$input_data = file_get_contents("php://input");
-$data = json_decode($input_data, true);
+require_once '../common.php'; // 引用共通設定
 
-// 取得用戶名和密碼
-// $userName = $data['userName'];
-$uid = $_SESSION['uid'];
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $communityName = $data['communityName'];
 $communityDescription = $data['communityDescription'];
 $communityCreateDate = date("Y-m-d");
@@ -15,64 +11,66 @@ $category = $data['communityCategory'];
 
 $community_id = 0;
 $message = "";
-$message1 = "";
-$message2 = "";
 
-$servername = "localhost"; // 資料庫伺服器名稱
-$user = "kumo"; // 資料庫使用者名稱
-$pass = "coco3430"; // 資料庫使用者密碼
-$dbname = "spaced"; // 資料庫名稱
-
-// 建立與 MySQL 資料庫的連接
-$conn = new mysqli($servername, $user, $pass, $dbname);
-// 檢查連接是否成功
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$db = Database::getInstance();
+$conn = $db->getConnection();
 
 function insertCommunity($conn, $uid, $communityName, $communityDescription, $communityCreateDate, $category, $CommunitySELSql) {
-    $CommunitySql = "INSERT INTO `Community` (`communityName`, `communityDescription`, `communityCreateDate`, `communityCategory`) VALUES ('$communityName', '$communityDescription','$communityCreateDate','$category')";
+    $CommunitySql = "INSERT INTO `Community` (`communityName`, `communityDescription`, `communityCreateDate`, `communityCategory`) VALUES (?, ?,?,?)";
     
-    if ($conn->query($CommunitySql) === TRUE) {
+    $stmt = $conn->prepare($CommunitySql);
+    $stmt->bind_param("sssi", $communityName, $communityDescription, $communityCreateDate, $category);
+
+    if ($stmt->execute() === TRUE) {
+        $community_id = $conn->insert_id;
         $message = "User New Community successfully";
-
-        $result = $conn->query($CommunitySELSql);
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $community_id = $row['id'];
-                $memberSql = "INSERT INTO `community_members` (`community_id`, `user_id`, `memberRole`, `joinDate`) VALUES ('$community_id', '$uid','1','$communityCreateDate')";
-
-                if ($conn->query($memberSql) === TRUE) {
-                    $message1 = "User New memberSql successfully";
-                } else {
-                    $message1 = 'New memberSql - Error: ' . $memberSql . '<br>' . $conn->error;
-                }
-            }
-        } else {
-            $message = "no such CommunitySELSql" . '<br>';
-        }
     } else {
-        $message = 'New Community - Error: ' . $CommunitySql . '<br>' . $conn->error;
-        if ($conn->connect_error) {
-            $message =  die("Connection failed: " . $conn->connect_error);
-        }
+        $message = "TodoSqlError: " . $stmt->error;
     }
     // return $message;
-    return array('message' => $message,'message1' => $message1, 'community_id' => $community_id);
+    $stmt->close();
+    return array('message' => $message, 'community_id' => $community_id);
+}
+function insertMemberSql($conn, $community_id, $uid, $communityCreateDate)
+{
+    $memberSql = "INSERT INTO `community_members` (`community_id`, `user_id`, `memberRole`, `joinDate`) VALUES (?, ?,'1',?)";
+
+    $stmt = $conn->prepare($memberSql);
+    $stmt->bind_param("iss", $community_id, $uid, $communityCreateDate);
+    if($stmt->execute() === TRUE) {
+        $result = $stmt->get_result();
+        $message = "User New memberSql successfully";
+    } else {
+        $message = 'New memberSql - Error: '. $stmt->error;
+    }
+    $stmt->close();
+    return $message;
 }
 
-$CommunitySELSql = "SELECT * FROM `Community` WHERE `communityName` = '$communityName' ;";
 
-$result = $conn->query($CommunitySELSql);
-if ($result->num_rows == 0) {
-    $result1 = insertCommunity($conn, $uid, $communityName, $communityDescription, $communityCreateDate, $category, $CommunitySELSql);
-    $message = $result1['message'];
-    $message1 = $result1['message1'];
-    $community_id = $result1['community_id'];
+$CommunitySELSql = "SELECT * FROM `Community` WHERE `communityName` = ? ;";
+
+$stmt = $conn->prepare($CommunitySELSql);
+if ($stmt === false) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("s", $communityName);
+if($stmt->execute() === TRUE) {
+    $result = $stmt->get_result();
+    if ($result->num_rows == 0) {
+        $result1 = insertCommunity($conn, $uid, $communityName, $communityDescription, $communityCreateDate, $category, $CommunitySELSql);
+        $message = $result1['message'];
+        if ($result1['message'] ==  "User New Community successfully") {
+            $message = insertMemberSql($conn, $community_id, $uid, $communityCreateDate);
+        }
+    }  else {
+        $message = "The Community is repeated";
+    }
 } else {
-    $message = "The Community is repeated";
+    error_log("SQL Error: " . $stmt->error);
+    $message = "TodoIdSqlError" . $stmt->error;
 }
-
+$stmt->close();
 $userData = array(
     'community_id' => intval($community_id),
     'communityName' => $communityName,
