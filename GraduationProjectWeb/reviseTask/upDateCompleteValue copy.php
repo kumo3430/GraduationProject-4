@@ -70,9 +70,11 @@ if ($result->num_rows > 0) {
         $stmt->bind_param("isiss", $Instance_id, $checkDate, $completeValue, $sleepTime, $routineTime);
     } elseif ($routineType == 3) {
         // 區間起床
-        $sleepTime = null;
-        $wakeUpTime = $routineTime;
-        $stmt->bind_param("isiss", $Instance_id, $checkDate, $completeValue, $sleepTime, $wakeUpTime);
+        if ( $message == "User New first RecurringInstance successfully") {
+            $sleepTime = null;
+            $wakeUpTime = $routineTime;
+            $stmt->bind_param("isiss", $Instance_id, $checkDate, $completeValue, $sleepTime, $wakeUpTime);
+        }
     }
     if($stmt->execute()) {
         $message = "User New RecurringCheck successfully";

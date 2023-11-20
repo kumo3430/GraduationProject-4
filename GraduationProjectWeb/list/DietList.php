@@ -3,8 +3,6 @@ require_once '../common.php'; // 引用共通設定
 
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
-$uid = $data['uid'];
-$_SESSION['uid'] = $uid;
 $category_id = 0;
 
 $TodoTitle = array();
@@ -33,26 +31,27 @@ $conn = $db->getConnection();
 $TodoSELSql = "SELECT T.*, RI.*, D.* FROM Todo T LEFT JOIN Diet D ON T.id = D.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id WHERE T.uid = ? AND t.category_id = 5 AND RI.isOver = 0;";
 
 $stmt = $conn->prepare($TodoSELSql);
-$stmt->bind_param("s",$uid);
+$stmt->bind_param("s", $data['uid']);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
-    if ($result->num_rows > 0) { 
+    if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            $_SESSION['uid'] = $uid;
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
             $TodoLabel[] = $row['label'];
             $StartDateTime[] = $row['startDateTime'];
-    
+
             $dietsType[] = $row['dietType'];
             $dietsValue[] = $row['dietValue'];
-    
+
             $frequency[] = $row['frequency'];
             $ReminderTime[] = $row['reminderTime'];
             $todo_id[] = $row['todo_id'];
             $todoStatus[] = $row['todoStatus'];
             $dueDateTime[] = $row['dueDateTime'];
             $todoNote[] = $row['todoNote'];
-    
+
             $RecurringStartDate[] = $row['RecurringStartDate'];
             $RecurringEndDate[] = $row['RecurringEndDate'];
             $completeValue[] = $row['completeValue'];

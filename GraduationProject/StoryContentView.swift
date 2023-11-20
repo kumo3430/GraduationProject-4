@@ -8,28 +8,38 @@
 import SwiftUI
 
 struct StoryContentView: View {
-    @State private var currentStep: Int = 0
-
+    //    @State private var currentStep: Int = 1
+    @AppStorage("currentStep") private var currentStep:Int = 1
+//    @Binding var currentStep:Int
     var body: some View {
         NavigationView {
             VStack {
-                if currentStep == 0 {
+                if currentStep == 1 {
                     StoryCharacterView(currentStep: $currentStep)
-                } else if currentStep == 1 {
-                    StorySituationView(currentStep: $currentStep)
                 } else if currentStep == 2 {
-                    StorySolutionView(currentStep: $currentStep)
+                    StorySituationView(currentStep: $currentStep)
                 } else if currentStep == 3 {
-                    StoryResultView()
+                    StorySolutionView(currentStep: $currentStep)
+                } else if currentStep == 4 {
+                    StoryResultView(currentStep: $currentStep)
                 }
             }
         }
+        .onAppear() {
+            print("currentStep : \(currentStep)")
+        }
+        .onChange(of: currentStep) { newValue in
+            currentStep = newValue
+            print("currentStep2 : \(currentStep)")
+        }
+
     }
+    
 }
 
 struct IntroAnimationView: View {
     @State private var showStory: Bool = false
-    
+    @AppStorage("currentStep") private var currentStep:Int = 1
     var body: some View {
         ZStack {
             Image("StoryIntro")
@@ -50,21 +60,52 @@ struct IntroAnimationView: View {
                 
                 Spacer().frame(height: 50)
                 
-                NavigationLink(destination: StoryContentView()
-                                .navigationBarBackButtonHidden(true)
-                                .interactiveDismissDisabled(true),
-                               isActive: $showStory) {
-                    Button("開始", action: {
-                        showStory = true
-                    })
-                    .padding(.horizontal, 25)
-                    .padding(.vertical, 12)
-                    .background(Color.purple)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                    .font(.title3)
+                //                NavigationLink(destination: StoryContentView()
+                //                                .navigationBarBackButtonHidden(true)
+                //                                .interactiveDismissDisabled(true),
+                //                               isActive: $showStory) {
+                //                    Button("開始", action: {
+                //                        print("希望我有反應")
+                //                        showStory = true
+                //                    })
+                //                    .padding(.horizontal, 25)
+                //                    .padding(.vertical, 12)
+                //                    .background(Color.purple)
+                //                    .foregroundColor(.white)
+                //                    .cornerRadius(12)
+                //                    .font(.title3)
+                //                }
+                
+                Button(action: {
+                    print("希望我有反應")
+                    showStory = true
+                    register{_ in }
+                }) {
+                    Text("開始")
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 12)
+                        .background(Color.purple)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                        .font(.title3)
                 }
+                .background(
+                    //                            NavigationLink("", destination: StoryContentView()
+                    NavigationLink("", destination: StoryContentView()
+                        .navigationBarBackButtonHidden(true)
+                        .interactiveDismissDisabled(true)
+                                   , isActive: $showStory)
+                    .hidden()
+                )
             }
+        }
+    }
+    func register(completion: @escaping (String) -> Void) {
+        
+        let body = ["currentStep": 1]
+        phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            completion(message["message"]!)
         }
     }
 }
@@ -72,8 +113,9 @@ struct IntroAnimationView: View {
 struct StoryBaseView: View {
     var image: String
     var description: String
+    //    var currentStep: Int
     var action: (() -> Void)?
-
+    
     var body: some View {
         ZStack {
             Image(image)
@@ -82,10 +124,10 @@ struct StoryBaseView: View {
                 .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                 .clipped()
                 .edgesIgnoringSafeArea(.all)
-
+            
             VStack {
                 Spacer()  // 這將推送下面的 VStack 到底部
-
+                
                 VStack(spacing: 15) {
                     Text(description)
                         .font(.system(size: 18, weight: .bold, design: .rounded))
@@ -111,48 +153,69 @@ struct StoryBaseView: View {
 
 struct StoryCharacterView: View {
     @Binding var currentStep: Int
-
+    
     var body: some View {
         StoryBaseView(
             image: "StoryB1",
             description: "小明，面臨著考試壓力和人生方向的迷茫。",
-            action: { currentStep += 1 }
+            //            currentStep: currentStep
+            action: { register(currentStep: currentStep) { responseMessage in
+                // 这里的代码会在 register 函数的网络请求完成后执行
+                currentStep =  responseMessage
+            }
+            }
         )
     }
 }
 
 struct StorySituationView: View {
     @Binding var currentStep: Int
-
+    
     var body: some View {
         StoryBaseView(
             image: "StoryB2",
             description: "小明在一次偶然的機會下，聽到了「原子習慣」的概念，並對此產生了興趣。",
-            action: { currentStep += 1 }
+            //            currentStep: 2
+            action: { register(currentStep: currentStep) { responseMessage in
+                // 这里的代码会在 register 函数的网络请求完成后执行
+                currentStep =  responseMessage
+            }
+            }
         )
     }
 }
 
 struct StorySolutionView: View {
     @Binding var currentStep: Int
-
+    
     var body: some View {
         StoryBaseView(
             image: "StoryB3",
             description: "他下載了我習慣了，並開始每天紀錄自己的學習進度、設定小目標，並透過App中的心理學知識，學會了如何自我激勵和保持專注。",
-            action: { currentStep += 1 }
+            //            currentStep: 3
+            action: { register(currentStep: currentStep) { responseMessage in
+                // 这里的代码会在 register 函数的网络请求完成后执行
+                currentStep =  responseMessage
+            }
+            }
         )
     }
 }
 
 struct StoryResultView: View {
     @State private var navigateToWelcome: Bool = false
-
+    @Binding var currentStep: Int
     var body: some View {
         ZStack {
             StoryBaseView(
                 image: "StoryB4",
                 description: "考試結果出來，小明取得了出奇的好成績，她深知這一切都得益於App的幫助。",
+                //                currentStep: 4
+//                action: { register(currentStep: currentStep) { responseMessage in
+//                    // 这里的代码会在 register 函数的网络请求完成后执行
+//                    currentStep =  responseMessage
+//                }
+//                }
                 action: nil
             )
             
@@ -161,6 +224,11 @@ struct StoryResultView: View {
                 
                 Button("下一步", action: {
                     navigateToWelcome = true
+                    register(currentStep: currentStep) { responseMessage in
+                        // 这里的代码会在 register 函数的网络请求完成后执行
+                        print("最後一夜的\(currentStep)")
+                        currentStep =  responseMessage
+                    }
                 })
                 .padding(.horizontal, 25)
                 .padding(.vertical, 12)
@@ -172,15 +240,25 @@ struct StoryResultView: View {
                     NavigationLink("", destination: WelcomeView()
                         .navigationBarBackButtonHidden(true)
                         .interactiveDismissDisabled(true)
-                    , isActive: $navigateToWelcome)
+                                   , isActive: $navigateToWelcome)
                     .hidden()
                 )
                 Spacer().frame(height: 50)
             }
         }
     }
+    
 }
-
+func register(currentStep:Int, completion: @escaping (Int) -> Void) {
+    
+    let body = ["currentStep": currentStep+1]
+    phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
+        // 在此处调用回调闭包，将 messenge 值传递给调用者
+        completion(currentStep+1)
+    }
+}
 #Preview {
     IntroAnimationView()
+    //    @State var currentStep: Int = 1
+    //    StoryContentView(currentStep: currentStep)
 }

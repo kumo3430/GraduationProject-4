@@ -8,20 +8,32 @@
 import SwiftUI
 import FirebaseCore
 import Foundation
+import Firebase
 
 @main
 struct YourApp: App {
+    init() {
+        // 確保只調用一次
+        handleLogout()
+        FirebaseApp.configure()
+
+    }
+    
     // register app delegate for Firebase setup
     @State private var shouldList = false
     @State private var hasListBeenCalled = false
+    @State private var registerStep = 0
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @AppStorage("signIn") var isSignIn = false
-    @AppStorage("uid") private var uid:String = ""
-    @AppStorage("email") private var email:String = ""
-    @AppStorage("userName") private var userName:String = "尚未輸入"
-    @AppStorage("userDescription") private var userDescription:String = "尚未輸入"
-    @AppStorage("password") private var password:String = ""
     @AppStorage("RegistrationView") var showRegistrationView: Bool = false
+    @AppStorage("signIn") var isSignIn = false
+    @AppStorage("uid") private var uid:Int = 0
+    @AppStorage("email") private var email:String = ""
+    @AppStorage("userName") private var userName:String = ""
+    @AppStorage("userDescription") private var userDescription:String = ""
+    @AppStorage("currentStep") private var currentStep:Int = 0
+    @AppStorage("create_at") private var create_at:String = ""
+    //    @AppStorage("password") private var password:String = ""
+    
     
     @StateObject var taskStore = TaskStore()
     @StateObject var todoStore = TodoStore()
@@ -32,27 +44,18 @@ struct YourApp: App {
     @StateObject var communityStore = CommunityStore()
     @StateObject var completionRates = CompletionRatesViewModel()
     @StateObject private var tabBarSettings = TabBarSettings()
-    
+    @State private var tabBarHidden = true
     var body: some Scene {
         WindowGroup {
-            if !isSignIn {
+            if !isSignIn || email == "" {
                 LoginView()
                     .onAppear() {
-//                        taskStore.clearTasks()
-//                        todoStore.clearTodos()
-//                        sportStore.clearTodos()
-//                        dietStore.clearTodos()
-//                        tickerStore.clearTodos()
-//                        UserDefaults.standard.set("", forKey: "uid")
-//                        UserDefaults.standard.set("", forKey: "userName")
-//                        UserDefaults.standard.set("", forKey: "password")
                         handleLogout()
                     }
-        
+                
             } else {
-                if showRegistrationView {
-                    RegistrationView()
-                } else {
+                if (create_at != "") {
+//                    HomeView( tabBarHidden: $tabBarHidden)
                     TabBarView()
                         .environmentObject(taskStore)
                         .environmentObject(todoStore)
@@ -63,17 +66,35 @@ struct YourApp: App {
                         .environmentObject(communityStore)
                         .environmentObject(completionRates)
                         .environmentObject(tabBarSettings)
-//                        .environmentObject(TaskStore())
-//                        .environmentObject(TodoStore())
                         .onAppear() {
-//                            List()
-//                            print("AppView-AppStorageUid:\(uid)")
-//                            print("AppView-AppStorageUserName:\(userName)")
-//                            print("AppView-AppStoragePassword:\(password)")
                             fetchDataIfNeeded()
                             printUserInfo()
                         }
+                } else if (currentStep == 5) {
+                    WelcomeView()
+                        .onAppear() {
+                            printUserInfo()
+                        }
+                    
+                } else if (currentStep != 0) {
+                    StoryContentView()
+                        .onAppear() {
+                            printUserInfo()
+                        }
+                    
+                } else if (userName == "" || userDescription == "" ) {
+                    RegistrationView()
+                        .onAppear() {
+                            printUserInfo()
+                        }
+                    
+                } else if (currentStep == 0) {
+                    IntroAnimationView()
+                        .onAppear() {
+                            printUserInfo()
+                        }
                 }
+                
             }
         }
     }
@@ -88,8 +109,12 @@ struct YourApp: App {
         completionRates.clearTodos()
         tickerStore.clearTodos()
         UserDefaults.standard.set("", forKey: "uid")
+        UserDefaults.standard.set("", forKey: "email")
         UserDefaults.standard.set("", forKey: "userName")
-        UserDefaults.standard.set("", forKey: "password")
+        UserDefaults.standard.set("", forKey: "userDescription")
+        UserDefaults.standard.set(0, forKey: "currentStep")
+        UserDefaults.standard.set("", forKey: "create_at")
+
     }
     
     private func fetchDataIfNeeded() {
@@ -100,9 +125,20 @@ struct YourApp: App {
     }
     
     private func printUserInfo() {
-        print("AppView-AppStorageUid:\(uid)")
-        print("AppView-AppStorageUserName:\(userName)")
-        print("AppView-AppStoragePassword:\(password)")
+//        print("AppView-AppStorageUid:\(uid)")
+//        print("AppView-AppStorageUserName:\(userName)")
+        //        print("AppView-AppStoragePassword:\(password)")
+        let values = """
+        Show Registration View: \(showRegistrationView)
+        Is Signed In: \(isSignIn)
+        UID: \(uid)
+        Email: \(email)
+        User Name: \(userName)
+        User Description: \(userDescription)
+        Current Step: \(currentStep)
+        Create At: \(create_at)
+        """
+        print(values)
     }
     
     private func printResultMessage(for message: String, withOperationName operationName: String) {
@@ -112,7 +148,7 @@ struct YourApp: App {
             print("\(operationName) failed with message: \(message)")
         }
     }
-  
+    
     private func list() {
         tickersList { tickersListMessage in
             printResultMessage(for: tickersListMessage, withOperationName: "TickersList")
@@ -141,7 +177,7 @@ struct YourApp: App {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-           // completion(message[0])
+            // completion(message[0])
             completion(message["message"]!)
         }
     }
@@ -150,7 +186,7 @@ struct YourApp: App {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudyGeneralList",type: "list",body:body,store: todoStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-           // completion(message[0])
+            // completion(message[0])
             completion(message["message"]!)
         }
     }
@@ -159,7 +195,7 @@ struct YourApp: App {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "SportList",type: "list",body:body,store: sportStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-           // completion(message[0])
+            // completion(message[0])
             completion(message["message"]!)
         }
     }
@@ -168,7 +204,7 @@ struct YourApp: App {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "DietList",type: "list",body:body,store: dietStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-           // completion(message[0])
+            // completion(message[0])
             completion(message["message"]!)
         }
     }
@@ -177,7 +213,7 @@ struct YourApp: App {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "RoutineList",type: "list",body:body,store: routineStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-           // completion(message[0])
+            // completion(message[0])
             completion(message["message"]!)
         }
     }

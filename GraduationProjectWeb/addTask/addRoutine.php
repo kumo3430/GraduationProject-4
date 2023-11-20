@@ -1,6 +1,5 @@
 <?php
-require_once '../common.php'; // 引用共通設定
-
+require_once '../common.php';
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
 $uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
@@ -8,8 +7,8 @@ $category_id = 4;
 $todoTitle = $data['todoTitle'];
 $todoIntroduction = $data['todoIntroduction'];
 $frequency = 0;
-$todoLabel= $data['label'];
-$todoStatus= 0;
+$todoLabel = $data['label'];
+$todoStatus = 0;
 $startDateTime = $data['startDateTime'];
 $routineType = $data['routineType'];
 $routineValue = $data['routineValue'];
@@ -47,11 +46,11 @@ function insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValu
 
     $stmt = $conn->prepare($SpacedSql);
     $stmt->bind_param("iisdi", $todo_id, $category_id, $routineType, $routineValue, $routineTime);
-    if($stmt->execute() === TRUE) {
+    if ($stmt->execute() === TRUE) {
         $result = $stmt->get_result();
         $message = "User New Sport successfully";
     } else {
-        $message = 'New Sport - Error: '. $stmt->error;
+        $message = 'New Sport - Error: ' . $stmt->error;
     }
     $stmt->close();
     return $message;
@@ -63,7 +62,7 @@ function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndD
     $stmt = $conn->prepare($InstanceSql);
     $stmt->bind_param("iss", $todo_id, $startDateTime, $RecurringEndDate);
 
-    if($stmt->execute() === TRUE) {
+    if ($stmt->execute() === TRUE) {
         $message = "User New first RecurringInstance successfully";
     } else {
         $message = "InstanceSqlError" . $stmt->error;
@@ -79,7 +78,7 @@ if ($stmt === false) {
     die("Error preparing statement: " . $conn->error);
 }
 $stmt->bind_param("sissss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $todoNote);
-if($stmt->execute() === TRUE) {
+if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
         $result1 = insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus);
@@ -87,10 +86,10 @@ if($stmt->execute() === TRUE) {
         $todo_id = $result1['todo_id'];
         $result2 = insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValue, $routineTime);
         $message = $message . $result2;
-    
+
         $RecurringEndDate = $startDateTime;
-        $message = $message .  insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
-    }  else {
+        $message = $message . insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
+    } else {
         $message = "The Todo is repeated";
     }
 } else {

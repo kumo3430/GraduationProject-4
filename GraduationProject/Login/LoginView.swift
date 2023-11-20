@@ -221,9 +221,7 @@ struct Login : View {
         let body = ["email": mail, "password": pass]
         phpUrl(php: "login" ,type: "account",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-//            completion(message[0])
             completion(message["message"]!)
-//            completion(message.values)
         }
     }
 }
@@ -309,12 +307,6 @@ struct SignUp : View {
                         .resizable()
                         .frame(width: 15, height: 18)
                         .foregroundColor(.black)
-//                    SecureField("Re-Enter", text: self.$repass)
-//                    Button(action: {
-//                    }) {
-//                        Image(systemName: "eye")
-//                            .foregroundColor(.black)
-//                    }
                     // yun 改
                     if isPasswordVisible2 {
                         TextField("Re-Enter", text: self.$repass)
@@ -348,17 +340,6 @@ struct SignUp : View {
             .cornerRadius(10)
             .padding(.top, 25)
             
-//            Button(action: {
-//                // 我要輸入註冊的function
-//                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
-//                    errorMessage2 = "請確認帳號密碼都有輸入"
-//                } else {
-//                    if !isSendingMail { // 避免重複發送郵件
-//                        mix()
-//                    }
-//                    isShowingVerifyRegister = true
-//                }
-//            }) {
             Button(action: {
                 // 我要輸入註冊的function
                 if mail.isEmpty || pass.isEmpty || repass.isEmpty {
@@ -396,68 +377,6 @@ struct SignUp : View {
             }
         }
     }
-//
-//
-//    public func mix() {
-////        Task {
-////            await Random()
-////            await sendMail()
-////        }
-//        DispatchQueue.global().async {
-//            Random()
-//            sendMail()
-//        }
-//    }
-//
-////    private func Random() async {
-//    private func Random() {
-//        self.verify = Int.random(in: 1..<99999999)
-//        print("regiest - 隨機變數為：\(self.verify)")
-//    }
-//
-////    public func sendMail() async {
-//    public func sendMail() {
-//        isSendingMail = true
-//        let smtp = SMTP(
-//            hostname: "smtp.gmail.com",     // SMTP server address
-//            email: "3430yun@gmail.com",        // username to login
-//            password: "knhipliavnpqxwty"            // password to login
-//        )
-//
-//        //        let megaman = Mail.User(name: "coco", email: "3430coco@gmail.com")
-//        print("mail:\(mail)")
-//        let megaman = Mail.User(name: "我習慣了使用者", email: mail)
-//        let drLight = Mail.User(name: "Yun", email: "3430yun@gmail.com")
-//
-//
-//        let mail = Mail(
-//            from: drLight,
-//            to: [megaman],
-//            subject: "歡迎使用我習慣了！這是您的驗證信件",
-//            text: "以下是您的驗證碼： \(String(self.verify))"
-//        )
-//
-//        smtp.send(mail) { (error) in
-//            if let error = error {
-//                isSendingMail = false
-//                print("regiest - \(error)")
-//            } else {
-//                isSendingMail = true
-//                print("SEND: SUBJECT: \(mail.subject)")
-//                print("SEND: SUBJECT: \(mail.text)")
-//                //                           print("MESSAGE-ID: \(mail.messageID)")
-//                print("FROM: \(mail.from)")
-//                print("TO: \(mail.to)")
-//                //                           print("DATE: \(mail.date)")
-//                //                           print("MIME-VERSION: \(mail.mimeVersion)")
-//                //                           print("SEND: \(mail.content.contentType ?? "")")
-//                //                           print("CONTENT-TRANSFER-ENCODING: \(mail.content.transferEncoding ?? "")")
-//                //                           print("CONTENT-DISPOSITION: \(mail.content.disposition ?? "")")
-//                print("Send email successful")
-//                print("---------------------------------")
-//            }
-//        }
-//    }
 }
 
 struct LoginView_Previews: PreviewProvider {

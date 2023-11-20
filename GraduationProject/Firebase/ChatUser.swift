@@ -9,16 +9,25 @@ import Foundation
 import FirebaseAuth
 import GoogleSignIn
 
-struct ChatUser: Identifiable {
+struct ChatUser {
     
-    var id: String { uid }
-    
-    let uid, email, profileImageUrl: String
-    
-    init(data: [String: Any]) {
-        self.uid = data["uid"] as? String ?? ""
-        self.email = data["email"] as? String ?? ""
-        self.profileImageUrl = data["profileImageUrl"] as? String ?? ""
+//    var id: String { uid }
+//    
+//    let uid, email, profileImageUrl: String
+//    
+//    init(data: [String: Any]) {
+//        self.uid = data["uid"] as? String ?? ""
+//        self.email = data["email"] as? String ?? ""
+//        self.profileImageUrl = data["profileImageUrl"] as? String ?? ""
+//    }
+    var uid: String
+    var email: String?
+    // 其他需要的屬性
+
+    init(uid: String, email: String?) {
+        self.uid = uid
+        self.email = email
+        // 初始化其他屬性
     }
     
     static var current: ChatUser? {
@@ -36,6 +45,6 @@ struct ChatUser: Identifiable {
             // 添加其他使用者資料字段
         ]
         
-        return ChatUser(data: data)
+        return ChatUser(uid: uid,email: email)
     }
 }

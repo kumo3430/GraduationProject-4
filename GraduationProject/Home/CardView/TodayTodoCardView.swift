@@ -20,7 +20,8 @@ struct TodayTodoCardView: View {
     @EnvironmentObject var sportStore: SportStore
     @EnvironmentObject var dietStore: DietStore
     @EnvironmentObject var routineStore: RoutineStore
-    
+    @EnvironmentObject var tickerStore: TickerStore
+    @EnvironmentObject var communityStore: CommunityStore
     // Helper function to format date
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()

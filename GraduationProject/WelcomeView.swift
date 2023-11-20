@@ -8,10 +8,17 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @State private var tabBarHidden = false
+    @State private var tabBarHidden = true
     @State private var offset: CGFloat = UIScreen.main.bounds.height
     @State private var buttonScale: CGFloat = 1.0
-
+    @EnvironmentObject var taskStore: TaskStore
+    @EnvironmentObject var todoStore: TodoStore
+    @EnvironmentObject var sportStore: SportStore
+    @EnvironmentObject var dietStore: DietStore
+    @EnvironmentObject var routineStore: RoutineStore
+    @EnvironmentObject var tickerStore: TickerStore
+    @EnvironmentObject var communityStore: CommunityStore
+    @EnvironmentObject var tabBarSettings: TabBarSettings
     var body: some View {
         ZStack {
             LinearGradient(gradient: .init(colors: [Color("Color"), Color("Color1")]), startPoint: .top, endPoint: .bottom)
@@ -40,9 +47,10 @@ struct WelcomeView: View {
                     .multilineTextAlignment(.center)
                     .padding([.leading, .trailing], 20)
                 
-                NavigationLink("開始使用", destination: HomeView(tabBarHidden: $tabBarHidden).onAppear {
-                    // 當導航到新視圖時，設置UserDefaults的值
-                    UserDefaults.standard.set(false, forKey: "RegistrationView")
+                Button(action: {
+                    register{_ in }
+                }, label: {
+                    Text("開始使用")
                 })
                     .font(.title2)
                     .padding()
@@ -67,6 +75,14 @@ struct WelcomeView: View {
             }
         }
         .navigationBarHidden(true)
+    }
+    func register(completion: @escaping (String) -> Void) {
+
+        let body : [String : Any] = [:]
+        phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            completion(message["message"]!)
+        }
     }
 }
 

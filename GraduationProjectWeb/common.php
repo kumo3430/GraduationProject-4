@@ -8,13 +8,15 @@ require_once 'Database.php'; // 更新這個路徑到您的資料庫連接設定
 session_start();
 
 // 獲取用戶提交的表單數據
-function getFormData() {
+function getFormData()
+{
     $input_data = file_get_contents("php://input");
     return json_decode($input_data, true);
 }
 
 // 從會話中獲取用戶ID
-function getUserId() {
+function getUserId()
+{
     return isset($_SESSION['uid']) ? $_SESSION['uid'] : null;
 }
 

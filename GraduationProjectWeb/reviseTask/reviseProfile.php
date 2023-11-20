@@ -20,7 +20,7 @@ if ($stmt === false) {
 }
 $stmt->bind_param("sss", $username, $userDescription, $uid);
 if($stmt->execute() === TRUE) {
-    $message = "User revise Space successfully";
+    $message = "User reviseProfile successfully";
 } else {
     error_log("SQL Error: " . $stmt->error);
     $message = "UpSqlError" . $stmt->error;

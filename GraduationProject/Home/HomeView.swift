@@ -10,7 +10,12 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var taskStore: TaskStore
     @EnvironmentObject var todoStore: TodoStore
-    @State private var showQuoteView: Bool = false 
+    @EnvironmentObject var sportStore: SportStore
+    @EnvironmentObject var dietStore: DietStore
+    @EnvironmentObject var routineStore: RoutineStore
+    @EnvironmentObject var tickerStore: TickerStore
+    @EnvironmentObject var communityStore: CommunityStore
+    @State private var showQuoteView: Bool = false
     @Binding var tabBarHidden: Bool
     
     var body: some View {

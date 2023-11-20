@@ -16,7 +16,7 @@ func handleGeneralRevise(data: Data, completion: @escaping ([String:String]) -> 
 }
 //func handleUpDateCompleteValue(data: Data, completion: @escaping ([String]) -> Void) {
 func handleUpDateCompleteValue(data: Data, completion: @escaping ([String:String]) -> Void) {
-    handleUpDateValue(data: data, messageType: .UpDateCompleteValue, completion: completion)
+    handleUpDateValue(data: data, messageType: .upDateCompleteValue, completion: completion)
 }
 func handleReviseProfile(data: Data, completion: @escaping ([String:String]) -> Void) {
     handleReviseProfileData(data: data, messageType: .reviseProfile, completion: completion)

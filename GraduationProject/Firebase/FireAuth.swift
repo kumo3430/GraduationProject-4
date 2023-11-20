@@ -10,13 +10,14 @@ import Firebase
 import FirebaseAuth
 import GoogleSignIn
 
+
 struct FireAuth {
     static let share = FireAuth()
-    
+
     private init() { }
     
     func signinWithGoogle(presenting: UIViewController, completion: @escaping(Error?) -> Void) {
-        // 獲取ㄈGoogle的clientID：首先，透過FirebaseApp.app()?.options.clientID獲取Firebase項目的clientID，用於Google Sign-In
+        // 獲取Google的clientID：首先，透過FirebaseApp.app()?.options.clientID獲取Firebase項目的clientID，用於Google Sign-In
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
         
         // Create Google Sign In configuration object.
@@ -30,18 +31,10 @@ struct FireAuth {
             // 處理登入結果：在登入完成的閉包內，首先檢查是否有錯誤發生，如果有錯誤，則通過閉包返回錯誤。否則，繼續處理成功登入的情況
             guard error == nil else {
                 completion(error)
-                // ...
                 return
             }
             // 獲取用戶資訊：從Google登入的結果中獲取用戶資訊，包括用戶的ID Token和Access Token。
             // 疑似從這段就可以獲得id
-//            guard let user = result?.user,
-//                  let idToken = user.idToken?.tokenString
-//            else {
-//                // ...
-//                return
-//            }
-            // yun 改
             guard let user = result?.user,
                   let idToken = user.idToken?.tokenString else {
                 // 條件不滿足時的處理邏輯
@@ -51,33 +44,44 @@ struct FireAuth {
 
             // 條件滿足時的處理邏輯
             print("idToken: \(idToken)")
-
-            
             
             // 創建Firebase身份驗證憑據：使用獲取到的ID Token和Access Token，創建一個GoogleAuthProvider憑據對象，該對象用於Firebase身份驗證的登入
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
                                                            accessToken: user.accessToken.tokenString)
             
             // 進行Firebase身份驗證：使用創建的憑據，通過Auth.auth().signIn方法進行Firebase身份驗證的登入。如果成功登入，則將登入狀態設置為true並存儲在UserDefaults中
-//            Auth.auth().signIn(with: credential) { result, error in guard error == nil else {
-//                completion(error)
-//                return
-//            }
-//                print("SIGN IN")
-//                UserDefaults.standard.set(true, forKey: "signIn")
-//            }
-            // yun 改
-            Auth.auth().signIn(with: credential) { result, error in
+            Auth.auth().signIn(with: credential) { authResult, error in
                 if let error = error {
                     // 處理登入錯誤
                     completion(error)
-                } else {
-                    // 登入成功，將登入狀態設置為 true
-                    print("SIGN IN")
-                    UserDefaults.standard.set(true, forKey: "signIn")
+                    return
                 }
-            }
 
+                // 登入成功
+                if let user = authResult?.user {
+                    // 更新 FirebaseManager 的 currentUser
+                    FirebaseManager.shared.currentUser = ChatUser(uid: user.uid, email: user.email)
+                    print("Firbase-user:\(user)")
+                    print("Firbase-user.uid:\(user.uid)")
+                    print("Firbase-user.email:\(user.email ?? "")")
+                    
+                    login(mail: user.email ?? "", gid: user.uid) {_ in}
+
+//                    UserDefaults.standard.set(true, forKey: "signIn")
+                }
+
+                completion(nil)
+            }
+        }
+    }
+    
+    func login(mail: String, gid:String,completion: @escaping (String) -> Void) {
+        let body = ["email": mail, "gid": gid]
+        print("GID:\(body)")
+        phpUrl(php: "login" ,type: "account",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            completion(message["message"]!)
         }
     }
 }
+

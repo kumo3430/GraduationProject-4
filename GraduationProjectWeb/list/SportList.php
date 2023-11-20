@@ -3,8 +3,6 @@ require_once '../common.php'; // 引用共通設定
 
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
-$uid = $data['uid'];
-$_SESSION['uid'] = $uid;
 $category_id = 0;
 $message = "";
 $TodoTitle = array();
@@ -36,27 +34,29 @@ $TodoSELSql = "SELECT T.*, RI.*, S.* FROM Todo T LEFT JOIN Sport S ON T.id = S.t
 
 
 $stmt = $conn->prepare($TodoSELSql);
-$stmt->bind_param("s",$uid);
+$stmt->bind_param("s", $data['uid']);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
-    if ($result->num_rows > 0) { 
+    if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            $_SESSION['uid'] = $uid;
+
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
             $TodoLabel[] = $row['label'];
             $StartDateTime[] = $row['startDateTime'];
-    
+
             $sportType[] = $row['sportType'];
             $sportValue[] = $row['sportValue'];
             $sportUnit[] = $row['sportUnit'];
-    
+
             $frequency[] = $row['frequency'];
             $ReminderTime[] = $row['reminderTime'];
             $todo_id[] = $row['todo_id'];
             $todoStatus[] = $row['todoStatus'];
             $dueDateTime[] = $row['dueDateTime'];
             $todoNote[] = $row['todoNote'];
-    
+
             $RecurringStartDate[] = $row['RecurringStartDate'];
             $RecurringEndDate[] = $row['RecurringEndDate'];
             $completeValue[] = $row['completeValue'];
@@ -70,6 +70,7 @@ if ($stmt->execute() === TRUE) {
 }
 $stmt->close();
 $userData = array(
+    'data' => $data,
     'userId' => $uid,
     'category_id' => $category_id,
     'todoTitle' => $TodoTitle,

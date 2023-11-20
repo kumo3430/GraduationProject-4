@@ -3,8 +3,6 @@ require_once '../common.php'; // 引用共通設定
 
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
 
-$uid = $data['uid'];
-$_SESSION['uid'] = $uid;
 $ticker_id = array();
 $name = array();
 $deadline = array();
@@ -19,11 +17,13 @@ $sql = "SELECT tickers.id,tickers.exchange_time,voucher.name,voucher.deadline FR
 
 
 $stmt = $conn->prepare($TodoSELSql);
-$stmt->bind_param("s",$uid);
+$stmt->bind_param("s", $data['uid']);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
-    if ($result->num_rows > 0) { 
+    if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            $_SESSION['uid'] = $uid;
+
             $ticker_id[] = $row['id'];
             $name[] = $row['name'];
             $deadline[] = $row['deadline'];

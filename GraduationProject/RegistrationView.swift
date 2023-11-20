@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct RegistrationView: View {
-    @State private var currentStep: Int = 0
+    @AppStorage("userName") private var userName:String = ""
+//    @AppStorage("userDescription") private var userDescription:String = ""
+    @State private var registerStep = 0
     @State private var nickname: String = ""
     @State private var goal: String = ""
     @State private var navigateToStory: Bool = false
@@ -16,7 +18,7 @@ struct RegistrationView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Image(currentStep == 0 ? "Registration1" : "Registration2")
+                Image(registerStep == 0 ? "Registration1" : "Registration2")
                     .resizable()
                     .scaledToFill()
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
@@ -25,7 +27,7 @@ struct RegistrationView: View {
 
                 VStack(alignment: .center, spacing: 20) {
                     Spacer()
-                    if currentStep == 0 {
+                    if registerStep == 0 {
                         Text("你希望我們怎麼稱呼你？")
                             .font(.headline)
 
@@ -38,7 +40,8 @@ struct RegistrationView: View {
 
                         Button(action: {
                             withAnimation {
-                                currentStep += 1
+                                registerStep = 1
+                                register{_ in }
                             }
                         }) {
                             Text("下一步")
@@ -62,6 +65,7 @@ struct RegistrationView: View {
                         Button(action: {
                             print("Registration Completed!")
                             navigateToStory = true
+                            register{_ in }
                         }) {
                             Text("完成註冊")
                                 .padding(.horizontal, 30)
@@ -71,7 +75,8 @@ struct RegistrationView: View {
                                 .cornerRadius(10)
                         }
                         .background(
-                            NavigationLink("", destination: StoryContentView()
+//                            NavigationLink("", destination: StoryContentView()
+                            NavigationLink("", destination: IntroAnimationView()
                                 .navigationBarBackButtonHidden(true)
                                 .interactiveDismissDisabled(true)
                             , isActive: $navigateToStory)
@@ -87,11 +92,48 @@ struct RegistrationView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
+        .onAppear() {
+            if userName == "" {
+                registerStep = 0
+            } else {
+                registerStep = 1
+            }
+        }
+    }
+    
+    func register(completion: @escaping (String) -> Void) {
+        var body: [String : Any] = [:]
+        
+        if navigateToStory {
+            body = ["userDescription": goal]
+        } else {
+            body = ["userName": nickname]
+        }
+
+        phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            completion(message["message"]!)
+        }
     }
 }
 
+//struct RegistrationView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        @State var registerStep = 0
+//        RegistrationView(registerStep: $registerStep)
+//    }
+//}
+
 struct RegistrationView_Previews: PreviewProvider {
+    struct PreviewWrapper: View {
+        @State var registerStep = 0
+
+        var body: some View {
+            RegistrationView()
+        }
+    }
+
     static var previews: some View {
-        RegistrationView()
+        PreviewWrapper()
     }
 }
