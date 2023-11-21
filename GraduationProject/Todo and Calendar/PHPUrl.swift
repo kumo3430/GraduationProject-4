@@ -7,7 +7,8 @@
 
 import Foundation
 
-var server = "http://127.0.0.1:8888"
+//var server = "http://127.0.0.1:8888"
+var server = "http://163.17.136.73:443"
 //var server = "http://172.20.10.8:8888"
 
 class URLSessionSingleton {
@@ -27,13 +28,13 @@ func phpUrl(php: String,type: String,body: [String:Any],store: (any ObservableOb
     print("新的url\(String(describing: url))")
     var request = URLRequest(url: url!)
     request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
     
-
-//    let body = PostData(userID: userName, TickerID: ticker.id)
-//    let jsonData = try! JSONEncoder().encode(body)
-
+    
+    //    let body = PostData(userID: userName, TickerID: ticker.id)
+    //    let jsonData = try! JSONEncoder().encode(body)
+    
     
     request.httpBody = jsonData
     
@@ -52,7 +53,7 @@ func phpUrl(php: String,type: String,body: [String:Any],store: (any ObservableOb
 
 func convertToDate(_ dateString: String) -> Date? {
     let dateFormatter = DateFormatter()
-//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
     dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -63,21 +64,21 @@ func convertToTime(_ timeString: String?) -> Date? {
     guard let timeString = timeString else { return nil }
     
     let dateFormatter = DateFormatter()
-//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
     dateFormatter.dateFormat = "HH:mm:ss"
-//    dateFormatter.dateFormat = "HH:mm"
+    //    dateFormatter.dateFormat = "HH:mm"
     return dateFormatter.date(from: timeString)
 }
 func convertToTimeM(_ timeString: String?) -> Date? {
     guard let timeString = timeString else { return nil }
     
     let dateFormatter = DateFormatter()
-//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
-//    dateFormatter.dateFormat = "HH:mm:ss"
+    //    dateFormatter.dateFormat = "HH:mm:ss"
     dateFormatter.dateFormat = "HH:mm"
     return dateFormatter.date(from: timeString)
 }
@@ -85,7 +86,7 @@ func convertToTimeHR(_ timeString: String?) -> Date? {
     guard let timeString = timeString else { return nil }
     
     let dateFormatter = DateFormatter()
-//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
     dateFormatter.dateFormat = "HH:mm"
@@ -94,7 +95,7 @@ func convertToTimeHR(_ timeString: String?) -> Date? {
 
 func convertToDateTime(_ dateString: String) -> Date? {
     let dateFormatter = DateFormatter()
-//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -116,7 +117,7 @@ func convertToTaipeiTime(_ date: Date) -> Date? {
 
 func formattedDate(_ date: Date) -> String {
     let formatter = DateFormatter()
-//    formatter.timeZone = TimeZone(identifier: "Asia/Taipei")
+    //    formatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     formatter.locale = Locale(identifier: "zh_Hant_TW") // 設定為台灣地區
     formatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定為台北時區
     formatter.dateFormat = "yyyy-MM-dd"
@@ -127,7 +128,7 @@ func formattedTime(_ date: Date) -> String {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "zh_Hant_TW") // 設定為台灣地區
     formatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定為台北時區
-//    formatter.dateFormat = "HH:mm:ss"
+    //    formatter.dateFormat = "HH:mm:ss"
     formatter.dateFormat = "HH:mm"
     return formatter.string(from: date)
 }

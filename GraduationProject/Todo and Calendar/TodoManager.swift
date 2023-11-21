@@ -45,7 +45,7 @@ struct UpdateValueData: Decodable {
 
 struct TaskData: Decodable {
     var todo_id: [Int]    
-    var userId: String?
+    var userId: Int?
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -65,8 +65,8 @@ struct TaskData: Decodable {
 }
 
 struct TodoData: Decodable {
-    var userId: String?
-    var todo_id: [Int]    
+    var userId: Int?
+    var todo_id: [Int]
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -90,8 +90,8 @@ struct TodoData: Decodable {
 }
 
 struct SportData: Decodable {
-    var userId: String?
-    var todo_id: [Int]    
+    var userId: Int?
+    var todo_id: [Int]
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -116,8 +116,8 @@ struct SportData: Decodable {
 }
 
 struct DietData: Decodable {
-    var userId: String?
-    var todo_id: [Int]    
+    var userId: Int?
+    var todo_id: [Int]
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -140,8 +140,8 @@ struct DietData: Decodable {
     var message: String
 }
 struct RoutineData: Decodable {
-    var userId: String?
-    var todo_id: [Int]    
+    var userId: Int?
+    var todo_id: [Int]
     var category_id: Int
     var todoTitle: [String]
     var todoIntroduction: [String]
@@ -168,7 +168,7 @@ struct RoutineData: Decodable {
 }
 
 struct TickerData: Decodable {
-    var userId: String?
+    var userId: Int?
     var ticker_id: [String]
     var name: [String]
     var deadline: [String]
@@ -177,7 +177,7 @@ struct TickerData: Decodable {
 }
 
 struct CommunityData: Decodable {
-    var userId: String?
+    var userId: Int?
     var community_id: [Int]
     var communityName: [String]
     var communityDescription: [String]
@@ -186,7 +186,7 @@ struct CommunityData: Decodable {
 }
 
 struct addTaskData : Decodable {
-    var userId: String?
+    var userId: Int?
     //        var id: Int
     var category_id: Int
     var todoLabel: String?
@@ -203,7 +203,7 @@ struct addTaskData : Decodable {
     var message: String
 }
 struct addTodoData : Decodable {
-    var userId: String?
+    var userId: Int?
     var category_id: Int
     var todoLabel: String?
     var todoTitle: String
@@ -222,7 +222,7 @@ struct addTodoData : Decodable {
     var message: String
 }
 struct addSportData : Decodable {
-    var userId: String?
+    var userId: Int?
     var category_id: Int
     var todoLabel: String?
     var todoTitle: String
@@ -242,7 +242,7 @@ struct addSportData : Decodable {
     var message: String
 }
 struct addDietData: Decodable {
-    var userId: String?
+    var userId: Int?
     var category_id: Int
     var todoLabel: String?
     var todoTitle: String
@@ -262,7 +262,7 @@ struct addDietData: Decodable {
 }
 
 struct addRoutineData: Decodable {
-    var userId: String?
+    var userId: Int?
     var category_id: Int
     var todoLabel: String?
     var todoTitle: String

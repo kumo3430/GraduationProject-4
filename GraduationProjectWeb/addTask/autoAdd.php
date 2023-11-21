@@ -4,8 +4,6 @@ session_start();
 $input_data = file_get_contents("php://input");
 $data = json_decode($input_data, true);
 
-// 取得用戶名和密碼
-// $userName = $data['userName'];
 $uid = $_SESSION['uid'];
 
 $today = date("Y/n/j");

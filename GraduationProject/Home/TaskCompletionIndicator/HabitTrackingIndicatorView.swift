@@ -388,7 +388,8 @@ struct ReportView: View {
           TrackingFirstDay(id: id) { selectedDate, instanceID in
               self.selectedDate = selectedDate
               self.Instance_id = instanceID
-              RecurringCheckList(id: instanceID, targetvalue: targetvalue ?? 1.0,store: completionRatesViewModel) { _ in}
+//              RecurringCheckList(id: instanceID, targetvalue: targetvalue ?? 1.0,store: completionRatesViewModel) { _ in}
+              RecurringCheckList(id: id, targetvalue: targetvalue ?? 1.0,store: completionRatesViewModel) { _ in}
           }
       }
 }

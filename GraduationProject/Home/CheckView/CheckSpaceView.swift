@@ -109,7 +109,7 @@ struct CheckSpaceView: View {
             "id": task.id,
             "value": currentStageIndex+1
         ]
-
+        print("body:\(body)")
         phpUrl(php: "upDateSpaced" ,type: "reviseTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
 //            completion(message[0])

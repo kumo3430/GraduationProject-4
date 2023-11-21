@@ -27,7 +27,7 @@ $completeValue = array();
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN Diet D ON T.id = D.todo_id WHERE T.uid = '$uid' && T.category_id = '5';";
+// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN Diet D ON T.id = D.todo_id WHERE T.uid = '$data['uid']' && T.category_id = '5';";
 $TodoSELSql = "SELECT T.*, RI.*, D.* FROM Todo T LEFT JOIN Diet D ON T.id = D.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id WHERE T.uid = ? AND t.category_id = 5 AND RI.isOver = 0;";
 
 $stmt = $conn->prepare($TodoSELSql);
@@ -36,7 +36,7 @@ if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $_SESSION['uid'] = $uid;
+            $_SESSION['uid'] = $data['uid'];
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
             $TodoLabel[] = $row['label'];
@@ -65,7 +65,7 @@ if ($stmt->execute() === TRUE) {
 }
 $stmt->close();
 $userData = array(
-    'userId' => $uid,
+    'userId' => $data['uid'],
     'category_id' => $category_id,
     'todoTitle' => $TodoTitle,
     'todoIntroduction' => $TodoIntroduction,

@@ -23,7 +23,13 @@ enum Message: String {
     case updateCurrentStep = "User updateCurrentStep successfully"
     case updateCreateAt = "User updateCreateAt successfully"
     
-    case reviseStudy = "User revise Study successfully"
+    case newTask = "User New Task successfully"
+    case reTask = "The Todo is repeated"
+    
+    case newCommunity = "User New Community successfully"
+    case reCommunity = "The Community is repeated"
+    
+    case reviseTask = "User revise Task successfully"
     case reviseSpace = "User revise Space successfully"
     case reviseProfile = "User reviseProfile successfully"
     case upDateCompleteValue = "User upDateCompleteValue successfully"
@@ -115,25 +121,25 @@ func handleUserData(data: Data, messageType: Message, completion: @escaping ([St
             
         } else if userData.message == Message.wrongPass.rawValue {
             completion(["message":Message.wrongPass.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else if userData.message == Message.wrongEmail.rawValue {
             completion(["message":Message.wrongEmail.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else if userData.message == Message.emailRegistered.rawValue {
             completion(["message":Message.emailRegistered.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else  if userData.message == Message.updateUsername.rawValue {
             completion(["message":Message.updateUsername.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else if userData.message == Message.updateUserDescription.rawValue {
             completion(["message":Message.updateUserDescription.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else if userData.message == Message.updateCurrentStep.rawValue {
             completion(["message":Message.updateCurrentStep.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else if userData.message == Message.updateCreateAt.rawValue {
             completion(["message":Message.updateCreateAt.rawValue])
-            
+            print("\(messageType.rawValue) - Message：\(userData.message)")
         } else {
             completion(["message":userData.message])
             print("\(messageType.rawValue) - Message：\(userData.message)")

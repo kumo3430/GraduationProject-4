@@ -25,7 +25,7 @@ $db = Database::getInstance();
 $conn = $db->getConnection();
 
 
-// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '$uid' AND T.category_id = '1';";
+// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '$data['uid']' AND T.category_id = '1';";
 $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = ? AND T.category_id = '1';";
 
 $stmt = $conn->prepare($TodoSELSql);
@@ -34,7 +34,7 @@ if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $_SESSION['uid'] = $uid;
+            $_SESSION['uid'] = $data['uid'];
 
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
@@ -61,7 +61,7 @@ if ($stmt->execute() === TRUE) {
 }
 $stmt->close();
 $userData = array(
-    'userId' => $uid,
+    'userId' => $data['uid'],
     'category_id' => $category_id,
     'todoTitle' => $TodoTitle,
     'todoIntroduction' => $TodoIntroduction,

@@ -2,11 +2,8 @@
 require_once '../common.php'; // 引用共通設定
 
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
-
 $uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
-$todo_id = $data['id'];
-$label = $data['label'];
-$reminderTime = $data['reminderTime'];
+
 $message = "";
 
 $db = Database::getInstance();
@@ -18,7 +15,7 @@ $stmt = $conn->prepare($UpSql);
 if ($stmt === false) {
     die("Error preparing statement: " . $conn->error);
 }
-$stmt->bind_param("ssi", $label, $reminderTime, $todo_id);
+$stmt->bind_param("ssi", $data['label'], $data['reminderTime'], $data['id']);
 if($stmt->execute() === TRUE) {
     $message = "User revise Space successfully";
 } else {
@@ -28,9 +25,9 @@ if($stmt->execute() === TRUE) {
 $stmt->close();
 
 $userData = array(
-    'todo_id' => $todo_id,
-    'label' => $label,
-    'reminderTime' => $reminderTime,
+    'todo_id' => $data['id'],
+    'label' => $data['label'],
+    'reminderTime' => $data['reminderTime'],
     'message' => $message
 );
 echo json_encode($userData);

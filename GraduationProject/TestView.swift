@@ -173,16 +173,11 @@ struct TickerRow: View {
                     session = URLSession(configuration: config)
                 }
             }
-            //        print("Ticker-userName2:\(appSettings.userName)")
-            //        print("Ticker-password2:\(appSettings.password)")
+
             let url = URL(string: "http://163.17.136.73/api/values/post")!
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            
-//                    let body = ["userID": uid,"TickerID": ticker.id]
-//                    let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
-            
             
             let body = PostData(userID: userName, TickerID: ticker.id)
             let jsonData = try! JSONEncoder().encode(body)

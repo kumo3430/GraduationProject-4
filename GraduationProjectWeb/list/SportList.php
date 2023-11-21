@@ -39,7 +39,7 @@ if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $_SESSION['uid'] = $uid;
+            $_SESSION['uid'] = $data['uid'];
 
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
@@ -71,7 +71,7 @@ if ($stmt->execute() === TRUE) {
 $stmt->close();
 $userData = array(
     'data' => $data,
-    'userId' => $uid,
+    'userId' => $data['uid'],
     'category_id' => $category_id,
     'todoTitle' => $TodoTitle,
     'todoIntroduction' => $TodoIntroduction,

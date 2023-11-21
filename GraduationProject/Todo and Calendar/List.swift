@@ -7,10 +7,6 @@
 
 import Foundation
 
-//@EnvironmentObject var todoStore: TodoStore
-//@EnvironmentObject var sportStore: SportStore
-//@EnvironmentObject var dietStore: DietStore
-
 // 定義一個通用的函數處理頻率轉換
 func ConvertFrequency(frequency: Int) -> String {
     switch frequency {
@@ -30,9 +26,10 @@ func ConvertTodoStatus(todoStatus: Int) -> Bool {
     return todoStatus != 0
 }
 
-//func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([String]) -> Void) {
 func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(TaskData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.todoTitle.indices {
             
             if let startDate = convertToDate(userData.startDateTime[index]),
@@ -57,14 +54,13 @@ func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([S
             }
         }
     }
-    //    print("tasks:\(taskStore.tasks)")
-    //    completion(["Success"])
     completion(["message":"Success"])
 }
 
-//func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping ([String]) -> Void) {
 func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(TodoData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.todoTitle.indices {
             
             var studyUnit: String = ""
@@ -111,14 +107,15 @@ func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping 
             }
         }
     }
-    //    print("tasks:\(todoStore.todos)")
-    //    completion(["Success"])
+
     completion(["message":"Success"])
 }
 
-//func handleSportList(data: Data,store: SportStore, completion: @escaping ([String]) -> Void) {
+
 func handleSportList(data: Data,store: SportStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(SportData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.todoTitle.indices {
             
             var sportUnit: String = ""
@@ -168,14 +165,13 @@ func handleSportList(data: Data,store: SportStore, completion: @escaping ([Strin
             }
         }
     }
-    //    print("tasks:\(sportStore.sports)")
-    //    completion(["Success"])
     completion(["message":"Success"])
 }
 
-//func handleDietList(data: Data,store: DietStore, completion: @escaping ([String]) -> Void) {
 func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(DietData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.todoTitle.indices {
             
             if let startDate = convertToDate(userData.startDateTime[index]),
@@ -215,12 +211,13 @@ func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:
             }
         }
     }
-    //    completion(["Success"])
     completion(["message":"Success"])
 }
 
 func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(RoutineData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.todoTitle.indices {
             
             if let startDate = convertToDate(userData.startDateTime[index]),
@@ -230,8 +227,6 @@ func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([S
                let routinesTime = convertToTime(userData.routinesTime[index]),
                let reminderTime = convertToTime(userData.reminderTime[index]) {
                 
-                //                let frequency = userData.frequency[index]
-                //                let recurringUnit = ConvertFrequency(frequency: frequency)
                 let recurringOption = calculateRecurringOption(dueDateTime: dueDateTime, startDate: startDate)
                 let todoStatus = userData.todoStatus[index]
                 let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
@@ -262,13 +257,13 @@ func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([S
             }
         }
     }
-    //    completion(["Success"])
     completion(["message":"Success"])
 }
 
-//func handletickersList(data: Data,store: TickerStore, completion: @escaping ([String]) -> Void) {
 func handletickersList(data: Data,store: TickerStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(TickerData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.ticker_id.indices {
             if let deadline = convertToDateTime(userData.deadline[index]) {
                 var exchange: String?
@@ -289,11 +284,13 @@ func handletickersList(data: Data,store: TickerStore, completion: @escaping ([St
             }
         }
     }
-    //    completion(["Success"])
     completion(["message":"Success"])
 }
+
 func handleCommunitysList(data: Data,store: CommunityStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(CommunityData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+
         for index in userData.community_id.indices {
             
             let task = Community(id: userData.community_id[index],
@@ -305,6 +302,5 @@ func handleCommunitysList(data: Data,store: CommunityStore, completion: @escapin
             }
         }
     }
-    //    completion(["Success"])
     completion(["message":"Success"])
 }

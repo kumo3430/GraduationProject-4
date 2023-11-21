@@ -12,17 +12,17 @@ $message = "";
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-// $sql = "SELECT * FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = '$uid';";
+// $sql = "SELECT * FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = '$data['uid']';";
 $sql = "SELECT tickers.id,tickers.exchange_time,voucher.name,voucher.deadline FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = ? ;";
 
 
-$stmt = $conn->prepare($TodoSELSql);
+$stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $data['uid']);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $_SESSION['uid'] = $uid;
+            $_SESSION['uid'] = $data['uid'];
 
             $ticker_id[] = $row['id'];
             $name[] = $row['name'];
@@ -39,7 +39,7 @@ if ($stmt->execute() === TRUE) {
 $stmt->close();
 $userData = array(
     'ticker_id' => $ticker_id,
-    'userId' => $uid,
+    'userId' => $data['uid'],
     'name' => $name,
     'deadline' => $deadline,
     'exchange' => $exchange,

@@ -156,6 +156,7 @@ struct CheckSportView: View {
             "completeValue": sportValue,
             "isComplete": isTaskCompleted,
         ]
+        print("body:\(body)")
         phpUrl(php: "upDateCompleteValue" ,type: "reviseTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
 //            completion(message[0])

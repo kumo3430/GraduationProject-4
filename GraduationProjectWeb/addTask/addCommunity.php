@@ -2,24 +2,20 @@
 require_once '../common.php'; // 引用共通設定
 
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
-
 $uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
-$communityName = $data['communityName'];
-$communityDescription = $data['communityDescription'];
-$communityCreateDate = date("Y-m-d");
-$category = $data['communityCategory'];
-
 $community_id = 0;
+$communityCreateDate = date("Y-m-d");
+
 $message = "";
 
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-function insertCommunity($conn, $uid, $communityName, $communityDescription, $communityCreateDate, $category, $CommunitySELSql) {
+function insertCommunity($conn, $uid, $data, $communityCreateDate) {
     $CommunitySql = "INSERT INTO `Community` (`communityName`, `communityDescription`, `communityCreateDate`, `communityCategory`) VALUES (?, ?,?,?)";
     
     $stmt = $conn->prepare($CommunitySql);
-    $stmt->bind_param("sssi", $communityName, $communityDescription, $communityCreateDate, $category);
+    $stmt->bind_param("sssi", $data['communityName'], $data['communityDescription'], $communityCreateDate, $data['communityCategory']);
 
     if ($stmt->execute() === TRUE) {
         $community_id = $conn->insert_id;
@@ -54,14 +50,20 @@ $stmt = $conn->prepare($CommunitySELSql);
 if ($stmt === false) {
     die("Error preparing statement: " . $conn->error);
 }
-$stmt->bind_param("s", $communityName);
+$stmt->bind_param("s", $data['communityName']);
 if($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
-        $result1 = insertCommunity($conn, $uid, $communityName, $communityDescription, $communityCreateDate, $category, $CommunitySELSql);
-        $message = $result1['message'];
+        $result1 = insertCommunity($conn, $uid, $data, $communityCreateDate);
         if ($result1['message'] ==  "User New Community successfully") {
-            $message = insertMemberSql($conn, $community_id, $uid, $communityCreateDate);
+            $result2 = insertMemberSql($conn, $community_id, $uid, $communityCreateDate);
+            if ($result2 ==  "User New memberSql successfully") {
+                $message = "User New Community successfully" ;
+            } else {
+                $message = $result2;
+            }
+        } else {
+            $message = $result1['message'];
         }
     }  else {
         $message = "The Community is repeated";
@@ -73,10 +75,10 @@ if($stmt->execute() === TRUE) {
 $stmt->close();
 $userData = array(
     'community_id' => intval($community_id),
-    'communityName' => $communityName,
-    'communityDescription' => $communityDescription,
+    'communityName' => $data['communityName'],
+    'communityDescription' => $data['communityDescription'],
     'communityCategory' => intval($communityCategory),
-    'message' => $message . $message1 . $message2
+    'message' => $message
 );
 echo json_encode($userData);
 

@@ -1,33 +1,19 @@
 <?php
 require_once '../common.php';
 $data = getFormData(); // 使用 common.php 中的函數獲取表單數據
-
 $uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
-$category_id = 4;
-$todoTitle = $data['todoTitle'];
-$todoIntroduction = $data['todoIntroduction'];
-$frequency = 0;
-$todoLabel = $data['label'];
-$todoStatus = 0;
-$startDateTime = $data['startDateTime'];
-$routineType = $data['routineType'];
-$routineValue = $data['routineValue'];
-$routineTime = $data['routineTime'];
-$reminderTime = $data['reminderTime'];
-$dueDateTime = $data['dueDateTime'];
-$todoNote = $data['todoNote'];
 $todo_id = 0;
 $message = "";
 
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-function insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus)
+function insertTodo($conn, $uid, $data)
 {
-    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `label`, `startDateTime`, `frequency`, `reminderTime`, `todoStatus`, `dueDateTime`, `todoNote`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `label`, `startDateTime`, `frequency`, `reminderTime`, `todoStatus`, `dueDateTime`, `todoNote`) VALUES (?,4,?,?,?,?,0,?,0,?,?)";
 
     $stmt = $conn->prepare($TodoSql);
-    $stmt->bind_param("sissssisiss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $todoStatus, $dueDateTime, $todoNote);
+    $stmt->bind_param("ssssssss", $uid, $data['todoTitle'], $data['todoIntroduction'], $data['label'], $data['startDateTime'], $data['reminderTime'], $data['dueDateTime'], $data['todoNote']);
 
     if ($stmt->execute() === TRUE) {
         $todo_id = $conn->insert_id;
@@ -40,27 +26,27 @@ function insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $t
     $stmt->close();
     return array('message' => $message, 'todo_id' => $todo_id);
 }
-function insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValue, $routineTime)
+function insertRoutine($conn, $todo_id, $data)
 {
-    $SpacedSql = "INSERT INTO `Routine` (`todo_id`, `category_id`, `routineType`, `routineValue`, `routineTime`) VALUES (?, ?,?,?,?)";
+    $SpacedSql = "INSERT INTO `Routine` (`todo_id`, `category_id`, `routineType`, `routineValue`, `routineTime`) VALUES (?, 4,?,?,?)";
 
     $stmt = $conn->prepare($SpacedSql);
-    $stmt->bind_param("iisdi", $todo_id, $category_id, $routineType, $routineValue, $routineTime);
+    $stmt->bind_param("isdi", $todo_id, $data['routineType'], $data['routineValue'], $data['routineTime']);
     if ($stmt->execute() === TRUE) {
         $result = $stmt->get_result();
-        $message = "User New Sport successfully";
+        $message = "User New Routine successfully";
     } else {
         $message = 'New Sport - Error: ' . $stmt->error;
     }
     $stmt->close();
     return $message;
 }
-function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate)
+function insertRecurringInstance($conn, $todo_id, $data, $RecurringEndDate)
 {
     $InstanceSql = "INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES (?, ?, ?);";
 
     $stmt = $conn->prepare($InstanceSql);
-    $stmt->bind_param("iss", $todo_id, $startDateTime, $RecurringEndDate);
+    $stmt->bind_param("iss", $todo_id, $data['startDateTime'], $RecurringEndDate);
 
     if ($stmt->execute() === TRUE) {
         $message = "User New first RecurringInstance successfully";
@@ -71,24 +57,35 @@ function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndD
     return $message;
 }
 
-$TodoIdSql = "SELECT * FROM `Todo` WHERE `uid` = ? AND `category_id` = ? AND `todoTitle` = ? AND `todoIntroduction` = ? AND `label` = ? AND `todoNote` = ? ";
+$TodoIdSql = "SELECT * FROM `Todo` WHERE `uid` = ? AND `category_id` = 4 AND `todoTitle` = ? AND `todoIntroduction` = ? AND `label` = ? AND `todoNote` = ? ";
 
 $stmt = $conn->prepare($TodoIdSql);
 if ($stmt === false) {
     die("Error preparing statement: " . $conn->error);
 }
-$stmt->bind_param("sissss", $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $todoNote);
+$stmt->bind_param("sssss", $uid, $data['todoTitle'], $data['todoIntroduction'], $data['label'], $data['todoNote']);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
-        $result1 = insertTodo($conn, $uid, $category_id, $todoTitle, $todoIntroduction, $todoLabel, $startDateTime, $frequency, $reminderTime, $dueDateTime, $todoNote, $todoStatus);
-        $message = $message . $result1['message'];
-        $todo_id = $result1['todo_id'];
-        $result2 = insertRoutine($conn, $todo_id, $category_id, $routineType, $routineValue, $routineTime);
-        $message = $message . $result2;
+        $result1 = insertTodo($conn, $uid, $data);
 
-        $RecurringEndDate = $startDateTime;
-        $message = $message . insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate);
+        if ($result1['message'] == "User New Todo successfully" ) {
+            $todo_id = $result1['todo_id'];
+            $result2 = insertRoutine($conn, $todo_id, $data);
+            if ($result2 == "User New Routine successfully" ) {
+                $RecurringEndDate = $data['startDateTime'];
+                $result3 = insertRecurringInstance($conn, $todo_id, $data, $RecurringEndDate);
+                if ($result3 == "User New first RecurringInstance successfully") {
+                    $message = "User New Task successfully";
+                } else {
+                    $message = $result3 ;
+                }
+            } else {
+                $message = $result2;
+            }
+        } else {
+            $message = $result1['message'];
+        }
     } else {
         $message = "The Todo is repeated";
     }
@@ -101,18 +98,18 @@ $stmt->close();
 $userData = array(
     'todo_id' => intval($todo_id),
     'userId' => $uid,
-    'category_id' => $category_id,
-    'label' => $todoLabel,
-    'todoTitle' => $todoTitle,
-    'todoIntroduction' => $todoIntroduction,
-    'startDateTime' => $startDateTime,
-    'routineType' => $routineType,
-    'routineValue' => intval($routineValue),
-    'routineTime' => $routineTime,
-    'todoStatus' => $todoStatus,
-    'dueDateTime' => $dueDateTime,
-    'reminderTime' => $reminderTime,
-    'message' => $message . $message1 . $message2
+    'category_id' => 4,
+    'label' => $data['label'],
+    'todoTitle' => $data['todoTitle'],
+    'todoIntroduction' => $data['todoIntroduction'],
+    'startDateTime' => $data['startDateTime'],
+    'routineType' => $data['routineType'],
+    'routineValue' => intval($data['routineValue']),
+    'routineTime' => $data['routineTime'],
+    'todoStatus' => 0,
+    'dueDateTime' => $data['dueDateTime'],
+    'reminderTime' => $data['reminderTime'],
+    'message' => $message
 );
 echo json_encode($userData);
 

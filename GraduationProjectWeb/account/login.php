@@ -72,7 +72,7 @@ if ($stmt->execute() === TRUE) {
 $stmt->close();
 
 $userData = array(
-    // 'data' => $data,
+    'data' => $data,
     'id' => $_SESSION['uid'],
     'email' => $_SESSION['email'],
     'userName' => $_SESSION['userName'],

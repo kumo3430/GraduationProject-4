@@ -51,7 +51,8 @@ func convertTodoStatus(todoStatus: Int) -> Bool {
 
 func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addTaskData.self, data: data) { userData in
-        if (userData.message == "User New Todo successfullyUser New StudySpacedRepetition successfully") {
+        print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == Message.newTask.rawValue) {
             let ReviewChecked0 = false
             let ReviewChecked1 = false
             let ReviewChecked2 = false
@@ -76,18 +77,23 @@ func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([St
                 DispatchQueue.main.async {
                     store.tasks.append(task)
                 }
-                //                completion(["Success"])
-                completion(["message":"Success"])
+                 completion(["message":Message.success.rawValue])
             } else {
+                completion(["message":"AddTaskFail"])
                 print("StudySpaceList - 日期或時間轉換失敗")
             }
+        } else if (userData.message == Message.reTask.rawValue) {
+            completion(["message":Message.reTask.rawValue])
+        } else {
+            completion(["message":"AddTaskFail"])
         }
     }
 }
 
 func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addTodoData.self, data: data) { userData in
-        if (userData.message == "User New Todo successfullyUser New StudyGeneral successfullyUser New first RecurringInstance successfully") {
+        print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == Message.newTask.rawValue) {
             var studyUnit: String = ""
             if let startDate = convertToDate(userData.startDateTime),
                let dueDateTime = convertToDate(userData.dueDateTime),
@@ -126,19 +132,23 @@ func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([
                 DispatchQueue.main.async {
                     store.todos.append(todo)
                 }
-                //                completion(["Success"])
-                completion(["message":"Success"])
+                 completion(["message":Message.success.rawValue])
             } else {
-                print("StudyGeneralList - 日期或時間轉換失敗")
+                completion(["message":"AddTaskFail"])
+                print("StudySpaceList - 日期或時間轉換失敗")
             }
-            
+        } else if (userData.message == Message.reTask.rawValue) {
+            completion(["message":Message.reTask.rawValue])
+        } else {
+            completion(["message":"AddTaskFail"])
         }
     }
 }
 
 func handleSportAdd(data: Data,store: SportStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addSportData.self, data: data) { userData in
-        if (userData.message == "User New Todo successfullyUser New Sport successfullyUser New first RecurringInstance successfully") {
+        print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == Message.newTask.rawValue) {
             var sportUnit: String = ""
             if let startDate = convertToDate(userData.startDateTime ),
                let dueDateTime = convertToDate(userData.dueDateTime ),
@@ -180,18 +190,23 @@ func handleSportAdd(data: Data,store: SportStore, completion: @escaping ([String
                 DispatchQueue.main.async {
                     store.sports.append(sport)
                 }
-                //                completion(["Success"])
-                completion(["message":"Success"])
+                 completion(["message":Message.success.rawValue])
             } else {
-                print("SportList - 日期或時間轉換失敗")
+                completion(["message":"AddTaskFail"])
+                print("StudySpaceList - 日期或時間轉換失敗")
             }
+        } else if (userData.message == Message.reTask.rawValue) {
+            completion(["message":Message.reTask.rawValue])
+        } else {
+            completion(["message":"AddTaskFail"])
         }
     }
 }
 
 func handleDietAdd(data: Data,store: DietStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addDietData.self, data: data) { userData in
-        if (userData.message == "User New Todo successfullyUser New Diet successfullyUser New first RecurringInstance successfully") {
+        print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == Message.newTask.rawValue) {
             
             if let startDate = convertToDate(userData.startDateTime ),
                let dueDateTime = convertToDate(userData.dueDateTime ),
@@ -224,25 +239,27 @@ func handleDietAdd(data: Data,store: DietStore, completion: @escaping ([String:S
                 DispatchQueue.main.async {
                     store.diets.append(diet)
                 }
-                //                completion(["Success"])
-                completion(["message":"Success"])
+                 completion(["message":Message.success.rawValue])
             } else {
-                print("DietList - 日期或時間轉換失敗")
+                completion(["message":"AddTaskFail"])
+                print("StudySpaceList - 日期或時間轉換失敗")
             }
+        } else if (userData.message == Message.reTask.rawValue) {
+            completion(["message":Message.reTask.rawValue])
+        } else {
+            completion(["message":"AddTaskFail"])
         }
     }
 }
 func handleRoutineAdd(data: Data,store: RoutineStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addRoutineData.self, data: data) { userData in
-        if (userData.message == "User New Todo successfullyUser New Sport successfullyUser New first RecurringInstance successfully") {
+        print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == Message.newTask.rawValue) {
             
             if let startDate = convertToDate(userData.startDateTime ),
                let dueDateTime = convertToDate(userData.dueDateTime ),
-               let routinesTime = convertToTime(userData.routineTime ),
-               let reminderTime = convertToTime(userData.reminderTime ) {
-                
-                //                let frequency = userData.frequency
-                //                let recurringUnit = convertFrequency(frequency: frequency)
+               let routinesTime = convertToTimeM(userData.routineTime ),
+               let reminderTime = convertToTimeM(userData.reminderTime ) {
                 let recurringOption = calculateRecurringOption(dueDateTime: dueDateTime, startDate: startDate)
                 let todoStatus = userData.todoStatus
                 let isTodoStatus = convertTodoStatus(todoStatus: todoStatus)
@@ -269,18 +286,22 @@ func handleRoutineAdd(data: Data,store: RoutineStore, completion: @escaping ([St
                 DispatchQueue.main.async {
                     store.routines.append(routine)
                 }
-                //                completion(["Success"])
-                completion(["message":"Success"])
+                 completion(["message":Message.success.rawValue])
             } else {
-                print("DietList - 日期或時間轉換失敗")
+                completion(["message":"AddTaskFail"])
+                print("StudySpaceList - 日期或時間轉換失敗")
             }
-        }
-    }
+        } else if (userData.message == Message.reTask.rawValue) {
+            completion(["message":Message.reTask.rawValue])
+        } else {
+            completion(["message":"AddTaskFail"])
+        }    }
 }
 
 func handleCommunityAdd(data: Data,store: CommunityStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(addCommunityData.self, data: data) { userData in
-        if (userData.message == "User New Community successfullyUser New memberSql successfully") {
+        print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == Message.newCommunity.rawValue) {
             
             let task = Community(id: userData.community_id,
                                  communityName: userData.communityName,
@@ -289,12 +310,12 @@ func handleCommunityAdd(data: Data,store: CommunityStore, completion: @escaping 
             DispatchQueue.main.async {
                 store.communitys.append(task)
             }
-            //                completion(["Success"])
-            completion(["message":"Success"])
+             completion(["message":Message.success.rawValue])
+        } else if (userData.message == Message.reCommunity.rawValue) {
+            completion(["message":Message.reCommunity.rawValue])
         } else {
             print("DietList - 日期或時間轉換失敗")
+            completion(["message":"AddCommunityFail"])
         }
-        
-        
     }
 }
