@@ -179,7 +179,9 @@ struct DietDetailView: View {
     func reviseDiet(completion: @escaping (String) -> Void) {
         let body: [String: Any] = [
             "id": diet.id,
+            "title": diet.title,
             "label": diet.label,
+            "description": diet.description,
             "reminderTime": formattedTime(diet.reminderTime),
             "dueDateTime": formattedDate(diet.dueDateTime),
             "todoNote": diet.todoNote

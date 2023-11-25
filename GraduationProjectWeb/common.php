@@ -24,7 +24,7 @@ function getUserId()
 // 在開發階段，您可能希望開啟錯誤報告來幫助調試。
 // 在生產環境中，通常會關閉這些錯誤報告來避免泄露敏感信息。
 // 根據您的需求取消下面兩行的註釋或進行調整。
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
 
 ?>

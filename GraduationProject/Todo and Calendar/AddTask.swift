@@ -64,8 +64,8 @@ func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([St
                let repetition4Count = convertToDate(userData.repetition4Count),
                let reminderTime = convertToTimeM(userData.reminderTime) {
                 
-                let taskId = Int(userData.todo_id)
-                let task = Task(id: taskId,
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle, body: userData.todoIntroduction,tid: String(userData.todo_id), isRemove: false)
+                let task = Task(id: userData.todo_id,
                                 label: userData.todoLabel ?? "",
                                 title: userData.todoTitle,
                                 description: userData.todoIntroduction,
@@ -112,8 +112,8 @@ func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([
                     studyUnit = "次"
                 }
                 
-                let taskId = Int(userData.todo_id)
-                let todo = Todo(id: taskId,
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle, body: userData.todoIntroduction,tid: String(userData.todo_id), isRemove: false)
+                let todo = Todo(id: userData.todo_id,
                                 label: userData.todoLabel ?? "",
                                 title: userData.todoTitle,
                                 description: userData.todoIntroduction,
@@ -169,8 +169,8 @@ func handleSportAdd(data: Data,store: SportStore, completion: @escaping ([String
                     sportUnit = "卡路里"
                 }
                 
-                let taskId = Int(userData.todo_id )
-                let sport = Sport(id: taskId,
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle, body: userData.todoIntroduction,tid: String(userData.todo_id), isRemove: false)
+                let sport = Sport(id: userData.todo_id,
                                   label: userData.todoLabel ?? "",
                                   title: userData.todoTitle ,
                                   description: userData.todoIntroduction ,
@@ -219,8 +219,8 @@ func handleDietAdd(data: Data,store: DietStore, completion: @escaping ([String:S
                 let isTodoStatus = convertTodoStatus(todoStatus: todoStatus)
                 let RecurringEndDate = addRecurringEndDate(frequency: frequency, startDate: startDate)
                 
-                let taskId = Int(userData.todo_id )
-                let diet = Diet(id: taskId,
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle, body: userData.todoIntroduction,tid: String(userData.todo_id), isRemove: false)
+                let diet = Diet(id: userData.todo_id,
                                 label: userData.todoLabel ?? "",
                                 title: userData.todoTitle ,
                                 description: userData.todoIntroduction ,
@@ -265,8 +265,8 @@ func handleRoutineAdd(data: Data,store: RoutineStore, completion: @escaping ([St
                 let isTodoStatus = convertTodoStatus(todoStatus: todoStatus)
                 let RecurringEndDate = addRecurringEndDate(frequency: 0, startDate: startDate)
                 
-                let taskId = Int(userData.todo_id )
-                let routine = Routine(id: taskId,
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle, body: userData.todoIntroduction,tid: String(userData.todo_id), isRemove: false)
+                let routine = Routine(id: userData.todo_id,
                                       label: userData.todoLabel ?? "",
                                       title: userData.todoTitle ,
                                       description: userData.todoIntroduction ,

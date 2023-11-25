@@ -15,7 +15,14 @@ $stmt = $conn->prepare($UpSql);
 if ($stmt === false) {
     die("Error preparing statement: " . $conn->error);
 }
-$stmt->bind_param("sss", $data['username'], $data['userDescription'], $uid);
+if ($data['username'] !== "" && isset($data['username'])) {
+    $_SESSION['username'] = $data['username'];
+} else if ($data['userDescription'] !== "" && isset($data['userDescription'])) {
+    $_SESSION['userDescription'] = $data['userDescription'];
+}
+
+
+$stmt->bind_param("sss", $_SESSION['username'], $_SESSION['userDescription'], $uid);
 if($stmt->execute() === TRUE) {
     $message = "User reviseProfile successfully";
 } else {
@@ -34,8 +41,8 @@ $userData = array(
     'data' => $data,
     'id' => $uid,
     'email' => $_SESSION['email'],
-    'userName' => $data['username'],
-    'userDescription' => $data['userDescription'],
+    'userName' => $_SESSION['username'],
+    'userDescription' => $_SESSION['userDescription'],
     'currentStep' => $_SESSION['currentStep'],
     'create_at' => $_SESSION['create_at'],
     'message' => $message

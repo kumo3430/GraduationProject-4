@@ -27,6 +27,12 @@ func handleReviseData(data: Data, messageType: Message, completion: @escaping ([
         if userData.message == messageType.rawValue {
             print("============== \(messageType.rawValue) ==============")
             print("\(messageType.rawValue) - userDate:\(userData)")
+            if  let reminderTime = convertToTimeM(userData.reminderTime ) {
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle, body: userData.todoIntroduction,tid: String(userData.todo_id), isRemove: true)
+            } else {
+                completion(["message":"reviseTaskFail"])
+                print("handleReviseData - 日期或時間轉換失敗")
+            }
             completion(["message":Message.success.rawValue])
             print("============== \(messageType.rawValue) ==============")
         } else {
@@ -40,8 +46,8 @@ func handleReviseProfileData(data: Data, messageType: Message, completion: @esca
         if userData.message == messageType.rawValue {
             print("============== \(messageType.rawValue) ==============")
             print("\(messageType.rawValue) - userDate:\(userData)")
-            UserDefaults.standard.set("\(userData.userName)", forKey: "userName")
-            UserDefaults.standard.set("\(userData.userDescription)", forKey: "userDescription")
+            UserDefaults.standard.set("\(userData.userName ?? "")", forKey: "userName")
+            UserDefaults.standard.set("\(userData.userDescription ?? "")", forKey: "userDescription")
             completion(["message":Message.success.rawValue])
             print("============== \(messageType.rawValue) ==============")
         } else {

@@ -130,7 +130,9 @@ struct StudyDetailView: View {
     func reviseTodo(completion: @escaping (String) -> Void) {
         let body: [String: Any] = [
             "id": todo.id,
+            "title": todo.title,
             "label": todo.label,
+            "description": todo.description,
             "reminderTime": formattedTime(todo.reminderTime),
             "dueDateTime": formattedDate(todo.dueDateTime),
             "todoNote": todo.todoNote

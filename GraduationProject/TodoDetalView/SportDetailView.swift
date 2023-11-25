@@ -153,7 +153,9 @@ struct DetailSportView: View {
     func reviseSport(completion: @escaping (String) -> Void) {
         let body: [String: Any] = [
             "id": sport.id,
+            "title": sport.title,
             "label": sport.label,
+            "description": sport.description,
             "reminderTime": formattedTime(sport.reminderTime),
             "dueDateTime": formattedDate(sport.dueDateTime),
             "todoNote": sport.todoNote

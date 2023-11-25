@@ -6,6 +6,36 @@
 //
 
 import Foundation
+import UserNotifications
+
+func scheduleNotificationIfNeeded(alert_time: Date, title: String, body: String,tid: String, isRemove: Bool) {
+    var notificationScheduled = false
+    guard !notificationScheduled else {
+        return
+    }
+    if isRemove {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [tid])
+    }
+    let content = UNMutableNotificationContent()
+    content.title = title
+    content.body = body
+    content.sound = UNNotificationSound.default
+    
+    let calendar = Calendar.current
+    let components = calendar.dateComponents([ .hour, .minute], from: alert_time)
+    let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+    
+    let request = UNNotificationRequest(identifier: tid, content: content, trigger: trigger)
+    
+    UNUserNotificationCenter.current().add(request) { error in
+        if let error = error {
+            print("無法設定推播通知: \(error)")
+        } else {
+            print("推播通知已設定\(title)")
+            notificationScheduled = true
+        }
+    }
+}
 
 // 定義一個通用的函數處理頻率轉換
 func ConvertFrequency(frequency: Int) -> String {
@@ -44,7 +74,7 @@ func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([S
                 let ReviewChecked2 = userData.repetition3Status[index] == 1
                 let ReviewChecked3 = userData.repetition4Status[index] == 1
                 
-                let taskId = Int(userData.todo_id[index])
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle[index], body: userData.todoTitle[index],tid: String(userData.todo_id[index]), isRemove: false)
                 let task = Task(id: userData.todo_id[index],label: userData.todoLabel[index]!, title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, repetition1Count: repetition1Count, repetition2Count: repetition2Count, repetition3Count: repetition3Count, repetition4Count: repetition4Count, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
                 DispatchQueue.main.async {
                     store.tasks.append(task)
@@ -82,7 +112,7 @@ func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping 
                 let todoStatus = userData.todoStatus[index]
                 let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
-                let taskId = Int(userData.todo_id[index])
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle[index], body: userData.todoIntroduction[index],tid: String(userData.todo_id[index]), isRemove: false)
                 let todo = Todo(id: userData.todo_id[index],
                                 label: userData.todoLabel[index]!,
                                 title: userData.todoTitle[index],
@@ -98,7 +128,7 @@ func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping 
                                 todoNote: userData.todoNote[index],
                                 RecurringStartDate: recurringStartDate,
                                 RecurringEndDate: recurringEndDate,
-                                completeValue: Float(userData.completeValue[index]) ?? 0.0)
+                                completeValue: Float(userData.completeValue[index]) )
                 DispatchQueue.main.async {
                     store.todos.append(todo)
                 }
@@ -139,7 +169,7 @@ func handleSportList(data: Data,store: SportStore, completion: @escaping ([Strin
                 let todoStatus = userData.todoStatus[index]
                 let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
-                let taskId = Int(userData.todo_id[index])
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle[index], body: userData.todoIntroduction[index],tid: String(userData.todo_id[index]), isRemove: false)
                 let sport = Sport(id: userData.todo_id[index],
                                   label: userData.todoLabel[index]!,
                                   title: userData.todoTitle[index],
@@ -156,7 +186,7 @@ func handleSportList(data: Data,store: SportStore, completion: @escaping ([Strin
                                   todoNote: userData.todoNote[index],
                                   RecurringStartDate: recurringStartDate,
                                   RecurringEndDate: recurringEndDate,
-                                  completeValue: Float(userData.completeValue[index]) ?? 0.0)
+                                  completeValue: Float(userData.completeValue[index]) )
                 DispatchQueue.main.async {
                     store.sports.append(sport)
                 }
@@ -186,7 +216,7 @@ func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:
                 let todoStatus = userData.todoStatus[index]
                 let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
-                let taskId = Int(userData.todo_id[index])
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle[index], body: userData.todoIntroduction[index],tid: String(userData.todo_id[index]), isRemove: false)
                 let diet = Diet(id: userData.todo_id[index],
                                 label: userData.todoLabel[index]!,
                                 title: userData.todoTitle[index],
@@ -202,7 +232,7 @@ func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:
                                 todoNote: userData.todoNote[index],
                                 RecurringStartDate: recurringStartDate,
                                 RecurringEndDate: recurringEndDate,
-                                completeValue: Float(userData.completeValue[index]) ?? 0.0)
+                                completeValue: Float(userData.completeValue[index]) )
                 DispatchQueue.main.async {
                     store.diets.append(diet)
                 }
@@ -231,7 +261,7 @@ func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([S
                 let todoStatus = userData.todoStatus[index]
                 let isTodoStatus = ConvertTodoStatus(todoStatus: todoStatus ?? 0)
                 
-                let taskId = Int(userData.todo_id[index])
+                scheduleNotificationIfNeeded(alert_time: reminderTime, title: userData.todoTitle[index], body: userData.todoIntroduction[index],tid: String(userData.todo_id[index]), isRemove: false)
                 let routine = Routine(id: userData.todo_id[index],
                                       label: userData.todoLabel[index]!,
                                       title: userData.todoTitle[index],

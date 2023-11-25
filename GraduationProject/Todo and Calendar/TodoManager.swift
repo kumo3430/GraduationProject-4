@@ -27,8 +27,10 @@ struct UserData: Decodable {
 }
 struct ReviseData: Decodable {
     var todo_id: Int
+    var todoTitle: String
     var label: String
     var reminderTime: String
+    var todoIntroduction: String
     var dueDateTime: String?
     var todoNote: String?
     var message: String

@@ -26,7 +26,9 @@ if($stmt->execute() === TRUE) {
 $stmt->close();
 $userData = array(
     'todo_id' => $data['id'],
+    'todoTitle' => $data['title'],
     'label' => $data['label'],
+    'todoIntroduction' => $data['description'],
     'reminderTime' => $data['reminderTime'],
     'dueDateTime' => $data['dueDateTime'],
     'todoNote' => $data['todoNote'],
