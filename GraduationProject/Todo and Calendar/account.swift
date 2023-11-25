@@ -92,17 +92,14 @@ func sendMail(verify: String,mail: String,completion: @escaping (String) -> Void
     }
 }
 
-//func handleLogin(data: Data, completion: @escaping ([String]) -> Void) {
 func handleLogin(data: Data, completion: @escaping ([String:String]) -> Void) {
     handleUserData(data: data, messageType: .login, completion: completion)
 }
 
-//func handleRegister(data: Data, completion: @escaping ([String]) -> Void) {
 func handleRegister(data: Data, completion: @escaping ([String:String]) -> Void) {
     handleUserData(data: data, messageType: .userRegistered, completion: completion)
 }
 
-//func handleUserData(data: Data, messageType: Message, completion: @escaping ([String]) -> Void) {
 func handleUserData(data: Data, messageType: Message, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(UserData.self, data: data) { userData in
         
@@ -114,11 +111,14 @@ func handleUserData(data: Data, messageType: Message, completion: @escaping ([St
             UserDefaults.standard.set(userData.email, forKey: "email")
             completion(["message":Message.userRegistered.rawValue])
             
+        } else if userData.message == Message.registerGmail.rawValue {
+            UserDefaults.standard.set(userData.id, forKey: "uid")
+            UserDefaults.standard.set(userData.email, forKey: "email")
+            completion(["message":Message.registerGmail.rawValue])
         } else if userData.message == Message.login.rawValue {
             UserDefaults.standard.set(userData.id, forKey: "uid")
             UserDefaults.standard.set(userData.email, forKey: "email")
             completion(["message":Message.login.rawValue])
-            
         } else if userData.message == Message.wrongPass.rawValue {
             completion(["message":Message.wrongPass.rawValue])
             print("\(messageType.rawValue) - Message：\(userData.message)")

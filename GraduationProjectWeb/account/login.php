@@ -60,7 +60,7 @@ if ($stmt->execute() === TRUE) {
             }
         }
     } else if ($data['gid'] !== "" && isset($data['gid'])) {
-        $message = registerEmail($conn, $data);
+        $message = registerGmail($conn, $data);
     } else {
         $message = "No such account";
     }

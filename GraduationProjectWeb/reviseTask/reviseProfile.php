@@ -24,10 +24,20 @@ if($stmt->execute() === TRUE) {
 }
 $stmt->close();
 
+// $userData = array(
+//     'id' => $uid,
+//     'userName' => $data['username'],
+//     'userDescription' => $data['userDescription'],
+//     'message' => $message
+// );
 $userData = array(
+    'data' => $data,
     'id' => $uid,
+    'email' => $_SESSION['email'],
     'userName' => $data['username'],
     'userDescription' => $data['userDescription'],
+    'currentStep' => $_SESSION['currentStep'],
+    'create_at' => $_SESSION['create_at'],
     'message' => $message
 );
 echo json_encode($userData);
