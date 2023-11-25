@@ -326,7 +326,7 @@ func handleCommunitysList(data: Data,store: CommunityStore, completion: @escapin
             let task = Community(id: userData.community_id[index],
                                  communityName: userData.communityName[index],
                                  communityDescription: userData.communityDescription[index],
-                                 communityCategory: userData.communityCategory[index]!)
+                                 communityCategory: userData.communityCategory[index]!, image: userData.image[index])
             DispatchQueue.main.async {
                 store.communitys.append(task)
             }

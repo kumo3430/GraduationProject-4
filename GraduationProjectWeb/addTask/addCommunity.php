@@ -12,10 +12,10 @@ $db = Database::getInstance();
 $conn = $db->getConnection();
 
 function insertCommunity($conn, $uid, $data, $communityCreateDate) {
-    $CommunitySql = "INSERT INTO `Community` (`communityName`, `communityDescription`, `communityCreateDate`, `communityCategory`) VALUES (?, ?,?,?)";
+    $CommunitySql = "INSERT INTO `Community` (`communityName`, `communityDescription`, `communityCreateDate`, `communityCategory`, `image`) VALUES (?, ?,?,?,?)";
     
     $stmt = $conn->prepare($CommunitySql);
-    $stmt->bind_param("sssi", $data['communityName'], $data['communityDescription'], $communityCreateDate, $data['communityCategory']);
+    $stmt->bind_param("sssis", $data['communityName'], $data['communityDescription'], $communityCreateDate, $data['communityCategory'], $data['image']);
 
     if ($stmt->execute() === TRUE) {
         $community_id = $conn->insert_id;
@@ -32,7 +32,7 @@ function insertMemberSql($conn, $community_id, $uid, $communityCreateDate)
     $memberSql = "INSERT INTO `community_members` (`community_id`, `user_id`, `memberRole`, `joinDate`) VALUES (?, ?,'1',?)";
 
     $stmt = $conn->prepare($memberSql);
-    $stmt->bind_param("iss", $community_id, $uid, $communityCreateDate);
+    $stmt->bind_param("iis", $community_id, $uid, $communityCreateDate);
     if($stmt->execute() === TRUE) {
         $result = $stmt->get_result();
         $message = "User New memberSql successfully";
@@ -56,6 +56,7 @@ if($stmt->execute() === TRUE) {
     if ($result->num_rows == 0) {
         $result1 = insertCommunity($conn, $uid, $data, $communityCreateDate);
         if ($result1['message'] ==  "User New Community successfully") {
+            $community_id = $result1['community_id'];
             $result2 = insertMemberSql($conn, $community_id, $uid, $communityCreateDate);
             if ($result2 ==  "User New memberSql successfully") {
                 $message = "User New Community successfully" ;
@@ -78,6 +79,7 @@ $userData = array(
     'communityName' => $data['communityName'],
     'communityDescription' => $data['communityDescription'],
     'communityCategory' => intval($communityCategory),
+    'image' =>  $data['image'],
     'message' => $message
 );
 echo json_encode($userData);

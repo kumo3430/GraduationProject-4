@@ -184,6 +184,7 @@ struct CommunityData: Decodable {
     var communityName: [String]
     var communityDescription: [String]
     var communityCategory: [Int?]
+    var image: [String]
     var message: String
 }
 
@@ -290,6 +291,7 @@ struct addCommunityData: Decodable {
     var communityName: String
     var communityDescription: String
     var communityCategory: Int
+    var image: String
     var message: String
 }
 

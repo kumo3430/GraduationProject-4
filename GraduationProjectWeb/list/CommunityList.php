@@ -7,6 +7,7 @@ $community_id = array();
 $communityName = array();
 $communityDescription = array();
 $communityCategory = array();
+$image = array();
 $message = "";
 
 $db = Database::getInstance();
@@ -28,6 +29,7 @@ if ($stmt->execute() === TRUE) {
             $communityName[] = $row['communityName'];
             $communityDescription[] = $row['communityDescription'];
             $communityCategory[] = $row['communityCategory'];
+            $image[] = $row['image'];
         }
     } else {
         $message = "no such Todo";
@@ -43,6 +45,7 @@ $userData = array(
     'communityName' => $communityName,
     'communityDescription' => $communityDescription,
     'communityCategory' => $communityCategory,
+    'image' => $image,
     'message' => $message
 );
 echo json_encode($userData);

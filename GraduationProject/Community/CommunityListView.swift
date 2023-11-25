@@ -232,13 +232,13 @@ struct CommunityCard: View {
     var body: some View {
 //        NavigationLink(destination: Text(community.communityName)) {
             HStack(spacing: 15) {
-                //                Image(community.image)
-                //                    .resizable()
-                //                    .scaledToFit()
-                //                    .frame(width: 60, height: 60)
-                //                    .clipShape(Circle())
-                //                    .overlay(Circle().stroke(Color.morandiPink, lineWidth: 2))
-                //                    .shadow(radius: 5)
+                Image(community.image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.morandiPink, lineWidth: 2))
+                    .shadow(radius: 5)
                 
                 VStack(alignment: .leading) {
                     Text(community.communityName)
@@ -269,6 +269,44 @@ struct CommunityCard: View {
 //        .buttonStyle(PlainButtonStyle())
     }
 }
+struct CoverPhotoPicker: View {
+    let coverPhotos: [String]
+    @Binding var selectedPhotoName: String
+
+    // 定義網格項目布局
+    internal var gridLayout: [GridItem] = Array(repeating: .init(.flexible()), count: 3)
+
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: gridLayout, spacing: 20) {
+                    ForEach(coverPhotos, id: \.self) { photoName in
+                        VStack {
+                            Image(photoName) // 顯示圖片
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 100) // 設置高度
+                                .cornerRadius(10) // 圓角
+                                .overlay(
+                                    selectedPhotoName == photoName ?
+                                        Image(systemName: "checkmark.circle.fill") // 標記選中的圖片
+                                        .foregroundColor(.blue)
+                                        .padding(5) : nil
+                                )
+                        }
+                        .onTapGesture {
+                            selectedPhotoName = photoName
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+            .navigationBarTitle("選擇封面照片", displayMode: .inline)
+        }
+    }
+}
+
 
 struct AddCommunityView: View {
     @State private var name: String = ""
@@ -277,6 +315,10 @@ struct AddCommunityView: View {
     @EnvironmentObject var communityStore: CommunityStore
     @State private var coverPhoto: Image? = nil
     @Environment(\.presentationMode) var presentationMode
+    @State private var selectedCoverPhotoName: String = "" // 保存選中的圖片名稱
+    @State private var showingCoverPhotoPicker = false // 控制選擇器的顯示
+    // 假設這些是您要顯示的資源束中的圖片名稱
+    let coverPhotoNames = (1...29).map { "GP\($0)" }
     let Category = ["學習", "運動", "作息", "飲食"]
     var body: some View {
         Form {
@@ -295,9 +337,22 @@ struct AddCommunityView: View {
                 .pickerStyle(MenuPickerStyle())
             }
 
+//            Section(header: Text("封面照片").foregroundColor(Color.morandiBlue)) {
+//                Text("選擇封面照片")
+//            }
             Section(header: Text("封面照片").foregroundColor(Color.morandiBlue)) {
-                Text("選擇封面照片")
-            }
+                         Button("選擇封面照片") {
+                             showingCoverPhotoPicker = true
+                         }
+
+                         // 顯示選中的封面圖片
+                         if !selectedCoverPhotoName.isEmpty {
+                             Image(selectedCoverPhotoName)
+                                 .resizable()
+                                 .scaledToFit()
+                         }
+                     }
+
             
             Button(action: {
                 addCommunity{_ in }
@@ -311,15 +366,17 @@ struct AddCommunityView: View {
             .buttonStyle(PlainButtonStyle())
             .padding(.top)
         }
-        
+        .sheet(isPresented: $showingCoverPhotoPicker) {
+                    CoverPhotoPicker(coverPhotos: coverPhotoNames, selectedPhotoName: $selectedCoverPhotoName)
+                }
     }
     
     func addCommunity(completion: @escaping (String) -> Void) {
-        let category = selectedCategory + 1
-        var body: [String: Any] = [
+        let body: [String: Any] = [
             "communityName": name,
             "communityDescription": description,
             "communityCategory": selectedCategory + 1,
+            "image": selectedCoverPhotoName,
         ]
 
         print("body:\(body)")

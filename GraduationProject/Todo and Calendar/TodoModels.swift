@@ -165,6 +165,7 @@ struct Community: Identifiable {
     var communityDescription: String
 //    var exchage: Date
     var communityCategory: Int
+    var image: String
 }
 
 extension Color {
