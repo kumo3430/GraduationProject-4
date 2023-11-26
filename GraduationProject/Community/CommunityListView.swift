@@ -317,6 +317,8 @@ struct AddCommunityView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedCoverPhotoName: String = "" // 保存選中的圖片名稱
     @State private var showingCoverPhotoPicker = false // 控制選擇器的顯示
+    @State var messenge = ""
+    @State var isError = false
     // 假設這些是您要顯示的資源束中的圖片名稱
     let coverPhotoNames = (1...29).map { "GP\($0)" }
     let Category = ["學習", "運動", "作息", "飲食"]
@@ -353,7 +355,10 @@ struct AddCommunityView: View {
                          }
                      }
 
-            
+            if(isError) {
+                Text(messenge)
+                    .foregroundColor(.red)
+            }
             Button(action: {
                 addCommunity{_ in }
             }) {
@@ -382,8 +387,18 @@ struct AddCommunityView: View {
         print("body:\(body)")
 
         phpUrl(php: "addCommunity" ,type: "addTask",body:body,store: communityStore) { message in
-            presentationMode.wrappedValue.dismiss()
-//            completion(message[0])
+            print("修改飲食回傳：\(String(describing: message["message"]))")
+            if message["message"] == "The Community is repeated" {
+                isError = true
+                messenge = "請問重複建立社團"
+            } else if message["message"] == "User New Community successfully" {
+                isError = false
+                messenge = ""
+                presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "社團建立錯誤 請聯繫管理員"
+            }
             completion(message["message"]!)
         }
     }

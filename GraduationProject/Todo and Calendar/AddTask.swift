@@ -79,13 +79,13 @@ func handleStudySpaceAdd(data: Data,store: TaskStore, completion: @escaping ([St
                 }
                  completion(["message":Message.success.rawValue])
             } else {
-                completion(["message":"AddTaskFail"])
+                completion(["message":"AddTaskConvertFail"])
                 print("StudySpaceList - 日期或時間轉換失敗")
             }
         } else if (userData.message == Message.reTask.rawValue) {
             completion(["message":Message.reTask.rawValue])
         } else {
-            completion(["message":"AddTaskFail"])
+            completion(["message":userData.message])
         }
     }
 }
@@ -134,13 +134,13 @@ func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([
                 }
                  completion(["message":Message.success.rawValue])
             } else {
-                completion(["message":"AddTaskFail"])
+                completion(["message":"AddTaskConvertFail"])
                 print("StudySpaceList - 日期或時間轉換失敗")
             }
         } else if (userData.message == Message.reTask.rawValue) {
             completion(["message":Message.reTask.rawValue])
         } else {
-            completion(["message":"AddTaskFail"])
+            completion(["message":userData.message])
         }
     }
 }
@@ -192,13 +192,13 @@ func handleSportAdd(data: Data,store: SportStore, completion: @escaping ([String
                 }
                  completion(["message":Message.success.rawValue])
             } else {
-                completion(["message":"AddTaskFail"])
+                completion(["message":"AddTaskConvertFail"])
                 print("StudySpaceList - 日期或時間轉換失敗")
             }
         } else if (userData.message == Message.reTask.rawValue) {
             completion(["message":Message.reTask.rawValue])
         } else {
-            completion(["message":"AddTaskFail"])
+            completion(["message":userData.message])
         }
     }
 }
@@ -241,13 +241,13 @@ func handleDietAdd(data: Data,store: DietStore, completion: @escaping ([String:S
                 }
                  completion(["message":Message.success.rawValue])
             } else {
-                completion(["message":"AddTaskFail"])
+                completion(["message":"AddTaskConvertFail"])
                 print("StudySpaceList - 日期或時間轉換失敗")
             }
         } else if (userData.message == Message.reTask.rawValue) {
             completion(["message":Message.reTask.rawValue])
         } else {
-            completion(["message":"AddTaskFail"])
+            completion(["message":userData.message])
         }
     }
 }
@@ -288,14 +288,15 @@ func handleRoutineAdd(data: Data,store: RoutineStore, completion: @escaping ([St
                 }
                  completion(["message":Message.success.rawValue])
             } else {
-                completion(["message":"AddTaskFail"])
+                completion(["message":"AddTaskConvertFail"])
                 print("StudySpaceList - 日期或時間轉換失敗")
             }
         } else if (userData.message == Message.reTask.rawValue) {
             completion(["message":Message.reTask.rawValue])
         } else {
-            completion(["message":"AddTaskFail"])
-        }    }
+            completion(["message":userData.message])
+        }
+    }
 }
 
 func handleCommunityAdd(data: Data,store: CommunityStore, completion: @escaping ([String:String]) -> Void) {

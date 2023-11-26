@@ -107,11 +107,17 @@ struct StudyDetailView: View {
                             }
                     }
                 }
-                
-                TextField("備註", text: $todo.todoNote)
-                    .onChange(of: todo.todoNote) { newValue in
-                        todo.todoNote = newValue
-                    }
+                Section {
+                    TextField("備註", text: $todo.todoNote)
+                        .onChange(of: todo.todoNote) { newValue in
+                            todo.todoNote = newValue
+                        }
+                }
+               
+                if(isError) {
+                    Text(messenge)
+                        .foregroundColor(.red)
+                }
             }
             .navigationBarTitle("一般學習修改")
             .navigationBarItems(
@@ -139,10 +145,15 @@ struct StudyDetailView: View {
         ]
         phpUrl(php: "reviseStudy" ,type: "reviseTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-            DispatchQueue.main.async {
+            print("休息學習回傳：\(String(describing: message["message"]))")
+            if message["message"] == "User revise Task successfully" {
+                isError = false
+                messenge = ""
                 presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "習慣建立錯誤 請聯繫管理員"
             }
-//            completion(message[0])
             completion(message["message"]!)
         }
     }

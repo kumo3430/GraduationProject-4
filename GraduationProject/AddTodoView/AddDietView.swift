@@ -187,7 +187,14 @@ struct AddDietView: View {
                         DatePicker("結束重複日期", selection: $recurringEndDate, displayedComponents: [.date])
                     }
                 }
-                TextField("備註", text: $todoNote)
+                Section {
+                    TextField("備註", text: $todoNote)
+                }
+               
+                if(isError) {
+                    Text(messenge)
+                        .foregroundColor(.red)
+                }
             }
             .navigationBarTitle("飲食")
             .navigationBarItems(leading:
@@ -230,8 +237,19 @@ struct AddDietView: View {
         print("addDiet:\(body)")
         print("selectedTimeUnit:\(selectedTimeUnit)")
         phpUrl(php: "addDiet" ,type: "addTask",body:body,store: dietStore){ message in
-            presentationMode.wrappedValue.dismiss()
-//            completion(message[0])
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            print("建立飲食回傳：\(String(describing: message["message"]))")
+            if message["message"] == "The Todo is repeated" {
+                isError = true
+                messenge = "不可重複輸入目前正在執行的習慣"
+            } else if message["message"] == "Success" {
+                isError = false
+                messenge = ""
+                presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "習慣建立錯誤 請聯繫管理員"
+            }
             completion(message["message"]!)
         }
     }

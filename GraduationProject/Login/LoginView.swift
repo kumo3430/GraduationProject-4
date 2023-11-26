@@ -226,6 +226,8 @@ struct Login : View {
                 errorMessage1 = "密碼輸入錯誤"
             } else if message["message"] == "No such account" {
                 errorMessage1 = "帳號輸入錯誤"
+            } else if message["message"] != "User registerGmail successfully" ||  message["message"] != "User login successfully" {
+                errorMessage1 = "登入錯誤 請聯繫管理員"
             }
             completion(message["message"]!)
         }

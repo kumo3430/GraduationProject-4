@@ -112,6 +112,7 @@ struct RegistrationView: View {
 
         phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
+            print("註冊0回傳：\(String(describing: message["message"]))")
             completion(message["message"]!)
         }
     }

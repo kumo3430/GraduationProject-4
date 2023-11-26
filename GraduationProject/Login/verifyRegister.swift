@@ -154,7 +154,12 @@ struct verifyRegister: View {
         let body = ["email": mail, "password": pass, "create_at": Set_date]
         print("body:\(body)")
         phpUrl(php: "register" , type: "account", body: body, store: nil) { message in
-//            completion(message[0])
+            print("註冊回傳：\(String(describing: message["message"]))")
+            if message["message"] == "email is registered" {
+                messenge = "電子郵件已註冊過"
+            } else if message["message"] != "User registered successfully" {
+                messenge = "註冊失敗 請聯繫管理員"
+            }
             completion(message["message"]!)
         }
     }

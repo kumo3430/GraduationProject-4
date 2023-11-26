@@ -105,6 +105,7 @@ struct IntroAnimationView: View {
         let body = ["currentStep": 1]
         phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
+            print("註冊1回傳：\(String(describing: message["message"]))")
             completion(message["message"]!)
         }
     }
@@ -254,6 +255,7 @@ func register(currentStep:Int, completion: @escaping (Int) -> Void) {
     let body = ["currentStep": currentStep+1]
     phpUrl(php: "register" ,type: "account",body:body, store: nil){ message in
         // 在此处调用回调闭包，将 messenge 值传递给调用者
+        print("註冊\(currentStep+1)回傳：\(String(describing: message["message"]))")
         completion(currentStep+1)
     }
 }

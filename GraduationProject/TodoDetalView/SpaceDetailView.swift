@@ -17,7 +17,7 @@ struct SpaceDetailView: View {
     @State var repetition2Status:Int = 0
     @State var repetition3Status:Int = 0
     @State var repetition4Status:Int = 0
-    @State var message = ""
+    @State var messenge = ""
     @State var isError = false
     
     struct reviseUserData : Decodable {
@@ -95,9 +95,9 @@ struct SpaceDetailView: View {
                         }
                     }
                 }
+                Text(messenge)
+                    .foregroundColor(.red)
             }
-            Text(message)
-                .foregroundColor(.red)
                 .navigationTitle("間隔學習修改")
                 .navigationBarItems(
                     trailing: Button("完成") { reviseStudySpaced{_ in }}
@@ -124,10 +124,15 @@ struct SpaceDetailView: View {
 
         phpUrl(php: "reviseSpace" ,type: "reviseTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-            DispatchQueue.main.async {
+            print("修改間隔學習回傳：\(String(describing: message["message"]))")
+            if message["message"] == "User revise Space successfully" {
+                isError = false
+                messenge = ""
                 presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "習慣建立錯誤 請聯繫管理員"
             }
-//            completion(message[0])
             completion(message["message"]!)
         }
     }

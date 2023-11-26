@@ -223,5 +223,6 @@ func handleDecodableData<T: Decodable>(_ type: T.Type, data: Data, handler: (T) 
         print("============== \(type) ============== \(type) ==============")
     } catch {
         print("解碼失敗：\(error)")
+        print("\(type): \(String(data: data, encoding: .utf8)!)")
     }
 }

@@ -131,10 +131,17 @@ struct DetailSportView: View {
                             }
                     }
                 }
-                TextField("備註", text: $sport.todoNote)
-                    .onChange(of: sport.todoNote) { newValue in
-                        sport.todoNote = newValue
-                    }
+                Section {
+                    TextField("備註", text: $sport.todoNote)
+                        .onChange(of: sport.todoNote) { newValue in
+                            sport.todoNote = newValue
+                        }
+                }
+               
+                if(isError) {
+                    Text(messenge)
+                        .foregroundColor(.red)
+                }
             }
             .navigationBarTitle("運動修改")
             .navigationBarItems(
@@ -162,10 +169,15 @@ struct DetailSportView: View {
         ]
         phpUrl(php: "reviseStudy" ,type: "reviseTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-            DispatchQueue.main.async {
+            print("修改運動回傳：\(String(describing: message["message"]))")
+            if message["message"] == "User revise Task successfully" {
+                isError = false
+                messenge = ""
                 presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "習慣建立錯誤 請聯繫管理員"
             }
-//            completion(message[0])
             completion(message["message"]!)
         }
     }

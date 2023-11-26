@@ -130,7 +130,14 @@ struct AddStudyView: View {
                         DatePicker("結束重複日期", selection: $recurringEndDate, displayedComponents: [.date])
                     }
                 }
-                TextField("備註", text: $todoNote)
+                Section {
+                    TextField("備註", text: $todoNote)
+                }
+               
+                if(isError) {
+                    Text(messenge)
+                        .foregroundColor(.red)
+                }
             }
             .navigationBarTitle("一般學習")
             .navigationBarItems(leading:
@@ -177,8 +184,19 @@ struct AddStudyView: View {
         }
         print("StudyGeneralAdd:\(body)")
         phpUrl(php: "addStudyGeneral" ,type: "addTask",body:body,store: todoStore) { message in
-            presentationMode.wrappedValue.dismiss()
-//            completion(message[0])
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            print("建立一般學習回傳：\(String(describing: message["message"]))")
+            if message["message"] == "The Todo is repeated" {
+                isError = true
+                messenge = "不可重複輸入目前正在執行的習慣"
+            } else if message["message"] == "Success" {
+                isError = false
+                messenge = ""
+                presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "習慣建立錯誤 請聯繫管理員"
+            }
             completion(message["message"]!)
         }
     }

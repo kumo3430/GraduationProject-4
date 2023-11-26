@@ -125,8 +125,18 @@ struct AddSpaceView: View {
         print("addStudySpaced:\(body)")
         phpUrl(php: "addStudySpaced" ,type: "addTask",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
-            presentationMode.wrappedValue.dismiss()
-//            completion(message[0])
+            print("建立間隔學習法回傳：\(String(describing: message["message"]))")
+            if message["message"] == "The Todo is repeated" {
+                isError = true
+                messenge = "不可重複輸入目前正在執行的習慣"
+            } else if message["message"] == "Success" {
+                isError = false
+                messenge = ""
+                presentationMode.wrappedValue.dismiss()
+            } else {
+                isError = true
+                messenge = "習慣建立錯誤 請聯繫管理員"
+            }
             completion(message["message"]!)
         }
     }
