@@ -222,9 +222,9 @@ struct TodayTasksView: View {
                             .padding()
                         
                         LottieView(animation: .named(animation1))
-                            .play(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
-                            .animationDidFinish { _ in
-                                withAnimation {
+                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
+                                   .animationDidFinish { _ in
+                                       withAnimation {
                                     playAnimation1 = false
                                 }
                             }
@@ -242,9 +242,9 @@ struct TodayTasksView: View {
                             .padding()
                         
                         LottieView(animation: .named(animation2))
-                            .play(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
-                            .animationDidFinish { _ in
-                                withAnimation {
+                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
+                                   .animationDidFinish { _ in
+                                       withAnimation {
                                     playAnimation2 = false
                                 }
                             }
@@ -262,9 +262,9 @@ struct TodayTasksView: View {
                             .padding()
                         
                         LottieView(animation: .named(animation3))
-                            .play(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
-                            .animationDidFinish { _ in
-                                withAnimation {
+                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
+                                   .animationDidFinish { _ in
+                                       withAnimation {
                                     playAnimation3 = false
                                 }
                             }
@@ -282,9 +282,9 @@ struct TodayTasksView: View {
                             .padding()
                         
                         LottieView(animation: .named(animation4))
-                            .play(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
-                            .animationDidFinish { _ in
-                                withAnimation {
+                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
+                                   .animationDidFinish { _ in
+                                       withAnimation {
                                     playAnimation4 = false
                                 }
                             }
@@ -302,9 +302,9 @@ struct TodayTasksView: View {
                             .padding()
                         
                         LottieView(animation: .named(animation5))
-                            .play(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
-                            .animationDidFinish { _ in
-                                withAnimation {
+                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
+                                   .animationDidFinish { _ in
+                                       withAnimation {
                                     playAnimation5 = false
                                 }
                             }
