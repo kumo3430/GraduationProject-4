@@ -53,7 +53,7 @@ function updateRecurringInstanc($conn,$todo_id,$today,$uid)
     return $message;
 }
 
-$TodoSELSql = "SELECT `Todo`.frequency, `RecurringInstance`.RecurringEndDate, `Todo`.id FROM `Todo`,`RecurringInstance` WHERE `Todo`.dueDateTime > '$today' AND `Todo`.id = `RecurringInstance`.todo_id AND `RecurringEndDate` <= '$today' AND `RecurringInstance`.isOver = 0 AND`Todo`.uid = '$uid' AND `Todo`.id != (SELECT todo_id FROM `Routine` WHERE routineType = '睡眠時長');";
+$TodoSELSql = "SELECT `Todo`.frequency, `RecurringInstance`.RecurringEndDate, `Todo`.id FROM `Todo`,`RecurringInstance` WHERE `Todo`.dueDateTime > '$today' AND `Todo`.id = `RecurringInstance`.todo_id AND `RecurringEndDate` <= '$today' AND `RecurringInstance`.isOver = 0 AND`Todo`.uid = '$uid' AND `Todo`.id NOT IN (SELECT todo_id FROM `Routine` WHERE routineType = '睡眠時長');";
 
 $result = $conn->query($TodoSELSql);
 if ($result->num_rows > 0) {

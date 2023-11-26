@@ -307,7 +307,10 @@ struct FirstDay: Decodable {
 
 struct CheckList: Decodable {
     var checkDate: [String]
-    var completeValue: [Int]
+    var completeValue: [Float]
+    var yearsMonth: [String]
+    var monthlyCount: [String]
+    var monthlyCompleteValue: [Float]
     var targetvalue: Float
     var message: String
 }

@@ -52,21 +52,43 @@ func handleRecurringCheckList(data: Data,store: CompletionRatesViewModel, messag
         if userData.message == messageType.rawValue {
             print("============== \(messageType.rawValue) ==============")
             store.clearTodos()
-
-            let completeValue = userData.completeValue.compactMap { (Double($0) ?? 0)/(Double(userData.targetvalue) ?? 0) }
+            var dictionary1: [String: Double] = [:]
+            var dictionary2: [String: Double] = [:]
+            
+            let completeValue = userData.completeValue.compactMap { (Double($0) )/(Double(userData.targetvalue) ) }
             let checkDate = userData.checkDate.compactMap { $0 }
             // 使用 zip 将两个数组合并成元组的数组
             if completeValue.count == checkDate.count {
                 // 使用 zip 函数将两个数组合并为元组数组
 
-                let combinedArray = Array(zip(checkDate, completeValue))
+                let combinedArray1 = Array(zip(checkDate, completeValue))
                 // 使用 Dictionary(uniqueKeysWithValues:) 创建字典
-                store.completionRates = Dictionary(combinedArray, uniquingKeysWith: { (current, new) in
+                dictionary1 = Dictionary(combinedArray1, uniquingKeysWith: { (current, new) in
                     current + new
                 })
             } else {
                 print("两个数组的元素数量不一致")
             }
+            
+            let monthlyCompleteValue = userData.monthlyCompleteValue.compactMap { Double($0) }
+            let monthlyCount = userData.monthlyCount.compactMap { Double($0) }
+            let yearsMonth = userData.yearsMonth.compactMap { $0 }
+            
+            if monthlyCompleteValue.count == yearsMonth.count {
+                let averageValues = zip(monthlyCompleteValue, monthlyCount)
+                       .map { $0 / $1 / Double(userData.targetvalue) }
+                   
+                   if averageValues.count == yearsMonth.count {
+                       let combinedArray2 = Array(zip(yearsMonth, averageValues))
+                       dictionary2 = Dictionary(uniqueKeysWithValues: combinedArray2)
+                       // 使用 combinedDictionary
+                   } else {
+                       print("兩個陣列的元素數量不一致")
+                   }
+            } else {
+                print("两个数组的元素数量不一致")
+            }
+            store.completionRates = dictionary1.merging(dictionary2) { (current, new) in current + new }
             print("============== \(messageType.rawValue) ==============")
         } else {
             completion(["message": userData.message])

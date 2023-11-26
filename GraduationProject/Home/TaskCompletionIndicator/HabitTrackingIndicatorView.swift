@@ -289,6 +289,7 @@ struct ReportView: View {
     @Binding var selectedIndicator: IndicatorType
     @State private var selectedDate = Date()
     @State private var Instance_id: Int = 0
+    @State private var selectedDateToString = ""
 //    let completionRatesViewModel = CompletionRatesViewModel()
     @ObservedObject var completionRatesViewModel: CompletionRatesViewModel
 //    var formattedDate = ""
@@ -325,9 +326,9 @@ struct ReportView: View {
     
     // year
     let months = [
-        "一月", "二月", "三月", "四月",
-        "五月", "六月", "七月", "八月",
-        "九月", "十月", "十一月", "十二月"
+        "01月", "02月", "03月", "04月",
+        "05月", "06月", "07月", "08月",
+        "09月", "10月", "11月", "12月"
     ]
     
     func dayList(cycleCategory: IndicatorType) -> ([String]) {
@@ -347,17 +348,26 @@ struct ReportView: View {
             ScrollView {
                 VStack(spacing: 10) {
                     ForEach(dayList(cycleCategory: selectedIndicator), id: \.self) { date in
+                        // 如果 selectedIndicator ＝ 年 -> value: completionRatesViewModel.completionRates[date+String(selectedDate)]
                         HStack {
                             Text(date)
                                 .font(.system(size: 16, weight: .medium, design: .rounded))
                                 .foregroundColor(.gray)
                                 .frame(alignment: .leading)
                             Spacer()
-                            ProgressBar(value: completionRatesViewModel.completionRates[date] ?? 0)
-                                .frame(width: 235, height: 20)
-                                .animation(.easeInOut(duration: 1.0))
-                                .background(Color(hex: "#EFEFEF").cornerRadius(5))
-                                .padding(5)
+                            if selectedIndicator == .year {
+                                ProgressBar(value: completionRatesViewModel.completionRates["\(selectedDateToString)\(date)"] ?? 0)
+                                    .frame(width: 235, height: 20)
+                                    .animation(.easeInOut(duration: 1.0))
+                                    .background(Color(hex: "#EFEFEF").cornerRadius(5))
+                                    .padding(5)
+                            } else {
+                                ProgressBar(value: completionRatesViewModel.completionRates[date] ?? 0)
+                                    .frame(width: 235, height: 20)
+                                    .animation(.easeInOut(duration: 1.0))
+                                    .background(Color(hex: "#EFEFEF").cornerRadius(5))
+                                    .padding(5)
+                            }
                         }
                         .padding(.vertical, 5)
                     }
@@ -368,6 +378,9 @@ struct ReportView: View {
         }
         .onChange(of: selectedIndicator) { _ in
             fetchDataAndUpdate()
+            if selectedIndicator == .year {
+                selectedDateToString = DateFormatter.yearFormatter.string(from: selectedDate)
+            }
         }
         .onAppear() {
             fetchDataAndUpdate()
