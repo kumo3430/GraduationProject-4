@@ -8,14 +8,33 @@ $checkDate = date("Y-m-d");
 $routineTime = date("H:i:s");
 $startDate  = date("Y-m-d");
 $endDate  = date("Y-m-d", strtotime($startDate . ' +1 day'));
-
+$isOver = 1 ;
 $message = "";
 
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
+if ($data['isComplete']) {
+    $occurrenceStatus = 1;
+} else {
+    $occurrenceStatus = 0;
+}
+
 if ($data['routineType'] == 3) {
     // 區間起床
+
+        // 使用預備語句更新 RecurringInstance
+        $updateStmt = $conn->prepare("UPDATE RecurringInstance SET `isOver` = ?, `occurrenceStatus` = ? WHERE `todo_id` = ? AND `RecurringEndDate` = ? AND `RecurringStartDate` = ?;");
+        $updateStmt->bind_param("iiiss", $isOver, $occurrenceStatus, $data['id'], $data['RecurringEndDate'], $data['RecurringStartDate']);
+    
+        if ($updateStmt->execute()) {
+            $message = "User upDateCompleteValue successfully";
+        } else {
+            $message = $message . 'User upDateCompleteValue - Error: ' . $updateStmt->error;
+        }
+        $updateStmt->close();
+
+
     $stmt = $conn->prepare("INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES (?, ?, ?);");
     $stmt->bind_param("iss", $data['id'], $startDate, $endDate);
     if ($stmt->execute()) {
@@ -39,11 +58,6 @@ if ($result->num_rows > 0) {
     $completeValueOld = $row['completeValue'];
     $completeValueNew = $completeValueOld + $data['completeValue'];
 
-    if ($data['isComplete']) {
-        $occurrenceStatus = 1;
-    } else {
-        $occurrenceStatus = 0;
-    }
     $stmt = $conn->prepare("INSERT INTO `RecurringCheck` (`Instance_id`, `checkDate`, `completeValue`, `sleepTime`, `wakeUpTime`) VALUES (?, ?, ?, ?, ?);");
 
     if ($data['completeValue'] != 0 && $data['routineType'] != 3) {
