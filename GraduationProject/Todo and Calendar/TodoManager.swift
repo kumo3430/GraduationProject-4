@@ -17,13 +17,13 @@ enum Action: Int, Identifiable {
     case diet
 }
 struct UserData: Decodable {
-    var id: Int
-    var email: String
+    var id: Int?
+    var email: String?
     var userName: String?
     var userDescription: String?
     var currentStep: Int?
     var create_at: String?
-    var image: String
+    var image: String?
     var message: String
 }
 struct ReviseData: Decodable {
