@@ -51,7 +51,7 @@ struct CommunityListView: View {
                     ScrollView {
                         SearchBar(text: $searchText, placeholder: "搜索社群")
                             .padding(.vertical, 5)
-                        ForEach(communityStore.communitys) { community in
+                        ForEach(communityStore.communitysIsMember(), id: \.id) { community in
                             Button(action: {
                                 print("我是社群")
                                 postCommunity(community:community) { verify, error in
@@ -73,13 +73,23 @@ struct CommunityListView: View {
                     ScrollView {
                         SearchBar(text: $searchText, placeholder: "搜索社群")
                             .padding(.vertical, 5)
-                        Picker("Category", selection: $selectedCategory) {
-                            Text("推薦").tag(0)
-                            Text("熱門").tag(1)
-                            Text("全部").tag(2)
+                        ForEach(communityStore.communitys) { community in
+                            Button(action: {
+                                print("我是社群")
+                                postCommunity(community:community) { verify, error in
+                                    if let error = error {
+                                        // 处理错误
+                                        print("Error: \(error.localizedDescription)")
+                                    } else if let verify = verify {
+                                        // 处理成功的情况
+                                        openSafariView(verify)
+                                    }
+                                }
+                                
+                            }){
+                                CommunityCard(community: community)
+                            }
                         }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding(.horizontal)
                     }
                 }
             }

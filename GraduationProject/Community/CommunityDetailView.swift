@@ -110,7 +110,7 @@ struct CommunityDetailHeader: View {
 
 struct CommunityDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        let sampleCommunity = Community(id: 1, communityName: "每日冥想", communityDescription: "專注於冥想的社群", communityCategory: 1, image: "GP1")
+        let sampleCommunity = Community(id: 1, communityName: "每日冥想", communityDescription: "專注於冥想的社群", communityCategory: 1, image: "GP1",isMember: "true")
         CommunityDetailView(community: sampleCommunity)
     }
 }

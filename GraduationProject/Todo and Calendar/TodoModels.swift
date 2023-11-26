@@ -163,9 +163,9 @@ struct Community: Identifiable {
 //    var ticker_id: String
     var communityName: String
     var communityDescription: String
-//    var exchage: Date
     var communityCategory: Int
     var image: String
+    var isMember: String
 }
 
 extension Color {

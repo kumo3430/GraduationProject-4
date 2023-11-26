@@ -14,7 +14,8 @@ $db = Database::getInstance();
 $conn = $db->getConnection();
 
 // $sql = "SELECT * FROM `tickers` INNER JOIN `voucher` ON tickers.voucher_id = voucher.id WHERE tickers.userID = '$uid';";
-$TodoSELSql = "SELECT * FROM community WHERE id IN (SELECT community_members.community_id FROM community_members WHERE user_id = ? );";
+// $TodoSELSql = "SELECT * FROM community WHERE id IN (SELECT community_members.community_id FROM community_members WHERE user_id = ? );";
+$TodoSELSql = "SELECT c.id, c.communityName, c.communityDescription, c.communityCategory, c.image, CASE WHEN cm.user_id IS NULL THEN 'false' ELSE 'true' END AS isMember FROM community c LEFT JOIN community_members cm ON c.id = cm.community_id AND cm.user_id = ? ;";
 
 
 $stmt = $conn->prepare($TodoSELSql);
@@ -30,6 +31,7 @@ if ($stmt->execute() === TRUE) {
             $communityDescription[] = $row['communityDescription'];
             $communityCategory[] = $row['communityCategory'];
             $image[] = $row['image'];
+            $isMember[] = $row['isMember'];
         }
     } else {
         $message = "no such Todo";
@@ -46,6 +48,7 @@ $userData = array(
     'communityDescription' => $communityDescription,
     'communityCategory' => $communityCategory,
     'image' => $image,
+    'isMember' => $isMember,
     'message' => $message
 );
 echo json_encode($userData);

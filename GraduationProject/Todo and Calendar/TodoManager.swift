@@ -186,6 +186,7 @@ struct CommunityData: Decodable {
     var communityDescription: [String]
     var communityCategory: [Int?]
     var image: [String]
+    var isMember: [String]
     var message: String
 }
 
@@ -582,19 +583,13 @@ class CommunityStore: ObservableObject {
     //    @Published var todos = [Todo]()
     @Published var communitys: [Community] = []
     
-//    func communitysForDate(_ date: Date) -> [Community] {
-//        let formattedSelectedDate = formattedDate(date)
-//        let filteredTickers = communitys.filter { ticker in
-//            return formattedSelectedDate == formattedDate(ticker.deadline)
-//        }
-//        return filteredTickers
-//    }
-//    
-//    func formattedDate(_ date: Date) -> String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "yyyy/MM/dd"
-//        return formatter.string(from: date)
-//    }
+    func communitysIsMember() -> [Community] {
+        let filteredCommunity = communitys.filter { community in
+            return (community.isMember == "true" )
+        }
+        return filteredCommunity
+    }
+    
     func clearTodos() {
         communitys = []
     }
