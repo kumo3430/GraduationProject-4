@@ -23,6 +23,7 @@ struct UserData: Decodable {
     var userDescription: String?
     var currentStep: Int?
     var create_at: String?
+    var image: String
     var message: String
 }
 struct ReviseData: Decodable {
@@ -294,7 +295,9 @@ struct addCommunityData: Decodable {
     var image: String
     var message: String
 }
-
+struct autoAddData: Decodable {
+    var message: String
+}
 struct FirstDay: Decodable {
     var id: Int
     var todo_id: Int

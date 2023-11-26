@@ -315,6 +315,7 @@ struct TodayTasksView: View {
                 }
             }
             .onAppear {
+                autoAdd{_ in }
                 tabBarSettings.isHidden = true
                 self.filteredSports = sportStore.sportsForDate(Date())
             }
@@ -323,7 +324,13 @@ struct TodayTasksView: View {
             }
         }
     }
-
+    func autoAdd(completion: @escaping (String) -> Void) {
+        let body: [String: Any] = [:]
+        phpUrl(php: "autoAdd" ,type: "addTask",body:body, store: nil){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            completion(message["message"]!)
+        }
+    }
     func getTaskView(task: Any, type: String) -> some View {
         let taskView: AnyView
         switch type {

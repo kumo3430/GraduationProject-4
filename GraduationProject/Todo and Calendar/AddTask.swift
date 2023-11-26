@@ -320,3 +320,9 @@ func handleCommunityAdd(data: Data,store: CommunityStore, completion: @escaping 
         }
     }
 }
+
+func handleAutoAdd(data: Data, completion: @escaping ([String:String]) -> Void) {
+    handleDecodableData(autoAddData.self, data: data) { userData in
+        print("\(userData.message) - userDate:\(userData)")
+    }
+}

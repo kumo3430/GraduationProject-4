@@ -14,7 +14,7 @@ $data = json_decode($input_data, true);
 $uid = "";
 $create_at = date("Y-m-d");
 $message = "";
-
+$_SESSION['image'] = "AppIcon";
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
@@ -153,6 +153,7 @@ $userData = array(
     'userDescription' => $_SESSION['userDescription'],
     'currentStep' => $_SESSION['currentStep'],
     'create_at' => $_SESSION['create_at'],
+    'image' => $_SESSION['image'],
     'message' => $message
 );
 echo json_encode($userData);

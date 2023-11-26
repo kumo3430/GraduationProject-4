@@ -16,47 +16,54 @@ struct TestView: View {
                     }
                 }
             }
-            .refreshable {
-                autoAdd()
-            }
+//            .refreshable {
+//                autoAdd{_ in }
+//            }
         }.onAppear() {
             print("tickerList: \(tickerStore.tickers)")
         }
     }
-    private func autoAdd() {
-            UserDefaults.standard.synchronize()
-            class URLSessionSingleton {
-                static let shared = URLSessionSingleton()
-                let session: URLSession
-                private init() {
-                    let config = URLSessionConfiguration.default
-                    config.httpCookieStorage = HTTPCookieStorage.shared
-                    config.httpCookieAcceptPolicy = .always
-                    session = URLSession(configuration: config)
-                }
-            }
-            let url = URL(string: "http://127.0.0.1:8888/addTask/autoAdd.php")!
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            let body: [String] = []
-            let jsonData = try! JSONEncoder().encode(body)
-            request.httpBody = jsonData
-            print("body:\(body)")
-            print("jsonData:\(jsonData)")
-            URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    print("StudySpaceList - Connection error: \(error)")
-                } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                    print("StudySpaceList - HTTP error: \(httpResponse.statusCode)")
-                }
-                else if let data = data{
-                    let decoder = JSONDecoder()
-                    print(String(data: data, encoding: .utf8)!)
-                    print("Do your refresh work here")
-                }
-            }
-            .resume()
-        }
+//    func autoAdd(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = [:]
+//        phpUrl(php: "autoAdd" ,type: "addTask",body:body, store: nil){ message in
+//            // 在此处调用回调闭包，将 messenge 值传递给调用者
+//            completion(message["message"]!)
+//        }
+//    }
+//    private func autoAdd() {
+//            UserDefaults.standard.synchronize()
+//            class URLSessionSingleton {
+//                static let shared = URLSessionSingleton()
+//                let session: URLSession
+//                private init() {
+//                    let config = URLSessionConfiguration.default
+//                    config.httpCookieStorage = HTTPCookieStorage.shared
+//                    config.httpCookieAcceptPolicy = .always
+//                    session = URLSession(configuration: config)
+//                }
+//            }
+//            let url = URL(string: "http://127.0.0.1:8888/addTask/autoAdd.php")!
+//            var request = URLRequest(url: url)
+//            request.httpMethod = "POST"
+//            let body: [String] = []
+//            let jsonData = try! JSONEncoder().encode(body)
+//            request.httpBody = jsonData
+//            print("body:\(body)")
+//            print("jsonData:\(jsonData)")
+//            URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
+//                if let error = error {
+//                    print("StudySpaceList - Connection error: \(error)")
+//                } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+//                    print("StudySpaceList - HTTP error: \(httpResponse.statusCode)")
+//                }
+//                else if let data = data{
+//                    let decoder = JSONDecoder()
+//                    print(String(data: data, encoding: .utf8)!)
+//                    print("Do your refresh work here")
+//                }
+//            }
+//            .resume()
+//        }
     
     func openSafariView() {
         tickerStore.clearTodos()

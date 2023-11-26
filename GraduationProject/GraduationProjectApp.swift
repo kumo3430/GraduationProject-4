@@ -32,7 +32,7 @@ struct YourApp: App {
     @AppStorage("userDescription") private var userDescription:String = ""
     @AppStorage("currentStep") private var currentStep:Int = 0
     @AppStorage("create_at") private var create_at:String = ""
-    //    @AppStorage("password") private var password:String = ""
+    @AppStorage("image") private var image:String = "appstore"
     
     
     @StateObject var taskStore = TaskStore()

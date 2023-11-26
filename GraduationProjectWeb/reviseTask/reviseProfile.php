@@ -9,20 +9,18 @@ $message = "";
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-$UpSql = "UPDATE User SET `username` = ? , `userDescription` = ? WHERE `id` = ? ;";
+$UpSql = "UPDATE User SET `username` = ? , `userDescription` = ? , `image` = ? WHERE `id` = ? ;";
 
 $stmt = $conn->prepare($UpSql);
 if ($stmt === false) {
     die("Error preparing statement: " . $conn->error);
 }
-if ($data['username'] !== "" && isset($data['username'])) {
-    $_SESSION['username'] = $data['username'];
-} else if ($data['userDescription'] !== "" && isset($data['userDescription'])) {
-    $_SESSION['userDescription'] = $data['userDescription'];
-}
 
+$_SESSION['username'] = $data['username'];
+$_SESSION['userDescription'] = $data['userDescription'];
+$_SESSION['image'] = $data['image'];
 
-$stmt->bind_param("sss", $_SESSION['username'], $_SESSION['userDescription'], $uid);
+$stmt->bind_param("ssss", $_SESSION['username'], $_SESSION['userDescription'], $_SESSION['image'], $uid);
 if($stmt->execute() === TRUE) {
     $message = "User reviseProfile successfully";
 } else {
@@ -39,12 +37,13 @@ $stmt->close();
 // );
 $userData = array(
     'data' => $data,
-    'id' => $uid,
+    'id' => intval($uid),
     'email' => $_SESSION['email'],
     'userName' => $_SESSION['username'],
     'userDescription' => $_SESSION['userDescription'],
     'currentStep' => $_SESSION['currentStep'],
     'create_at' => $_SESSION['create_at'],
+    'image' => $_SESSION['image'],
     'message' => $message
 );
 echo json_encode($userData);

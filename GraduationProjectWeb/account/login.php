@@ -53,6 +53,7 @@ if ($stmt->execute() === TRUE) {
                 $_SESSION['userDescription'] = $row['userDescription'];
                 $_SESSION['currentStep'] = $row['currentStep'];
                 $_SESSION['create_at'] = $row['create_at'];
+                $_SESSION['image'] = $row['image'];
                 $message = "User login successfully";
                 break;
             } else {
@@ -79,6 +80,7 @@ $userData = array(
     'userDescription' => $_SESSION['userDescription'],
     'currentStep' => $_SESSION['currentStep'],
     'create_at' => $_SESSION['create_at'],
+    'image' => $_SESSION['image'],
     'message' => $message
 );
 echo json_encode($userData);

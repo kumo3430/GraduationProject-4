@@ -8,9 +8,16 @@
 import SwiftUI
 
 struct PersonalAndMoreView: View {
-    @State private var username: String = "shinji"
-    @State private var userProfileImage: Image = Image("shinji")
-    @State private var userDescription: String = "這是我的習慣養成之旅，與我一起進步吧!"
+//    @State private var username: String = "我習慣了"
+////    @State private var userProfileImage: Image = Image("appstore")
+//    @State private var selectedCoverPhotoName: String = "appstore" // 保存選中的圖片名稱
+//    @State private var userDescription: String = "這是我的習慣養成之旅，與我一起進步吧!"
+    
+    
+    @AppStorage("userName") private var userName: String = "我習慣了"
+    @AppStorage("userDescription") private var userDescription: String = "這是我的習慣養成之旅，與我一起進步吧!"
+    @AppStorage("image") private var selectedCoverPhotoName: String = "appstore"
+    
     @EnvironmentObject var tickerStore: TickerStore
     @State private var showingSheet = false
     var body: some View {
@@ -18,7 +25,7 @@ struct PersonalAndMoreView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     VStack(spacing: 15) {
-                        userProfileImage
+                        Image(selectedCoverPhotoName)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 100, height: 100)
@@ -26,7 +33,7 @@ struct PersonalAndMoreView: View {
                             .overlay(Circle().stroke(Color.gray, lineWidth: 2))
                             .shadow(radius: 10)
                         
-                        Text(username)
+                        Text(userName)
                             .font(.title)
                             .fontWeight(.bold)
                         
@@ -41,14 +48,12 @@ struct PersonalAndMoreView: View {
                         .font(.footnote)
                         .foregroundColor(.blue)
                        .sheet(isPresented: $showingSheet) {
-                           ProfileEditView()
+                           ProfileEditView(username: $userName,userDescription: $userDescription,selectedCoverPhotoName: $selectedCoverPhotoName)
                                .presentationDetents([ .large, .large])
                        }
-//                        NavigationLink("查看和編輯個人資料", destination: ProfileEditView(username: $username, userProfileImage: $userProfileImage, userDescription: $userDescription))
-//                            .font(.footnote)
-//                            .foregroundColor(.blue)
                     }
                     .padding()
+                    .frame(maxWidth: .infinity)
                     .background(Color.white)
                     .cornerRadius(15)
                     .shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5)
@@ -64,21 +69,25 @@ struct PersonalAndMoreView: View {
             }
             .background(Color(hex: "#F5F3F0").edgesIgnoringSafeArea(.all))
         }
-        .onAppear() {
-            if let name = UserDefaults.standard.string(forKey: "userName") ,
-               let description = UserDefaults.standard.string(forKey: "userDescription"){
-                // 在c画面中使用存储的userName值
-                username = name
-                userDescription = description
-                print("Stored userName: \(username)")
-                print("Stored userName: \(userDescription)")
-            } else {
-                // 如果没有找到存储的userName值，则使用默认值或采取其他适当的措施
-                print("Stored userName: \(username)")
-                print("Stored userName: \(userDescription)")
-            }
-
-        }
+//        .onAppear() {
+//            if let name = UserDefaults.standard.string(forKey: "userName") ,
+//               let description = UserDefaults.standard.string(forKey: "userDescription"),
+//               let image = UserDefaults.standard.string(forKey: "image"){
+//                // 在c画面中使用存储的userName值
+//                username = name
+//                userDescription = description
+//                selectedCoverPhotoName = image
+//                print("Stored userName: \(username)")
+//                print("Stored userDescription: \(userDescription)")
+//                print("Stored selectedCoverPhotoName: \(selectedCoverPhotoName)")
+//            } else {
+//                // 如果没有找到存储的userName值，则使用默认值或采取其他适当的措施
+//                print("Stored userName: \(username)")
+//                print("Stored userDescription: \(userDescription)")
+//                print("Stored selectedCoverPhotoName: \(selectedCoverPhotoName)")
+//            }
+//
+//        }
     }
 
     func getFeatures() -> [Feature] {

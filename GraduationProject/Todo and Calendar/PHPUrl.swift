@@ -30,12 +30,7 @@ func phpUrl(php: String,type: String,body: [String:Any],store: (any ObservableOb
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
-    
-    
-    //    let body = PostData(userID: userName, TickerID: ticker.id)
-    //    let jsonData = try! JSONEncoder().encode(body)
-    
-    
+
     request.httpBody = jsonData
     
     URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
@@ -193,6 +188,8 @@ func handleDataForPHP(php: String, data: Data,store: (any ObservableObject)? = n
         handleRoutineAdd(data: data,store: store as! RoutineStore, completion: completion)
     case "addCommunity":
         handleCommunityAdd(data: data,store: store as! CommunityStore, completion: completion)
+    case "autoAdd":
+        handleAutoAdd(data: data, completion: completion)
         
     case "reviseSpace":
         handleStudySpaceRevise(data: data, completion: completion)

@@ -48,6 +48,7 @@ func handleReviseProfileData(data: Data, messageType: Message, completion: @esca
             print("\(messageType.rawValue) - userDate:\(userData)")
             UserDefaults.standard.set("\(userData.userName ?? "")", forKey: "userName")
             UserDefaults.standard.set("\(userData.userDescription ?? "")", forKey: "userDescription")
+            UserDefaults.standard.set("\(userData.image)", forKey: "image")
             completion(["message":Message.success.rawValue])
             print("============== \(messageType.rawValue) ==============")
         } else {
