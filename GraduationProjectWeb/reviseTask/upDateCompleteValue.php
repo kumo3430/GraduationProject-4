@@ -32,19 +32,29 @@ if ($data['routineType'] == 3) {
         } else {
             $message = $message . 'User upDateCompleteValue - Error: ' . $updateStmt->error;
         }
+
         $updateStmt->close();
+        $stmtSEL = $conn->prepare("SELECT * FROM `RecurringInstance` WHERE todo_id = ? AND `RecurringEndDate` = ? AND `RecurringStartDate` = ?;");
+        $stmtSEL->bind_param("iss", $data['id'], $startDate, $endDate);
+        $stmtSEL->execute();
+        $result = $stmtSEL->get_result();
+        
+        if ($result->num_rows > 0) {
+            $message = "Today RoutineType3 is add";
+        } else {
+            $stmt = $conn->prepare("INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES (?, ?, ?);");
+            $stmt->bind_param("iss", $data['id'], $startDate, $endDate);
+            if ($stmt->execute()) {
+                $message = "User New first RecurringInstance successfully";
+                $data['RecurringEndDate'] = $endDate;
+                $data['RecurringStartDate'] = $startDate;
+            } else {
+                $message = "New first RecurringInstance successfully - Error: " . $stmt->error;
+            }
+            $stmt->close();
+        }
+        $stmtSEL->close();
 
-
-    $stmt = $conn->prepare("INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES (?, ?, ?);");
-    $stmt->bind_param("iss", $data['id'], $startDate, $endDate);
-    if ($stmt->execute()) {
-        $message = "User New first RecurringInstance successfully";
-        $data['RecurringEndDate'] = $endDate;
-        $data['RecurringStartDate'] = $startDate;
-    } else {
-        $message = "New first RecurringInstance successfully - Error: " . $stmt->error;
-    }
-    $stmt->close();
 }
 
 $stmtSEL = $conn->prepare("SELECT * FROM `RecurringInstance` WHERE todo_id = ? AND `RecurringEndDate` = ? AND `RecurringStartDate` = ?;");

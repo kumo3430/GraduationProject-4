@@ -58,6 +58,7 @@ func ConvertTodoStatus(todoStatus: Int) -> Bool {
 
 func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(TaskData.self, data: data) { userData in
+        store.clearTasks()
         print("\(userData.message) - userDate:\(userData)")
 
         for index in userData.todoTitle.indices {
@@ -89,6 +90,7 @@ func handleStudySpaceList(data: Data,store: TaskStore, completion: @escaping ([S
 
 func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(TodoData.self, data: data) { userData in
+        store.clearTodos()
         print("\(userData.message) - userDate:\(userData)")
 
         for index in userData.todoTitle.indices {
@@ -144,6 +146,7 @@ func handleStudyGeneralList(data: Data, store: TodoStore, completion: @escaping 
 
 func handleSportList(data: Data,store: SportStore, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(SportData.self, data: data) { userData in
+        store.clearTodos()
         print("\(userData.message) - userDate:\(userData)")
 
         for index in userData.todoTitle.indices {
@@ -199,6 +202,7 @@ func handleSportList(data: Data,store: SportStore, completion: @escaping ([Strin
 }
 
 func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:String]) -> Void) {
+    store.clearTodos()
     handleDecodableData(DietData.self, data: data) { userData in
         print("\(userData.message) - userDate:\(userData)")
 
@@ -245,6 +249,7 @@ func handleDietList(data: Data,store: DietStore, completion: @escaping ([String:
 }
 
 func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([String:String]) -> Void) {
+    store.clearTodos()
     handleDecodableData(RoutineData.self, data: data) { userData in
         print("\(userData.message) - userDate:\(userData)")
 

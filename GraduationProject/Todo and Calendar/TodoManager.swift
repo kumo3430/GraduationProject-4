@@ -331,7 +331,7 @@ class CompletionRatesViewModel: ObservableObject {
 class TodoStore: ObservableObject {
     //    @Published var todos = [Todo]()
     @Published var todos: [Todo] = []
-    
+    static let shared = TodoStore()
     func todosForDate(_ date: Date) -> [Todo] {
         let filteredTodos = todos.filter { todo in
             return isDate(date, inRangeOf: todo.startDateTime, and: todo.dueDateTime, description: todo.description)
@@ -364,6 +364,7 @@ class TodoStore: ObservableObject {
 class TaskStore: ObservableObject {
     // 具有一個已發佈的 tasks 屬性，該屬性存儲任務的數組
     @Published var tasks: [Task] = []
+    static let shared = TaskStore()
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
         let formattedSelectedDate = formattedDate(date)
@@ -414,7 +415,7 @@ class TaskStore: ObservableObject {
 class SportStore: ObservableObject {
     //    @Published var todos = [Todo]()
     @Published var sports: [Sport] = []
-    
+    static let shared = SportStore()
     func sportsForDate(_ date: Date) -> [Sport] {
         let filteredTodos = sports.filter { todo in
             return isDate(date, inRangeOf: todo.startDateTime, and: todo.dueDateTime)
@@ -445,7 +446,7 @@ class SportStore: ObservableObject {
 
 class DietStore: ObservableObject {
     @Published var diets: [Diet] = []
-    
+    static let shared = DietStore()
     func dietForDate(_ date: Date) -> [Diet] {
         let filteredDiets = diets.filter { diet in
             return isDate(date, inRangeOf: diet.startDateTime, and: diet.dueDateTime)
@@ -476,7 +477,7 @@ class DietStore: ObservableObject {
 
 class RoutineStore: ObservableObject {
     @Published var routines: [Routine] = []
-    
+    static let shared = RoutineStore()
     func routineForDate(_ date: Date) -> [Routine] {
         let filteredDiets = routines.filter { routine in
             return isDate(date, inRangeOf: routine.startDateTime, and: routine.dueDateTime)

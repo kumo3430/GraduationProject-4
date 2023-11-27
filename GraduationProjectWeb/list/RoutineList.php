@@ -1,7 +1,7 @@
 <?php
 require_once '../common.php'; // 引用共通設定
 
-$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 
 $category_id = 0;
 
@@ -28,19 +28,19 @@ $wakeUpTime = array();
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN Diet D ON T.id = D.todo_id WHERE T.uid = '$data['uid']' && T.category_id = '5';";
+// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN Diet D ON T.id = D.todo_id WHERE T.uid = '$uid' && T.category_id = '5';";
 // $TodoSELSql = "SELECT T.*, RI.*, R.* FROM Todo T LEFT JOIN Routine R ON T.id = R.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id WHERE T.uid = ? AND t.category_id = 4 AND RI.isOver = 0;";
 $TodoSELSql = "SELECT R.*,T.*, RI.RecurringStartDate,RI.RecurringEndDate, RC.sleepTime,RC.wakeUpTime FROM Todo T LEFT JOIN Routine R ON T.id = R.todo_id LEFT JOIN RecurringInstance RI ON T.id = RI.todo_id LEFT JOIN RecurringCheck RC ON RI.id = RC.Instance_id WHERE T.uid = ? AND T.category_id = 4 AND RI.isOver = 0 UNION SELECT R.*,T.*, RI.RecurringStartDate,RI.RecurringEndDate, RC.sleepTime,RC.wakeUpTime FROM Todo T RIGHT JOIN Routine R ON T.id = R.todo_id RIGHT JOIN RecurringInstance RI ON T.id = RI.todo_id RIGHT JOIN RecurringCheck RC ON RI.id = RC.Instance_id WHERE T.uid = ? AND T.category_id = 4 AND RI.isOver = 0;
 ";
 
 
 $stmt = $conn->prepare($TodoSELSql);
-$stmt->bind_param("ss", $data['uid'], $data['uid']);
+$stmt->bind_param("ss", $uid, $uid);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) { 
         while ($row = $result->fetch_assoc()) {
-            $_SESSION['uid'] = $data['uid'];
+            $_SESSION['uid'] = $uid;
 
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
@@ -72,7 +72,7 @@ if ($stmt->execute() === TRUE) {
 
 $stmt->close();
 $userData = array(
-    'userId' => $data['uid'],
+    'userId' => $uid,
     'category_id' => $category_id,
     'todoTitle' => $TodoTitle,
     'todoIntroduction' => $TodoIntroduction,

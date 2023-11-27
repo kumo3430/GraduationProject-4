@@ -1,7 +1,7 @@
 <?php
 require_once '../common.php'; // 引用共通設定
 
-$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 
 $category_id = 0;
 $message = "";
@@ -34,12 +34,12 @@ $TodoSELSql = "SELECT T.*, RI.*, S.* FROM Todo T LEFT JOIN Sport S ON T.id = S.t
 
 
 $stmt = $conn->prepare($TodoSELSql);
-$stmt->bind_param("s", $data['uid']);
+$stmt->bind_param("s", $uid);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $_SESSION['uid'] = $data['uid'];
+            $_SESSION['uid'] = $uid;
 
             $TodoTitle[] = $row['todoTitle'];
             $TodoIntroduction[] = $row['todoIntroduction'];
@@ -71,7 +71,7 @@ if ($stmt->execute() === TRUE) {
 $stmt->close();
 $userData = array(
     'data' => $data,
-    'userId' => $data['uid'],
+    'userId' => $uid,
     'category_id' => $category_id,
     'todoTitle' => $TodoTitle,
     'todoIntroduction' => $TodoIntroduction,

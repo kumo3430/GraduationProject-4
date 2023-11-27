@@ -119,7 +119,7 @@ struct YourApp: App {
     
     private func fetchDataIfNeeded() {
         if !shouldList {
-            list()
+            startList()
             shouldList = true
         }
     }
@@ -149,10 +149,8 @@ struct YourApp: App {
         }
     }
     
-    private func list() {
-        tickersList { tickersListMessage in
-            printResultMessage(for: tickersListMessage, withOperationName: "TickersList")
-        }
+    private func startList() {
+//        list(taskStore: taskStore, todoStore: todoStore, sportStore: sportStore, dietStore: dietStore, routineStore: routineStore)
         RoutineList { dietListMessage in
             printResultMessage(for: dietListMessage, withOperationName: "RoutineList")
         }
@@ -168,13 +166,18 @@ struct YourApp: App {
         StudySpaceList { spaceListMessage in
             printResultMessage(for: spaceListMessage, withOperationName: "StudySpaceList")
         }
+        tickersList { tickersListMessage in
+            printResultMessage(for: tickersListMessage, withOperationName: "TickersList")
+        }
+       
         CommunityList { spaceListMessage in
             printResultMessage(for: spaceListMessage, withOperationName: "CommunityList")
         }
     }
     
-    private func StudySpaceList(completion: @escaping (String) -> Void) {
-        let body: [String: Any] = ["uid": uid]
+    func StudySpaceList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
         phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -182,8 +185,9 @@ struct YourApp: App {
         }
     }
     
-    private func StudyGeneralList(completion: @escaping (String) -> Void) {
-        let body: [String: Any] = ["uid": uid]
+    func StudyGeneralList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
         phpUrl(php: "StudyGeneralList",type: "list",body:body,store: todoStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -191,8 +195,9 @@ struct YourApp: App {
         }
     }
     
-    private func SportList(completion: @escaping (String) -> Void) {
-        let body: [String: Any] = ["uid": uid]
+    func SportList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
         phpUrl(php: "SportList",type: "list",body:body,store: sportStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -200,8 +205,9 @@ struct YourApp: App {
         }
     }
     
-    private func DietList(completion: @escaping (String) -> Void) {
-        let body: [String: Any] = ["uid": uid]
+    func DietList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
         phpUrl(php: "DietList",type: "list",body:body,store: dietStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -209,8 +215,9 @@ struct YourApp: App {
         }
     }
     
-    private func RoutineList(completion: @escaping (String) -> Void) {
-        let body: [String: Any] = ["uid": uid]
+    func RoutineList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
         phpUrl(php: "RoutineList",type: "list",body:body,store: routineStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -218,7 +225,7 @@ struct YourApp: App {
         }
     }
     
-    private func tickersList(completion: @escaping (String) -> Void) {
+   func tickersList(completion: @escaping (String) -> Void) {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "tickersList",type: "list",body:body,store: tickerStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
@@ -226,7 +233,7 @@ struct YourApp: App {
             completion(message["message"]!)
         }
     }
-    private func CommunityList(completion: @escaping (String) -> Void) {
+   func CommunityList(completion: @escaping (String) -> Void) {
         let body: [String: Any] = ["uid": uid]
         phpUrl(php: "CommunityList",type: "list",body:body,store: communityStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者

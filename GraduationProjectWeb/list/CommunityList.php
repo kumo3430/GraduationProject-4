@@ -1,8 +1,7 @@
 <?php
 require_once '../common.php'; // 引用共通設定
 
-$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
-
+$uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $community_id = array();
 $communityName = array();
 $communityDescription = array();
@@ -19,7 +18,7 @@ $TodoSELSql = "SELECT c.id, c.communityName, c.communityDescription, c.community
 
 
 $stmt = $conn->prepare($TodoSELSql);
-$stmt->bind_param("s", $data['uid']);
+$stmt->bind_param("s", $uid);
 if ($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {

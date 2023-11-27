@@ -328,6 +328,10 @@ struct TodayTasksView: View {
         let body: [String: Any] = [:]
         phpUrl(php: "autoAdd" ,type: "addTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
+            print("自動新增回傳：\(String(describing: message["message"]))")
+            if message["message"] == "User New first RecurringInstance successfully" {
+                List()
+            }
             completion(message["message"]!)
         }
     }
@@ -350,6 +354,83 @@ struct TodayTasksView: View {
             .background(Color.white)
             .cornerRadius(10)
             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+    
+    private func printResultMessage(for message: String, withOperationName operationName: String) {
+        if message == "Success" {
+            print("\(operationName) Success")
+        } else {
+            print("\(operationName) failed with message: \(message)")
+        }
+    }
+    
+    private func List() {
+//        list(taskStore: taskStore, todoStore: todoStore, sportStore: sportStore, dietStore: dietStore, routineStore: routineStore)
+        RoutineList { dietListMessage in
+            printResultMessage(for: dietListMessage, withOperationName: "RoutineList")
+        }
+        DietList { dietListMessage in
+            printResultMessage(for: dietListMessage, withOperationName: "DietList")
+        }
+        SportList { sportListMessage in
+            printResultMessage(for: sportListMessage, withOperationName: "SportList")
+        }
+        StudyGeneralList { generalListMessage in
+            printResultMessage(for: generalListMessage, withOperationName: "StudyGeneralList")
+        }
+        StudySpaceList { spaceListMessage in
+            printResultMessage(for: spaceListMessage, withOperationName: "StudySpaceList")
+        }
+    }
+    
+    func StudySpaceList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
+        phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: taskStore){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            // completion(message[0])
+            completion(message["message"]!)
+        }
+    }
+    
+    func StudyGeneralList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
+        phpUrl(php: "StudyGeneralList",type: "list",body:body,store: todoStore){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            // completion(message[0])
+            completion(message["message"]!)
+        }
+    }
+    
+    func SportList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
+        phpUrl(php: "SportList",type: "list",body:body,store: sportStore){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            // completion(message[0])
+            completion(message["message"]!)
+        }
+    }
+    
+    func DietList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
+        phpUrl(php: "DietList",type: "list",body:body,store: dietStore){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            // completion(message[0])
+            completion(message["message"]!)
+        }
+    }
+    
+    func RoutineList(completion: @escaping (String) -> Void) {
+//        let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = [: ]
+        phpUrl(php: "RoutineList",type: "list",body:body,store: routineStore){ message in
+            // 在此处调用回调闭包，将 messenge 值传递给调用者
+            // completion(message[0])
+            completion(message["message"]!)
+        }
     }
 }
 

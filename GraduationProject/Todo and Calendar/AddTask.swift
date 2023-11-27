@@ -326,5 +326,78 @@ func handleCommunityAdd(data: Data,store: CommunityStore, completion: @escaping 
 func handleAutoAdd(data: Data, completion: @escaping ([String:String]) -> Void) {
     handleDecodableData(autoAddData.self, data: data) { userData in
         print("\(userData.message) - userDate:\(userData)")
+        if (userData.message == "User New first RecurringInstance successfully") {
+            completion(["message":"User New first RecurringInstance successfully"])
+        } else {
+            completion(["message":"今日無需新增"])
+        }
     }
 }
+//func list(taskStore:TaskStore,todoStore:TodoStore,sportStore:SportStore,dietStore:DietStore,routineStore:RoutineStore) {
+//    RoutineList(store: routineStore) { dietListMessage in
+//        printResultMessage(for: dietListMessage, withOperationName: "RoutineList")
+//    }
+//    DietList(store: dietStore) { dietListMessage in
+//        printResultMessage(for: dietListMessage, withOperationName: "DietList")
+//    }
+//    SportList(store: sportStore) { sportListMessage in
+//        printResultMessage(for: sportListMessage, withOperationName: "SportList")
+//    }
+//    StudyGeneralList(store: todoStore) { generalListMessage in
+//        printResultMessage(for: generalListMessage, withOperationName: "StudyGeneralList")
+//    }
+//    StudySpaceList(store: taskStore) { spaceListMessage in
+//        printResultMessage(for: spaceListMessage, withOperationName: "StudySpaceList")
+//    }
+//}
+//func printResultMessage(for message: String, withOperationName operationName: String) {
+//    if message == "Success" {
+//        print("\(operationName) Success")
+//    } else {
+//        print("\(operationName) failed with message: \(message)")
+//    }
+//}
+//func StudySpaceList(store: TaskStore,completion: @escaping (String) -> Void) {
+//    let body: [String: Any] = [: ]
+//    phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: TaskStore.shared){ message in
+//        // 在此处调用回调闭包，将 messenge 值传递给调用者
+//        // completion(message[0])
+//        completion(message["message"]!)
+//    }
+//}
+//
+//func StudyGeneralList(store: TodoStore,completion: @escaping (String) -> Void) {
+//    let body: [String: Any] = [: ]
+//    phpUrl(php: "StudyGeneralList",type: "list",body:body,store: TodoStore.shared){ message in
+//        // 在此处调用回调闭包，将 messenge 值传递给调用者
+//        // completion(message[0])
+//        completion(message["message"]!)
+//    }
+//}
+//
+//func SportList(store: SportStore,completion: @escaping (String) -> Void) {
+//    let body: [String: Any] = [: ]
+//    phpUrl(php: "SportList",type: "list",body:body,store: SportStore.shared){ message in
+//        // 在此处调用回调闭包，将 messenge 值传递给调用者
+//        // completion(message[0])
+//        completion(message["message"]!)
+//    }
+//}
+//
+//func DietList(store: DietStore,completion: @escaping (String) -> Void) {
+//    let body: [String: Any] = [: ]
+//    phpUrl(php: "DietList",type: "list",body:body,store: DietStore.shared){ message in
+//        // 在此处调用回调闭包，将 messenge 值传递给调用者
+//        // completion(message[0])
+//        completion(message["message"]!)
+//    }
+//}
+//
+//func RoutineList(store: RoutineStore,completion: @escaping (String) -> Void) {
+//    let body: [String: Any] = [: ]
+//    phpUrl(php: "RoutineList",type: "list",body:body,store: RoutineStore.shared){ message in
+//        // 在此处调用回调闭包，将 messenge 值传递给调用者
+//        // completion(message[0])
+//        completion(message["message"]!)
+//    }
+//}
