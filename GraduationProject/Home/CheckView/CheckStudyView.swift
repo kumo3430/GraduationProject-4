@@ -93,7 +93,7 @@ struct CheckStudyView: View {
 //                                CheckSportView.remainingValuePublisher.send( isCompleted)
                         }
 //                        CheckSportView.remainingValuePublisher.send( isCompleted)
-                        CheckSportView.remainingValuePublisher.send( isTaskCompleted)
+                        CheckStudyView.remainingValuePublisher.send(isTaskCompleted)
                         upDateCompleteValue{_ in }
                     }) {
                         Image(systemName: "checkmark")

@@ -83,7 +83,7 @@ if($stmt->execute() === TRUE) {
                         $RecurringEndDate = $data['startDateTime'];
                     } else if ($data['frequency'] == 2) {
                         // 每週重複
-                        $RecurringEndDate = date('Y-m-d', strtotime($data['startDateTime'] . " +6 day"));
+                        $RecurringEndDate = date('Y-m-d', strtotime($data['startDateTime'] . " +7 day"));
                     } else if ($data['frequency'] == 3) {
                         // 每月重複
                         $RecurringEndDate = date('Y-m-d', strtotime($data['startDateTime'] . " +1 month"));

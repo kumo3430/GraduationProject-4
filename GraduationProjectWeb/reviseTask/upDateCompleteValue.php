@@ -36,42 +36,6 @@ function insertRecurringInstance($conn, $data, $checkDate)
     $stmt->close();
     return array('message' => $message, 'RI_id' => $RI_id);
 }
-// if ($data['routineType'] == 3) {
-//     // 區間起床
-
-//         // 使用預備語句更新 RecurringInstance
-//         $updateStmt = $conn->prepare("UPDATE RecurringInstance SET `isOver` = ?, `occurrenceStatus` = ? WHERE `todo_id` = ? AND `RecurringEndDate` = ? AND `RecurringStartDate` = ?;");
-//         $updateStmt->bind_param("iiiss", $isOver, $occurrenceStatus, $data['id'], $data['RecurringEndDate'], $data['RecurringStartDate']);
-    
-//         if ($updateStmt->execute()) {
-//             $message = "User upDateCompleteValue successfully";
-//         } else {
-//             $message = $message . 'User upDateCompleteValue - Error: ' . $updateStmt->error;
-//         }
-
-//         $updateStmt->close();
-//         $stmtSEL = $conn->prepare("SELECT * FROM `RecurringInstance` WHERE todo_id = ? AND `RecurringEndDate` = ? AND `RecurringStartDate` = ?;");
-//         $stmtSEL->bind_param("iss", $data['id'], $startDate, $endDate);
-//         $stmtSEL->execute();
-//         $result = $stmtSEL->get_result();
-        
-//         if ($result->num_rows > 0) {
-//             $message = "Today RoutineType3 is add";
-//         } else {
-//             $stmt = $conn->prepare("INSERT INTO `RecurringInstance` (`todo_id`, `RecurringStartDate`, `RecurringEndDate`) VALUES (?, ?, ?);");
-//             $stmt->bind_param("iss", $data['id'], $startDate, $endDate);
-//             if ($stmt->execute()) {
-//                 $message = "User New first RecurringInstance successfully";
-//                 $data['RecurringEndDate'] = $endDate;
-//                 $data['RecurringStartDate'] = $startDate;
-//             } else {
-//                 $message = "New first RecurringInstance successfully - Error: " . $stmt->error;
-//             }
-//             $stmt->close();
-//         }
-//         $stmtSEL->close();
-
-// }
 
 $stmtSEL = $conn->prepare("SELECT * FROM `RecurringInstance` WHERE todo_id = ? AND `RecurringEndDate` = ? AND `RecurringStartDate` = ?;");
 $stmtSEL->bind_param("iss", $data['id'], $data['RecurringEndDate'], $data['RecurringStartDate']);
@@ -103,15 +67,16 @@ if ($data['routineType'] == 2 && $data['RecurringStartDate'] != $checkDate) {
     }
     $row = $result->fetch_assoc();
     $Instance_id = $row['id'];
+    // $completeValueOld = $row['completeValue'];
+    // if ($row['completeValue'] == null ){
+    //     $completeValueOld = 0 ;
+    //     $completeValueNew = 0;
+    // } else {
+    //     $completeValueOld = $row['completeValue'];
+    //     $completeValueNew = $completeValueOld + $data['completeValue'];
+    // }
     $completeValueOld = $row['completeValue'];
-    if ($row['completeValue'] == null ){
-        $completeValueOld = 0 ;
-        $completeValueNew = 0;
-    } else {
-        $completeValueOld = $row['completeValue'];
-        $completeValueNew = $completeValueOld + $data['completeValue'];
-    }
-
+    $completeValueNew = $completeValueOld + $data['completeValue'];
     $stmt = $conn->prepare("INSERT INTO `RecurringCheck` (`Instance_id`, `checkDate`, `completeValue`, `sleepTime`, `wakeUpTime`) VALUES (?, ?, ?, ?, ?);");
 
     if ($data['completeValue'] != 0 && $data['routineType'] != 3) {
