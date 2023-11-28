@@ -22,6 +22,24 @@ $today = date("Y-n-j");
 // $tody = date('Y-m-d');
 $duration = "睡眠時長";
 
+function updateRecurringInstancRoutine($conn,$todo_id,$today,$uid)
+{
+    $update = "UPDATE RecurringInstance RI LEFT JOIN ( SELECT MAX(RecurringInstance.id) as max_id FROM RecurringInstance INNER JOIN todo T ON RecurringInstance.todo_id = T.id WHERE T.uid = ? GROUP BY RecurringInstance.todo_id ) AS LatestRI ON RI.id = LatestRI.max_id SET RI.isOver = 1 WHERE RI.todo_id IN ( SELECT id FROM todo WHERE uid = ? ) AND LatestRI.max_id IS NULL;";
+
+    $stmt = $conn->prepare($update);
+    if ($stmt === false) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param("ii", $uid, $uid);
+    if($stmt->execute() === TRUE) {
+        $message = "User updateRecurringInstancRoutine successfully";
+    } else {
+        error_log("SQL Error: " . $stmt->error);
+        $message = "UpSqlError" . $stmt->error;
+    }
+    $stmt->close();
+    return $message;
+}
 
 function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndDate)
 {
@@ -39,19 +57,22 @@ function insertRecurringInstance($conn, $todo_id, $startDateTime, $RecurringEndD
     return $message;
 }
 
-function updateRecurringInstanc($conn,$todo_id,$today,$uid)
+function updateRecurringInstanceIsOver($conn,$todo_id,$today,$uid)
 {
-    $update = "UPDATE `RecurringInstance` AS RI INNER JOIN `Todo` AS T ON RI.todo_id = T.id SET RI.`isOver` = '1' WHERE RI.`RecurringEndDate` <= '$today' AND T.`uid` = '$uid'; ";
+    $update = "UPDATE `RecurringInstance` AS RI INNER JOIN `Todo` AS T ON RI.todo_id = T.id SET RI.`isOver` = '1' WHERE RI.`RecurringEndDate` <= ?  AND T.`id` = ? AND T.`uid` = ? ; ";
 
-    if ($conn->query($update) === TRUE) {
-        $message = "User updateRecurringInstanc successfully";
-    } else {
-        $message = "updateRecurringInstanc - Error: " . $update . '<br>' . $conn->error;
-        if ($conn->connect_error) {
-            $message = die("Connection failed: " . $conn->connect_error);
-        }
-
+    $stmt = $conn->prepare($update);
+    if ($stmt === false) {
+        die("Error preparing statement: " . $conn->error);
     }
+    $stmt->bind_param("sii", $today, $todo_id, $uid);
+    if($stmt->execute() === TRUE) {
+        $message = "User updateRecurringInstanceIsOver successfully";
+    } else {
+        error_log("SQL Error: " . $stmt->error);
+        $message = "UpSqlError" . $stmt->error;
+    }
+    $stmt->close();
     return $message;
 }
 
@@ -109,33 +130,16 @@ if ($stmt === false) {
 $stmt->bind_param("sss", $today, $today, $uid);
 if($stmt->execute() === TRUE) {
     $result = $stmt->get_result();
+    $message = updateRecurringInstancRoutine($conn,$todo_id,$today,$uid);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             
             $RecurringEndDate_data = $row['RecurringEndDate'];
             $frequency = $row['frequency'];
             $todo_id = $row['id'];
-            $update = "UPDATE `RecurringInstance` AS RI INNER JOIN `Todo` AS T ON RI.todo_id = T.id SET RI.`isOver` = '1' WHERE RI.`RecurringEndDate` <= '$today'  AND T.`id` = $todo_id; ";
-            $conn->query($update); // 執行更新操作;
-            // $message = updateRecurringInstanc($conn,$todo_id, $today, $uid);
-            // $RecurringStartDate_new = date('Y-m-d', strtotime("$RecurringEndDate_data +1 day"));
 
-            // if ($frequency == 1 || $frequency == 0) {
-            //     // 每天重複
-            //     $RecurringEndDate_new = $RecurringStartDate_new;
-            //     $message = insertRecurringInstance($conn, $todo_id, $RecurringStartDate_new, $RecurringEndDate_new);
-            //     // $conn->query($update); // 執行更新操作
-            // } else if ($frequency == 2) {
-            //     // 每週重複
-            //     $RecurringEndDate_new = date('Y-m-d', strtotime("$RecurringEndDate_data +6 day"));
-            //     $message = insertRecurringInstance($conn, $todo_id, $RecurringStartDate_new, $RecurringEndDate_new);
-            //     // $conn->query($update); // 執行更新操作
-            // } else if ($frequency == 3) {
-            //     // 每月重複
-            //     $RecurringEndDate_new = date('Y-m-d', strtotime("$RecurringEndDate_data +1 month"));
-            //     $message = insertRecurringInstance($conn, $todo_id, $RecurringStartDate_new, $RecurringEndDate_new);
-            //     // $conn->query($update); // 執行更新操作
-            // }
+            $message = updateRecurringInstanceIsOver($conn,$todo_id,$today,$uid);
+
             $message = updateRecurringInstance($conn, $todo_id, $RecurringEndDate_data, $frequency,$today);
         }
     }  else {

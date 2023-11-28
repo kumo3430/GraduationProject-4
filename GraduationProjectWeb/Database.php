@@ -13,6 +13,8 @@ class Database
 
     private function __construct()
     {
+        date_default_timezone_set('Asia/Taipei');
+        
         $this->conn = new mysqli($this->servername, $this->user, $this->pass, $this->dbname);
         // $this->conn = new mysqli($this->servername, $this->user, $this->pass, $this->dbname, $this->port);
         if ($this->conn->connect_error) {

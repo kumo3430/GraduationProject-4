@@ -170,7 +170,7 @@ struct DetailSportView: View {
         phpUrl(php: "reviseStudy" ,type: "reviseTask",body:body, store: nil){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             print("修改運動回傳：\(String(describing: message["message"]))")
-            if message["message"] == "User revise Task successfully" {
+            if message["message"] == "Success" {
                 isError = false
                 messenge = ""
                 presentationMode.wrappedValue.dismiss()

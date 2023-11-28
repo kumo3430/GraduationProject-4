@@ -67,7 +67,7 @@ struct CheckSleepView: View {
                         Text("目標")
                             .font(.system(size: 12, weight: .medium, design: .serif))
                             .foregroundColor(Color.secondary)
-                        
+
                         if task.selectedRoutines == "早睡" {
                             Text("早睡目標: \(routineTimeToString)")
                                 .font(.system(size: 16, weight: .semibold, design: .default))
@@ -100,9 +100,14 @@ struct CheckSleepView: View {
                                 .foregroundColor(customBlue)
                         } else if task.selectedRoutines == "睡眠時長" {
                             Text(task.sleepTime != nil ? "睡覺時間: \(formattedTime(from: task.sleepTime!))" : "未記錄")
-                            Text("睡眠時長: \(accumulatedValue, specifier: "%.1f") \(sleepUnit)")
                                 .font(.system(size: 16, weight: .semibold, design: .default))
                                 .foregroundColor(customBlue)
+                            Text(task.wakeUpTime != nil ? "起床時間: \(formattedTime(from: task.wakeUpTime!))" : "未記錄")
+                                .font(.system(size: 16, weight: .semibold, design: .default))
+                                .foregroundColor(customBlue)
+//                            Text("睡眠時長: \(accumulatedValue, specifier: "%.1f") \(sleepUnit)")
+//                                .font(.system(size: 16, weight: .semibold, design: .default))
+//                                .foregroundColor(customBlue)
                         }
                     }
                 }
@@ -195,24 +200,41 @@ struct CheckSleepView: View {
                 if (task.selectedRoutines == "睡眠時長") {
                     print("我是睡眠時長time sleepTime ＝ \(task.sleepTime) wakeUpTime ＝ \(newValue)")
                     let calendar = Calendar.current
-                    let components = calendar.dateComponents([.hour, .minute], from: task.sleepTime!, to: newValue!)
-                    let totalHours = Float(components.hour ?? 0) + Float(components.minute ?? 0) / 60.0
-                    accumulatedValue = totalHours
-                    isTaskSuccess = totalHours < 24.0 && totalHours > Float(task.routineValue)
-                    CheckSleepView.remainingValuePublisher.send((isCompleted: isTaskSuccess, routineType: 3))
+                    if newValue != nil {
+                        let components = calendar.dateComponents([.hour, .minute], from: task.sleepTime!, to: newValue!)
+                        let totalHours = Float(components.hour ?? 0) + Float(components.minute ?? 0) / 60.0
+                        accumulatedValue = totalHours
+                        isTaskSuccess = totalHours < 24.0 && totalHours > Float(task.routineValue)
+                        CheckSleepView.remainingValuePublisher.send((isCompleted: isTaskSuccess, routineType: 3))
+                    } else {
+                        isTaskCompleted = false
+                    }
+
                 }
+            }
+            .onChange(of: task.RecurringStartDate) { _ in
+                if task.wakeUpTime != nil {
+                    let calendar = Calendar.current
+                    let components = calendar.dateComponents([.hour, .minute], from: task.sleepTime!, to: task.wakeUpTime!)
+                    let totalHours = Float(components.hour ?? 0) + Float(components.minute ?? 0) / 60.0
+                    print("components :\(components)")
+                    print("components.hour :\(components.hour)")
+                    print("components.minute :\(components.minute)")
+                    isTaskCompleted = totalHours < 24.0 && totalHours > Float(task.routineValue)
+                }
+
             }
             .padding(12)
             .background(
                 (task.id == 0  ||  isTaskCompleted || ((task.selectedRoutines == "早睡" && task.sleepTime != nil) || (task.selectedRoutines == "早起" && task.wakeUpTime != nil))) ? Color.gray : Color.clear
             )
-            if isTaskCompleted {
+            if isTaskCompleted && task.id != 0 {
                 Image(systemName: "checkmark")
                     .foregroundColor(.white)
                     .font(.system(size: 20, weight: .bold))
                     .padding(15)
                     .background(Circle().fill(Color.green))
-            } else if ((task.selectedRoutines == "早睡" && task.sleepTime != nil) || (task.selectedRoutines == "早起" && task.wakeUpTime != nil) || (task.wakeUpTime != nil && task.sleepTime != nil)) {
+            } else if (((task.selectedRoutines == "早睡" && task.sleepTime != nil) || (task.selectedRoutines == "早起" && task.wakeUpTime != nil) || (task.wakeUpTime != nil && task.sleepTime != nil)) && task.id != 0) {
                 Image(systemName: "xmark")
                     .foregroundColor(.white)
                     .font(.system(size: 20, weight: .bold))
@@ -245,13 +267,48 @@ struct CheckSleepView: View {
                     print("我是早睡time routineTime ＝ \(routineTimeToDate) rtime ＝ \(wakeUpTimeToDate)")
                     isTaskCompleted =  wakeUpTimeToDate < routineTimeToDate
                 }
-            } else {
-                if (task.wakeUpTime != nil && task.sleepTime != nil) {
-                    let calendar = Calendar.current
-                    let components = calendar.dateComponents([.hour, .minute], from: task.sleepTime!, to: task.wakeUpTime!)
-                    let totalHours = Float(components.hour ?? 0) + Float(components.minute ?? 0) / 60.0
-                    isTaskCompleted = totalHours < 24.0 && totalHours > Float(task.routineValue)
+            } else if (task.wakeUpTime != nil && task.sleepTime != nil) {
+                routineStore.updateOrCreateRoutineFromID(task.id, to: 0)
+                let calendar = Calendar.current
+                let components = calendar.dateComponents([.hour, .minute], from: task.sleepTime!, to: task.wakeUpTime!)
+                let totalHours = Float(components.hour ?? 0) + Float(components.minute ?? 0) / 60.0
+                print("components :\(components)")
+                print("components.hour :\(components.hour)")
+                print("components.minute :\(components.minute)")
+                isTaskCompleted = totalHours < 24.0 && totalHours > Float(task.routineValue)
+            } else if (task.wakeUpTime == nil && task.sleepTime == nil) {
+                if task.RecurringStartDate != Date() {
+                    routineType = 2
+                    routineStore.updateRecurring(withID: task.id, newDate: Date(), newTime: nil, type: routineType)
                 }
+            } else if (task.wakeUpTime == nil && task.sleepTime != nil) {
+                
+                // 使用日曆來計算這個日期加上一天
+//                let calendar = Calendar.current
+                print("task.RecurringStartDate 01:\(task.RecurringStartDate)")
+                let calendar = Calendar.current
+                let now = Date()
+                let todayComponents = calendar.dateComponents([.year, .month, .day], from: now)
+                let today = calendar.date(from: todayComponents)!
+
+                if let datePlusOneDay = calendar.date(byAdding: .day, value: 1, to: task.RecurringStartDate) {
+                    let datePlusOneDayComponents = calendar.dateComponents([.year, .month, .day], from: datePlusOneDay)
+                    let datePlusOneDayStripped = calendar.date(from: datePlusOneDayComponents)!
+
+                    // 現在比較這個新日期和當前日期（僅基於年月日）
+                    if datePlusOneDayStripped < today {
+                        routineType = 2
+                        print("task.RecurringStartDate 02:\(task.RecurringStartDate)")
+                        print("datePlusOneDay :\(datePlusOneDayStripped)")
+                        print("今天的日期（無時間）:\(today)")
+                        routineStore.updateRecurring(withID: task.id, newDate: Date(), newTime: nil, type: routineType)
+                    } else {
+                        print("加一天後的日期不小於今天")
+                    }
+                } else {
+                    print("無法計算日期")
+                }
+
             }
         }
     }

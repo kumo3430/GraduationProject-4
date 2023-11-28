@@ -525,7 +525,7 @@ class RoutineStore: ObservableObject {
                 routines[index].RecurringStartDate = newDate ?? Date()
                 let currentDate = Date() // 假设这是你要操作的日期
                 let calendar = Calendar.current // 使用当前用户的日历
-                if let nextDate = calendar.date(byAdding: .day, value: 1, to: newDate ?? Date()) {
+                if let nextDate = calendar.date(byAdding: .day, value: 0, to: newDate ?? Date()) {
                     print(nextDate) // nextDate 是一个 Date 对象，已经加上了一天
                     routines[index].RecurringEndDate = nextDate
                 }
@@ -534,28 +534,54 @@ class RoutineStore: ObservableObject {
             } else if type == 3 {
                 // 睡眠時長 - 起來
                 routines[index].wakeUpTime = newTime
-                duplicateRoutineWithID(id, newID: 0)
-                
-                routines[index].RecurringStartDate = newDate ?? Date()
-                let currentDate = Date() // 假设这是你要操作的日期
-                let calendar = Calendar.current // 使用当前用户的日历
-                if let nextDate = calendar.date(byAdding: .day, value: 1, to: newDate ?? Date()) {
-                    print(nextDate) // nextDate 是一个 Date 对象，已经加上了一天
-                    routines[index].RecurringEndDate = nextDate
-                }
+//                duplicateRoutineWithID(id, newID: 0)
+                updateOrCreateRoutineFromID(id, to: 0)
+
+//                routines[index].RecurringStartDate = newDate ?? Date()
+//                let currentDate = Date() // 假设这是你要操作的日期
+//                let calendar = Calendar.current // 使用当前用户的日历
+//                if let nextDate = calendar.date(byAdding: .day, value: 0, to: newDate ?? Date()) {
+//                    print(nextDate) // nextDate 是一个 Date 对象，已经加上了一天
+//                    routines[index].RecurringEndDate = nextDate
+//                }
                 routines[index].sleepTime = nil
                 routines[index].wakeUpTime = nil
             }
             print("我是檢查 routines[index] ： \(routines[index])")
         }
     }
-    func duplicateRoutineWithID(_ id: Int, newID: Int) {
-        if let index = routines.firstIndex(where: { $0.id == id }) {
-            var newRoutine = routines[index]
-            newRoutine.id = newID
+//    func duplicateRoutineWithID(_ id: Int, newID: Int) {
+//        if let index = routines.firstIndex(where: { $0.id == id }) {
+//            var newRoutine = routines[index]
+//            newRoutine.id = newID
+//            routines.append(newRoutine)
+//        }
+//    }
+    func updateOrCreateRoutineFromID(_ sourceID: Int, to targetID: Int) {
+        guard let sourceIndex = routines.firstIndex(where: { $0.id == sourceID }) else {
+            print("錯誤：找不到源 ID \(sourceID) 的 Routine。")
+            return
+        }
+
+        if let targetIndex = routines.firstIndex(where: { $0.id == targetID }) {
+            var newRoutine = routines[sourceIndex]
+            newRoutine.id = targetID // 確保目標 ID 保持不變
+            if  routines[targetIndex].title != "\(routines[sourceIndex].title)" {
+                newRoutine.title = "\(routines[sourceIndex].title) - yesterday"
+            }
+            routines[targetIndex] = newRoutine
+        } else {
+            var newRoutine = routines[sourceIndex]
+            newRoutine.id = targetID // 為新 Routine 設置目標 ID
+            newRoutine.title = "\(routines[sourceIndex].title) - yesterday"
             routines.append(newRoutine)
+            if (routines[sourceIndex].sleepTime != nil && routines[sourceIndex].wakeUpTime != nil) {
+                routines[sourceIndex].sleepTime = nil
+                routines[sourceIndex].wakeUpTime = nil
+            }
         }
     }
+
 }
 
 class TickerStore: ObservableObject {

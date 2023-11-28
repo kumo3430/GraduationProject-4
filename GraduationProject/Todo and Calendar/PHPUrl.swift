@@ -49,19 +49,22 @@ func phpUrl(php: String,type: String,body: [String:Any],store: (any ObservableOb
 func convertToDate(_ dateString: String) -> Date? {
     let dateFormatter = DateFormatter()
     //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
-    dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
-    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
+//    dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
+//    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
+    dateFormatter.timeZone = TimeZone(identifier: "UTC")
     dateFormatter.dateFormat = "yyyy-MM-dd"
     return dateFormatter.date(from: dateString)
 }
 
 func convertToTime(_ timeString: String?) -> Date? {
+    print("希望成功轉過去\(timeString)")
+    print("希望成功轉過去\(String(describing: timeString))")
     guard let timeString = timeString else { return nil }
-    
     let dateFormatter = DateFormatter()
     //    dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei")
     dateFormatter.locale = Locale(identifier: "zh_Hant_TW") // 設定地區(台灣)
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
+//    dateFormatter.timeZone = TimeZone(identifier: "UTC")
     dateFormatter.dateFormat = "HH:mm:ss"
     //    dateFormatter.dateFormat = "HH:mm"
     return dateFormatter.date(from: timeString)
