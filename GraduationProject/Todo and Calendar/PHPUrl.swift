@@ -66,7 +66,7 @@ func convertToTime(_ timeString: String?) -> Date? {
     dateFormatter.timeZone = TimeZone(identifier: "Asia/Taipei") // 設定時區(台灣)
 //    dateFormatter.timeZone = TimeZone(identifier: "UTC")
     dateFormatter.dateFormat = "HH:mm:ss"
-    //    dateFormatter.dateFormat = "HH:mm"
+//        dateFormatter.dateFormat = "HH:mm"
     return dateFormatter.date(from: timeString)
 }
 func convertToTimeM(_ timeString: String?) -> Date? {

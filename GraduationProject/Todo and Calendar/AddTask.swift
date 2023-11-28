@@ -97,7 +97,7 @@ func handleStudyGeneralAdd(data: Data,store: TodoStore, completion: @escaping ([
             var studyUnit: String = ""
             if let startDate = convertToDate(userData.startDateTime),
                let dueDateTime = convertToDate(userData.dueDateTime),
-               let reminderTime = convertToTime(userData.reminderTime) {
+               let reminderTime = convertToTimeM(userData.reminderTime) {
                 
                 let frequency = userData.frequency
                 let recurringUnit = convertFrequency(frequency: frequency)

@@ -73,6 +73,8 @@ struct TodayTasksView: View {
                                         if isCompleted == true {
                                             print("Setting playAnimation to true")
                                             playAnimation1 = true
+                                        } else {
+                                            playAnimation2 = true
                                         }
                                     }
                             }

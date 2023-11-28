@@ -168,17 +168,19 @@ struct DetailSportView: View {
             "todoNote": sport.todoNote
         ]
         phpUrl(php: "reviseStudy" ,type: "reviseTask",body:body, store: nil){ message in
-            // 在此处调用回调闭包，将 messenge 值传递给调用者
-            print("修改運動回傳：\(String(describing: message["message"]))")
-            if message["message"] == "Success" {
-                isError = false
-                messenge = ""
-                presentationMode.wrappedValue.dismiss()
-            } else {
-                isError = true
-                messenge = "習慣建立錯誤 請聯繫管理員"
+            DispatchQueue.main.async {
+                // 確保在主線程執行 UI 相關操作
+                if message["message"] == "Success" {
+                    self.isError = false
+                    self.messenge = ""
+                    self.presentationMode.wrappedValue.dismiss() // 確保在主線程關閉視圖
+                } else {
+                    self.isError = true
+                    self.messenge = "習慣建立錯誤 請聯繫管理員"
+                    print("修改運動回傳：\(String(describing: message["message"]))")
+                }
+                completion(message["message"]!)
             }
-            completion(message["message"]!)
         }
     }
 }
