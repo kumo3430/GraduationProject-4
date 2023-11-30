@@ -103,7 +103,7 @@ struct TickerRow: View {
                    // 在主线程上执行与界面相关的操作，包括打开 Safari 视图控制器
 //                    SFSafariViewController(url: url).present(safariViewController, animated:true, completion:nil)
                     mainWindow.rootViewController?.present(safariViewController, animated: true, completion: nil)
-                    tickerStore.clearTodos()
+//                    tickerStore.clearTodos()
                 }
             }else{
                 print("無法顯示2")

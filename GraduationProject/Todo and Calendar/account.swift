@@ -149,6 +149,7 @@ func handleUserData(data: Data, messageType: Message, completion: @escaping ([St
         UserDefaults.standard.set(userData.userDescription ?? "", forKey: "userDescription")
         UserDefaults.standard.set(userData.currentStep ?? 0, forKey: "currentStep")
         UserDefaults.standard.set(userData.create_at ?? "", forKey: "create_at")
+        UserDefaults.standard.set(userData.image ?? "", forKey: "image")
         UserDefaults.standard.set(true, forKey: "signIn")
         
         // 然后在同一作用域中调用它
