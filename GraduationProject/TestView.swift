@@ -8,17 +8,30 @@ import SafariServices
 struct TestView: View {
     @EnvironmentObject var tickerStore: TickerStore
     var body: some View {
-        NavigationStack {
+        NavigationView {
             VStack {
-                List {
-                    ForEach(tickerStore.tickers) { ticker in
-                        TickerRow(ticker: ticker)
+                if tickerStore.tickers.isEmpty {
+                    EmptyStateView()
+                } else {
+                    List {
+                        ForEach(tickerStore.tickers) { ticker in
+                            TickerRow(ticker: ticker)
+                        }
                     }
                 }
             }
         }.onAppear() {
             print("tickerList: \(tickerStore.tickers)")
         }
+        .navigationTitle("票卷列表")
+    }
+    
+    private func EmptyStateView() -> some View {
+        Text("尚未獲得票卷")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .foregroundColor(.gray)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     func openSafariView() {
@@ -56,10 +69,10 @@ struct TickerRow: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("名稱: \(ticker.name)")
-                Text("id: \(ticker.id)")
-                Text("截止日期: \(formatDate(ticker.deadline))")
-                Text("兌換時間: \(ticker.exchage)")
+                Text("名稱： \(ticker.name)")
+                Text("id： \(ticker.id)")
+                Text("截止日期： \(formattedDate(ticker.deadline))")
+                Text("兌換時間： \(ticker.exchage)")
             }
             Spacer()
             Button(action: {
@@ -78,6 +91,7 @@ struct TickerRow: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit) // 保持圖示的原始寬高比
                     .frame(width: 30, height: 30) // 這裡的尺寸是示例，您可以根據需要調整
+                    .foregroundColor(.blue)
             })
 
         }
@@ -103,7 +117,6 @@ struct TickerRow: View {
                    // 在主线程上执行与界面相关的操作，包括打开 Safari 视图控制器
 //                    SFSafariViewController(url: url).present(safariViewController, animated:true, completion:nil)
                     mainWindow.rootViewController?.present(safariViewController, animated: true, completion: nil)
-//                    tickerStore.clearTodos()
                 }
             }else{
                 print("無法顯示2")
@@ -112,16 +125,8 @@ struct TickerRow: View {
             print("無法顯示")
         }
     }
-    
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return formatter.string(from: date)
-    }
-    
-//        private func postTicker(completion: @escaping (String?) -> Void) {
+
     private func postTicker(completion: @escaping (String?, Error?) -> Void) {
-//            private func postTicker() {
             UserDefaults.standard.synchronize()
             class URLSessionSingleton {
                 static let shared = URLSessionSingleton()
