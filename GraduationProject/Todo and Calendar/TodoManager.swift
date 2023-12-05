@@ -395,18 +395,35 @@ class TaskStore: ObservableObject {
         let today = formattedDate(Date())
         
         if let index = tasks.firstIndex(where: { $0.id == id }) {
-            let repetitions = [
-                Repetition(date: tasks[index].repetition1Count, isChecked: tasks[index].isReviewChecked0),
-                Repetition(date: tasks[index].repetition2Count, isChecked: tasks[index].isReviewChecked1),
-                Repetition(date: tasks[index].repetition3Count, isChecked: tasks[index].isReviewChecked2),
-                Repetition(date: tasks[index].repetition4Count, isChecked: tasks[index].isReviewChecked3)
-            ]
+            var taskToUpdate = tasks[index]
 
-            for (index, repetition) in repetitions.enumerated() {
-                if today == formattedDate(repetition.date) {
-                    break
-                }
-            }
+                 let repetitions = [
+                     Repetition(date: taskToUpdate.repetition1Count, isChecked: taskToUpdate.isReviewChecked0),
+                     Repetition(date: taskToUpdate.repetition2Count, isChecked: taskToUpdate.isReviewChecked1),
+                     Repetition(date: taskToUpdate.repetition3Count, isChecked: taskToUpdate.isReviewChecked2),
+                     Repetition(date: taskToUpdate.repetition4Count, isChecked: taskToUpdate.isReviewChecked3)
+                 ]
+
+                 for (index, repetition) in repetitions.enumerated() {
+                     if today == formattedDate(repetition.date) {
+                         switch index {
+                         case 0:
+                             taskToUpdate.isReviewChecked0 = true
+                         case 1:
+                             taskToUpdate.isReviewChecked1 = true
+                         case 2:
+                             taskToUpdate.isReviewChecked2 = true
+                         case 3:
+                             taskToUpdate.isReviewChecked3 = true
+                         default:
+                             break
+                         }
+                         break
+                     }
+                 }
+
+                 // 更新 tasks 陣列中的 Task
+                 tasks[index] = taskToUpdate
         }
     }
 

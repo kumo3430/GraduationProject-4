@@ -33,7 +33,7 @@ struct HabitTrackingIndicatorCardView: View {
                         .foregroundColor(Color(hex: "#545439"))
                     Spacer()
                 }
-                ProgressBar(value: completionRate)
+                ProgressBar(value: completionRate, selectedDiets: "")
             }
 
             List(upcomingTasks) { task in

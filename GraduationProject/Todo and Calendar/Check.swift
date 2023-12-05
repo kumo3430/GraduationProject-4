@@ -64,7 +64,9 @@ func handleRecurringCheckList(data: Data,store: CompletionRatesViewModel, messag
                 let combinedArray1 = Array(zip(checkDate, completeValue))
                 // 使用 Dictionary(uniqueKeysWithValues:) 创建字典
                 dictionary1 = Dictionary(combinedArray1, uniquingKeysWith: { (current, new) in
-                    current + new
+//                    current + new
+                    let sum = current + new
+                    return sum > 1 ? 1 : sum
                 })
             } else {
                 print("两个数组的元素数量不一致")
@@ -76,7 +78,9 @@ func handleRecurringCheckList(data: Data,store: CompletionRatesViewModel, messag
             
             if monthlyCompleteValue.count == yearsMonth.count {
                 let averageValues = zip(monthlyCompleteValue, monthlyCount)
-                       .map { $0 / $1 / Double(userData.targetvalue) }
+//                       .map { $0 / $1 / Double(userData.targetvalue) }
+                    .map { min($0 / $1 / Double(userData.targetvalue), 1.0) } // 確保不超過1
+
                    
                    if averageValues.count == yearsMonth.count {
                        let combinedArray2 = Array(zip(yearsMonth, averageValues))

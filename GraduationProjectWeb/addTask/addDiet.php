@@ -87,7 +87,7 @@ if($stmt->execute() === TRUE) {
                         $RecurringEndDate = date('Y-m-d', strtotime($data['startDateTime'] . " +7 day"));
                     } else if ($data['frequency'] == 3) {
                         // 每月重複
-                        $RecurringEndDate = date('Y-m-d', strtotime($data['startDateTime'] . " +1 month"));
+                        $RecurringEndDate = date('Y-m-d', strtotime($data['startDateTime'] . " +30 day"));
                     }
 
                     $result3 = insertRecurringInstance($conn, $todo_id, $data, $RecurringEndDate);

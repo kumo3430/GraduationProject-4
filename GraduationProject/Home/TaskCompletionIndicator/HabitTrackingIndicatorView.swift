@@ -39,7 +39,7 @@ enum TaskCategory: String, CaseIterable {
     case spacedLearning = "間隔學習"
     case sport = "運動"
     case diet = "飲食"
-    case habits = "習慣"
+//    case habits = "習慣"
 }
 
 struct HabitTask: Identifiable {
@@ -126,9 +126,9 @@ struct HabitTrackingIndicatorView: View {
         case .sport:
             return sportStore.sports // Replace with the actual property from your data store
         case .diet:
-            return sportStore.sports // Replace with the actual property from your data store
-        case .habits:
-            return tasks // Replace with your habit tasks array
+            return dietStore.diets // Replace with the actual property from your data store
+//        case .habits:
+//            return tasks // Replace with your habit tasks array
         }
     }
     
@@ -137,12 +137,18 @@ struct HabitTrackingIndicatorView: View {
         var task: Any
         var name: String
         var targetvalue: Float
+        var selectedDiets: String
+        var repetitionDay: [String]
+        var repetitionCheck: [Double]
         
-        init(id: Int, task: Any, taskName: String,targetvalue: Float) {
+        init(id: Int, task: Any, taskName: String, targetvalue: Float, selectedDiets: String, repetitionDay: [String], repetitionCheck: [Double]) {
             self.id = id
             self.task = task
             self.name = taskName
             self.targetvalue = targetvalue
+            self.selectedDiets = selectedDiets
+            self.repetitionDay = repetitionDay
+            self.repetitionCheck = repetitionCheck
         }
     }
     
@@ -151,6 +157,9 @@ struct HabitTrackingIndicatorView: View {
         @State private var id:Int = 0
         @State private var name:String = "TaskName"
         @State private var targetvalue:Float? = 0.0
+        @State private var selectedDiets:String = ""
+        @State private var repetitionDay: [String] = []
+        @State private var repetitionCheck: [Double] = []
         @Binding var selectedTask: TaskItem?
         @Binding var selectedCategory: TaskCategory
         var body: some View {
@@ -161,9 +170,14 @@ struct HabitTrackingIndicatorView: View {
                 id = result.id
                 name = result.name
                 targetvalue = result.targetvalue
+                selectedDiets = result.selectedDiets
+                repetitionDay = result.repetitionDay
+                repetitionCheck = result.repetitionCheck
                 print("targetvalue:\(targetvalue)")
+                print("repetition:\(repetitionDay)")
+                print("repetition:\(repetitionCheck)")
                 print(type(of: targetvalue))
-                let selected = TaskItem(id: id,task: task, taskName: name, targetvalue: targetvalue ?? 0.0)
+                let selected = TaskItem(id: id,task: task, taskName: name, targetvalue: targetvalue ?? 0.0, selectedDiets: selectedDiets, repetitionDay: repetitionDay, repetitionCheck: repetitionCheck)
                 $selectedTask.wrappedValue = selected
                 print("selectedTask:\(selectedTask)")
                 
@@ -184,7 +198,7 @@ struct HabitTrackingIndicatorView: View {
             }
             .buttonStyle(PlainButtonStyle())
             .sheet(item: $selectedTask) { task in
-                TaskDetailView(task: task,id: task.id, taskName: task.name, targetvalue: task.targetvalue)
+                TaskDetailView(task: task,id: task.id, taskName: task.name, targetvalue: task.targetvalue, selectedDiets: task.selectedDiets, repetitionDay: task.repetitionDay, repetitionCheck: task.repetitionCheck)
             }
         }
         
@@ -195,25 +209,27 @@ struct HabitTrackingIndicatorView: View {
                 return task.title
             } else if let sport = task as? Sport {
                 return sport.title
+            } else if let diet = task as? Diet {
+                return diet.title
             } else if let habit = task as? HabitTask {
                 return habit.name
             }
             return ""
         }
         
-        func selectedTaskFromStore(store: Any, _ category: TaskCategory) -> (id: Int, name: String, targetvalue: Float) {
+        func selectedTaskFromStore(store: Any, _ category: TaskCategory) -> (id: Int, name: String, targetvalue: Float, selectedDiets: String, repetitionDay: [String], repetitionCheck: [Double]) {
             
             switch category {
             case .generalLearning:
-                return ((store as! Todo).id, (store as! Todo).title, (store as! Todo).studyValue)
+                return ((store as! Todo).id, (store as! Todo).title, (store as! Todo).studyValue, "", [], [])
             case .spacedLearning:
-                return ((store as! Task).id, (store as! Task).title, 0.0)
+                return ((store as! Task).id, (store as! Task).title, 0.0, "", [formattedDate((store as! Task).repetition1Count), formattedDate((store as! Task).repetition2Count), formattedDate((store as! Task).repetition3Count), formattedDate((store as! Task).repetition4Count)], [(store as! Task).isReviewChecked0 ? 0.25 : 0.0, (store as! Task).isReviewChecked1 ? 0.25 : 0.0, (store as! Task).isReviewChecked2 ? 0.25 : 0.0, (store as! Task).isReviewChecked3 ? 0.25 : 0.0])
             case .sport:
-                return ((store as! Sport).id, (store as! Sport).title, (store as! Sport).sportValue)
+                return ((store as! Sport).id, (store as! Sport).title, (store as! Sport).sportValue, "", [], [])
             case .diet:
-                return ((store as! Sport).id, (store as! Sport).title, (store as! Sport).sportValue)
-            case .habits:
-                return (0, "", 0.0)
+                return ((store as! Diet).id, (store as! Diet).title, Float((store as! Diet).dietsValue), (store as! Diet).selectedDiets, [], [])
+//            case .habits:
+//                return (0, "", 0.0, "", [], [])
             }
             
         }
@@ -225,6 +241,9 @@ struct HabitTrackingIndicatorView: View {
         var id: Int?
         var taskName: String
         var targetvalue: Float? = 0.0
+        var selectedDiets:String = ""
+        var repetitionDay: [String] = []
+        var repetitionCheck: [Double] = []
         let completionRatesViewModel = CompletionRatesViewModel()
         @State private var selectedIndicator = IndicatorType.week
         
@@ -234,19 +253,25 @@ struct HabitTrackingIndicatorView: View {
                     .font(.system(size: 30, weight: .semibold, design: .default))
                     .foregroundColor(Color(hex: "#4A4A4A"))
                     .padding(.top, 20)
-                
-                Picker("Indicator", selection: $selectedIndicator) {
-                    ForEach(IndicatorType.allCases, id: \.self) { indicator in
-                        Text(indicator.rawValue).tag(indicator)
+                // spaced -> X
+                if targetvalue != 0.0 {
+                    Picker("Indicator", selection: $selectedIndicator) {
+                        ForEach(IndicatorType.allCases, id: \.self) { indicator in
+                            Text(indicator.rawValue).tag(indicator)
+                        }
                     }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.horizontal, 10)
+                    .background(Color(hex: "#EFEFEF"))
+                    .cornerRadius(8)
+                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2)
+                } else {
+                    Text("")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                                       .padding(.horizontal)
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal, 10)
-                .background(Color(hex: "#EFEFEF"))
-                .cornerRadius(8)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2)
                 
-                ReportView(id: id ?? 0, targetvalue: targetvalue,selectedIndicator: $selectedIndicator, completionRatesViewModel: completionRatesViewModel)
+                ReportView(id: id ?? 0, targetvalue: targetvalue, selectedDiets: selectedDiets, repetitionDay: repetitionDay, repetitionCheck: repetitionCheck,selectedIndicator: $selectedIndicator, completionRatesViewModel: completionRatesViewModel)
                     .transition(.slide)
                 Spacer()
             }
@@ -260,7 +285,7 @@ struct HabitTrackingIndicatorView: View {
 
 struct ProgressBar: View {
     var value: Double
-    
+    var selectedDiets: String
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
@@ -269,7 +294,8 @@ struct ProgressBar: View {
                     .cornerRadius(5)
                 
                 Rectangle()
-                    .fill(Color(hex: "#91A3B0"))
+//                    .fill(Color(hex: "#91A3B0"))
+                    .fill(selectedDiets == "減糖" || selectedDiets == "少油炸" ? Color(hex: "#B09191") : Color(hex: "#91A3B0"))
                     .cornerRadius(5)
                     .frame(width: geometry.size.width * CGFloat(value))
             }
@@ -286,6 +312,9 @@ struct ProgressBar: View {
 struct ReportView: View {
     let id: Int
     let targetvalue: Float?
+    var selectedDiets:String = ""
+    var repetitionDay: [String] = []
+    var repetitionCheck: [Double] = []
     @Binding var selectedIndicator: IndicatorType
     @State private var selectedDate = Date()
     @State private var Instance_id: Int = 0
@@ -332,19 +361,28 @@ struct ReportView: View {
     ]
     
     func dayList(cycleCategory: IndicatorType) -> ([String]) {
-        switch cycleCategory {
-        case .week:
-            return datesOfWeek
-        case .month:
-            return datesOfMonth
-        case .year:
-            return months
+        
+        if targetvalue != 0.0 {
+            switch cycleCategory {
+            case .week:
+                return datesOfWeek
+            case .month:
+                return datesOfMonth
+            case .year:
+                return months
+            }
+        } else {
+            return repetitionDay
         }
+        
     }
     
     var body: some View {
         VStack {
-            DateSelectionView(id: id, targetvalue: targetvalue, selectedIndicator: $selectedIndicator, selectedDate: $selectedDate, completionRatesViewModel: completionRatesViewModel)
+            // spaced -> X
+            if targetvalue != 0.0 {
+                DateSelectionView(id: id, targetvalue: targetvalue, selectedIndicator: $selectedIndicator, selectedDate: $selectedDate, completionRatesViewModel: completionRatesViewModel)
+            }
             ScrollView {
                 VStack(spacing: 10) {
                     ForEach(dayList(cycleCategory: selectedIndicator), id: \.self) { date in
@@ -356,13 +394,13 @@ struct ReportView: View {
                                 .frame(alignment: .leading)
                             Spacer()
                             if selectedIndicator == .year {
-                                ProgressBar(value: completionRatesViewModel.completionRates["\(selectedDateToString)\(date)"] ?? 0)
+                                ProgressBar(value: completionRatesViewModel.completionRates["\(selectedDateToString)\(date)"] ?? 0, selectedDiets: selectedDiets)
                                     .frame(width: 235, height: 20)
                                     .animation(.easeInOut(duration: 1.0))
                                     .background(Color(hex: "#EFEFEF").cornerRadius(5))
                                     .padding(5)
                             } else {
-                                ProgressBar(value: completionRatesViewModel.completionRates[date] ?? 0)
+                                ProgressBar(value: completionRatesViewModel.completionRates[date] ?? 0, selectedDiets: selectedDiets)
                                     .frame(width: 235, height: 20)
                                     .animation(.easeInOut(duration: 1.0))
                                     .background(Color(hex: "#EFEFEF").cornerRadius(5))
@@ -398,12 +436,22 @@ struct ReportView: View {
         return dateFormatter
     }
     func fetchDataAndUpdate() {
-          TrackingFirstDay(id: id) { selectedDate, instanceID in
-              self.selectedDate = selectedDate
-              self.Instance_id = instanceID
-//              RecurringCheckList(id: instanceID, targetvalue: targetvalue ?? 1.0,store: completionRatesViewModel) { _ in}
-              RecurringCheckList(id: id, targetvalue: targetvalue ?? 1.0,store: completionRatesViewModel) { _ in}
-          }
+        if targetvalue != 0.0 {
+              TrackingFirstDay(id: id) { selectedDate, instanceID in
+                  self.selectedDate = selectedDate
+                  self.Instance_id = instanceID
+                  RecurringCheckList(id: id, targetvalue: targetvalue ?? 1.0, store: completionRatesViewModel) { _ in}
+              }
+        } else {
+            if repetitionDay.count == repetitionCheck.count {
+                let dictionary = Dictionary(uniqueKeysWithValues: zip(repetitionDay, repetitionCheck))
+                completionRatesViewModel.completionRates = dictionary
+                print(dictionary)
+            } else {
+                print("鍵和值的數量不一致，無法組合成字典。")
+            }
+
+        }
       }
 }
 

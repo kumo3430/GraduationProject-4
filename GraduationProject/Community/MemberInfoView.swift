@@ -33,7 +33,7 @@ struct MemberInfoView: View {
                     Spacer()
                     Text("\(Int(memberInfo.taskProgress * 100))%")
                 }
-                ProgressBar(value: memberInfo.taskProgress) // add a progress bar to display task progress
+                ProgressBar(value: memberInfo.taskProgress, selectedDiets: "") // add a progress bar to display task progress
                     .frame(height: 20)
                     .padding(.horizontal)
                 

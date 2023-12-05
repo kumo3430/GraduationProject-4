@@ -18,7 +18,7 @@ $conn = $db->getConnection();
 
 // $uid = $_SESSION['uid'];
 
-$today = date("Y-n-j");
+$today = date("Y-m-d");
 // $tody = date('Y-m-d');
 $duration = "睡眠時長";
 
@@ -99,7 +99,7 @@ function getNextRecurringDate($date, $frequency) {
         case 2:
             return date('Y-m-d', strtotime("$date +7 day"));
         case 3:
-            return date('Y-m-d', strtotime("$date +1 month"));
+            return date('Y-m-d', strtotime("$date +30 day"));
         // 可以添加更多的 case
     }
 }
@@ -111,9 +111,9 @@ function getPreviousRecurringDate($date, $frequency) {
         case 0:
             return date('Y-m-d', strtotime("$date -0 day"));
         case 2:
-            return date('Y-m-d', strtotime("$date -7 day"));
+            return date('Y-m-d', strtotime("$date -6 day"));
         case 3:
-            return date('Y-m-d', strtotime("$date -1 month"));
+            return date('Y-m-d', strtotime("$date -29 day"));
         // 可以添加更多的 case
     }
 }
@@ -177,7 +177,7 @@ $stmt->close();
 //                 // $conn->query($update); // 執行更新操作
 //             } else if ($frequency == 3) {
 //                 // 每月重複
-//                 $RecurringEndDate_new = date('Y-m-d', strtotime("$RecurringEndDate_data +1 month"));
+//                 $RecurringEndDate_new = date('Y-m-d', strtotime("$RecurringEndDate_data +30 day"));
 //                 $message = insertRecurringInstance($conn, $todo_id, $RecurringStartDate_new, $RecurringEndDate_new);
 //                 // $conn->query($update); // 執行更新操作
 //             }
