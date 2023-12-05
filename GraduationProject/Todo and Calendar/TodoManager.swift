@@ -171,7 +171,7 @@ struct RoutineData: Decodable {
 }
 
 struct TickerData: Decodable {
-    var userId: Int?
+    var userId: String?
     var ticker_id: [String]
     var name: [String]
     var deadline: [String]

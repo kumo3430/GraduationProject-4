@@ -14,7 +14,7 @@ import Firebase
 struct YourApp: App {
     init() {
         // 確保只調用一次
-        handleLogout()
+//        handleLogout()
         FirebaseApp.configure()
 
     }
@@ -176,8 +176,7 @@ struct YourApp: App {
     }
     
     func StudySpaceList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -186,8 +185,7 @@ struct YourApp: App {
     }
     
     func StudyGeneralList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudyGeneralList",type: "list",body:body,store: todoStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -196,8 +194,8 @@ struct YourApp: App {
     }
     
     func SportList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+                let body: [String: Any] = ["uid": uid]
+
         phpUrl(php: "SportList",type: "list",body:body,store: sportStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -206,8 +204,7 @@ struct YourApp: App {
     }
     
     func DietList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "DietList",type: "list",body:body,store: dietStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -216,8 +213,7 @@ struct YourApp: App {
     }
     
     func RoutineList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "RoutineList",type: "list",body:body,store: routineStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])

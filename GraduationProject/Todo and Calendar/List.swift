@@ -296,6 +296,7 @@ func handleRoutineList(data: Data,store: RoutineStore, completion: @escaping ([S
 }
 
 func handletickersList(data: Data,store: TickerStore, completion: @escaping ([String:String]) -> Void) {
+    store.clearTodos()
     handleDecodableData(TickerData.self, data: data) { userData in
         print("\(userData.message) - userDate:\(userData)")
 
@@ -323,6 +324,7 @@ func handletickersList(data: Data,store: TickerStore, completion: @escaping ([St
 }
 
 func handleCommunitysList(data: Data,store: CommunityStore, completion: @escaping ([String:String]) -> Void) {
+    store.clearTodos()
     handleDecodableData(CommunityData.self, data: data) { userData in
         print("\(userData.message) - userDate:\(userData)")
 

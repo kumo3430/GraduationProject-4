@@ -27,6 +27,7 @@ extension Color {
 }
 
 struct CommunityListView: View {
+    @AppStorage("uid") private var uid:String = ""
     @State private var selectedSegment = 0
     @State private var selectedCategory = 0
     @State private var searchText: String = ""
@@ -103,12 +104,6 @@ struct CommunityListView: View {
                         .presentationDetents([ .large, .large])
                 }
             )
-//            .sheet(isPresented: $showingNotifications) {
-//                NotificationView()
-//            }
-//            if isCommunityIntroShowing {
-//                CommunityIntroView(isShowing: $isCommunityIntroShowing)
-//            }
         }
         .background(
             ZStack {
@@ -119,7 +114,32 @@ struct CommunityListView: View {
                 }
             }
         )
+        .onAppear() {
+            List()
+        }
     }
+    
+    private func List() {
+        CommunityList { spaceListMessage in
+            printResultMessage(for: spaceListMessage, withOperationName: "CommunityList")
+        }
+    }
+    private func printResultMessage(for message: String, withOperationName operationName: String) {
+        if message == "Success" {
+            print("\(operationName) Success")
+        } else {
+            print("\(operationName) failed with message: \(message)")
+        }
+    }
+    func CommunityList(completion: @escaping (String) -> Void) {
+        let body: [String: Any] = ["uid": uid]
+         phpUrl(php: "CommunityList",type: "list",body:body,store: communityStore){ message in
+             // 在此处调用回调闭包，将 messenge 值传递给调用者
+             //// completion(message[0])
+             completion(message["message"]!)
+         }
+     }
+    
     func openSafariView(_ verify: String) {
         print("VERIFY: \(verify)")
         let stringWithoutQuotes = verify.replacingOccurrences(of: "\"", with: "") // 去掉双引号的字符串

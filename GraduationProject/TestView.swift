@@ -7,6 +7,7 @@ import SafariServices
 
 struct TestView: View {
     @EnvironmentObject var tickerStore: TickerStore
+    @AppStorage("uid") private var uid:String = ""
     var body: some View {
         NavigationView {
             VStack {
@@ -21,6 +22,7 @@ struct TestView: View {
                 }
             }
         }.onAppear() {
+            reList()
             print("tickerList: \(tickerStore.tickers)")
         }
         .navigationTitle("票卷列表")
@@ -34,23 +36,26 @@ struct TestView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    func openSafariView() {
-        tickerStore.clearTodos()
-        // 設定要開啟的網址
-        guard let url = URL(string: "http://163.17.136.73/web_login.aspx") else { return }
-        
-        // 建立 SFSafariViewController 實例
-        let safariViewController = SFSafariViewController(url: url)
-        
-        // 取得目前的 UIWindowScene
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            // 取得目前的 UIWindow
-            if let mainWindow = windowScene.windows.first {
-                // 以全屏方式彈出 SFSafariViewController
-                mainWindow.rootViewController?.present(safariViewController, animated: true, completion: nil)
-            }
+    private func reList() {
+        tickersList { tickersListMessage in
+            printResultMessage(for: tickersListMessage, withOperationName: "TickersList")
         }
     }
+    private func printResultMessage(for message: String, withOperationName operationName: String) {
+        if message == "Success" {
+            print("\(operationName) Success")
+        } else {
+            print("\(operationName) failed with message: \(message)")
+        }
+    }
+    func tickersList(completion: @escaping (String) -> Void) {
+        let body: [String: Any] = ["uid": uid]
+         phpUrl(php: "tickersList",type: "list",body:body,store: tickerStore){ message in
+             // 在此处调用回调闭包，将 messenge 值传递给调用者
+             //// completion(message[0])
+             completion(message["message"]!)
+         }
+     }
 }
 
 struct PostData: Encodable {

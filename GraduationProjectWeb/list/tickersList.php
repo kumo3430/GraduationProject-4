@@ -1,5 +1,7 @@
 <?php
 require_once '../common.php'; // 引用共通設定
+$data = getFormData(); // 使用 common.php 中的函數獲取表單數據
+$_SESSION['uid'] = $data['uid'];
 $uid = getUserId(); // 使用 common.php 中的函數獲取用戶ID
 $ticker_id = array();
 $name = array();

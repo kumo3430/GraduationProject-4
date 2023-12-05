@@ -9,6 +9,7 @@ import SwiftUI
 import Lottie
 
 struct TodayTasksView: View {
+    @AppStorage("uid") private var uid:String = ""
     @State private var previousCompletionStatus: [Int: Bool] = [:]
     @State private var remainingValues: [Int: Float] = [:]
     @ObservedObject private var taskService = TaskService.shared
@@ -386,8 +387,7 @@ struct TodayTasksView: View {
     }
     
     func StudySpaceList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -396,8 +396,7 @@ struct TodayTasksView: View {
     }
     
     func StudyGeneralList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudyGeneralList",type: "list",body:body,store: todoStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -406,8 +405,7 @@ struct TodayTasksView: View {
     }
     
     func SportList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "SportList",type: "list",body:body,store: sportStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -416,8 +414,7 @@ struct TodayTasksView: View {
     }
     
     func DietList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "DietList",type: "list",body:body,store: dietStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -426,8 +423,7 @@ struct TodayTasksView: View {
     }
     
     func RoutineList(completion: @escaping (String) -> Void) {
-//        let body: [String: Any] = ["uid": uid]
-        let body: [String: Any] = [: ]
+       let body: [String: Any] = ["uid": uid]
         phpUrl(php: "RoutineList",type: "list",body:body,store: routineStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
