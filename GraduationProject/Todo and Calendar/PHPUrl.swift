@@ -7,8 +7,8 @@
 
 import Foundation
 
-var server = "http://127.0.0.1:8888"
-//var server = "http://163.17.136.73:443"
+//var server = "http://127.0.0.1:8888"
+var server = "http://163.17.136.73:443"
 //var server = "http://172.20.10.8:8888"
 
 class URLSessionSingleton {
