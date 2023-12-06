@@ -11,6 +11,7 @@ struct StudyDetailView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var todo: Todo
     @EnvironmentObject var todoStore: TodoStore
+    @State private var showAlert = false
     
     
     @State var messenge = ""
@@ -113,23 +114,55 @@ struct StudyDetailView: View {
                             todo.todoNote = newValue
                         }
                 }
-               
+                
                 if(isError) {
                     Text(messenge)
                         .foregroundColor(.red)
                 }
+                Section {
+                    VStack(spacing: 10) {
+                        // 刪除按鈕
+                        Button(action: {
+                            self.showAlert = true
+                        }) {
+                            Text("刪除")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.red)
+                                .cornerRadius(8)
+                        }
+                        .alert(isPresented: $showAlert) {
+                            Alert(
+                                title: Text("重要提醒："),
+                                message: Text("您即將刪除此任務及其所有相關資料，包含所有習慣追蹤指標的歷史紀錄。\n請注意，此操作一旦執行將無法復原。\n您確定要繼續進行嗎？"),
+                                primaryButton: .destructive(Text("確定")) {
+                                    // 添加刪除功能在這裡，寶貝加油
+                                },
+                                secondaryButton: .cancel(Text("取消"))
+                            )
+                        }
+                        
+                        Button(action: {
+                            reviseTodo{_ in }
+                            if todo.label == "" {
+                                todo.label = "notSet"
+                            }
+                        }) {
+                            Text("完成")
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.blue)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .listRowBackground(Color.clear)
             }
             .navigationBarTitle("一般學習修改")
-            .navigationBarItems(
-                                trailing: Button(action: {
-                                    reviseTodo{_ in }
-                if todo.label == "" {
-                    todo.label = "notSet"
-                }
-            }) {
-                Text("完成")
-                    .foregroundColor(.blue)
-            })
+            .navigationBarItems(trailing: EmptyView())
         }
     }
     
