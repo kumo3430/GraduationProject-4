@@ -180,7 +180,7 @@ struct TickerData: Decodable {
 }
 
 struct CommunityData: Decodable {
-    var userId: Int?
+    var userId: String?
     var community_id: [Int]
     var communityName: [String]
     var communityDescription: [String]

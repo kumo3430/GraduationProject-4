@@ -313,7 +313,7 @@ func handleCommunityAdd(data: Data,store: CommunityStore, completion: @escaping 
             DispatchQueue.main.async {
                 store.communitys.append(task)
             }
-             completion(["message":Message.success.rawValue])
+             completion(["message":Message.newCommunity.rawValue])
         } else if (userData.message == Message.reCommunity.rawValue) {
             completion(["message":Message.reCommunity.rawValue])
         } else {
