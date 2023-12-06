@@ -60,12 +60,12 @@ struct TodoListView: View {
                                     ItemView(title: dietStore.diets[index].title, description: dietStore.diets[index].description, date: dietStore.diets[index].startDateTime)
                                 }
                             }
-//                            SectionHeaderView(title: "作息")
-//                            ForEach(routineStore.routines.indices, id: \.self) { index in
-//                                NavigationLink(destination: DetailSportView(sport: $routineStore.routines[index])) {
-//                                    ItemView(title: sportStore.sports[index].title, description: sportStore.sports[index].description, date: sportStore.sports[index].startDateTime)
-//                                }
-//                            }
+                            SectionHeaderView(title: "作息")
+                            ForEach(routineStore.routines.indices, id: \.self) { index in
+                                NavigationLink(destination: RoutineDetailView(routine: $routineStore.routines[index])) {
+                                    ItemView(title: routineStore.routines[index].title, description: routineStore.routines[index].description, date: routineStore.routines[index].startDateTime)
+                                }
+                            }
                         }
                         .padding()
                     }

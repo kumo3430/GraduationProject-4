@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		13AD35D42A70BB880003FF1B /* TodoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D32A70BB880003FF1B /* TodoListView.swift */; };
 		13AD35D62A70BC0D0003FF1B /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D52A70BC0D0003FF1B /* CalendarView.swift */; };
+		13C3D3522B20E7E900955843 /* RoutineDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C3D3512B20E7E900955843 /* RoutineDetailView.swift */; };
 		13D0E0972AFFDCB0005EC8AB /* account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E0962AFFDCB0005EC8AB /* account.swift */; };
 		13D0E0992B00987F005EC8AB /* AddTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E0982B00987F005EC8AB /* AddTask.swift */; };
 		13D0E09B2B009895005EC8AB /* ReviseTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D0E09A2B009895005EC8AB /* ReviseTask.swift */; };
@@ -133,6 +134,7 @@
 /* Begin PBXFileReference section */
 		13AD35D32A70BB880003FF1B /* TodoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListView.swift; sourceTree = "<group>"; };
 		13AD35D52A70BC0D0003FF1B /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		13C3D3512B20E7E900955843 /* RoutineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineDetailView.swift; sourceTree = "<group>"; };
 		13D0E0962AFFDCB0005EC8AB /* account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = account.swift; sourceTree = "<group>"; };
 		13D0E0982B00987F005EC8AB /* AddTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTask.swift; sourceTree = "<group>"; };
 		13D0E09A2B009895005EC8AB /* ReviseTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviseTask.swift; sourceTree = "<group>"; };
@@ -485,6 +487,7 @@
 			children = (
 				3B5A47EA2A889C520022D796 /* StudyDetailView.swift */,
 				3B0A5DB32A81DED900283B40 /* SpaceDetailView.swift */,
+				13C3D3512B20E7E900955843 /* RoutineDetailView.swift */,
 				3B4A8FD72AA6E78B00C4E0AF /* SportDetailView.swift */,
 				3BDA96F42AA86834009FA88F /* DietDetailView.swift */,
 			);
@@ -739,6 +742,7 @@
 				3BBBF4C42A847B4A0077B3E6 /* TodoModels.swift in Sources */,
 				3B66931C2AEB928F00081384 /* CommunityDetailView.swift in Sources */,
 				3B5F03D22ACBBD8C0085B39A /* StoryContentView.swift in Sources */,
+				13C3D3522B20E7E900955843 /* RoutineDetailView.swift in Sources */,
 				3B35DAAB2AEF9354008C3D2F /* GroupDetailView.swift in Sources */,
 				3B35DAB12AEF93B1008C3D2F /* MemberInfoView.swift in Sources */,
 				3B31C0942ACEC2F800A2529D /* CheckSleepView.swift in Sources */,
