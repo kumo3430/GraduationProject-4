@@ -633,7 +633,12 @@ class CommunityStore: ObservableObject {
         }
         return filteredCommunity
     }
-    
+    func communitysNotJoined() -> [Community] {
+        let filteredCommunity = communitys.filter { community in
+            return (community.isMember == "false" )
+        }
+        return filteredCommunity
+    }
     func clearTodos() {
         communitys = []
     }

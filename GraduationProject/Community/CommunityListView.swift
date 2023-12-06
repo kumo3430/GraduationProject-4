@@ -74,7 +74,7 @@ struct CommunityListView: View {
                     ScrollView {
                         SearchBar(text: $searchText, placeholder: "搜索社群")
                             .padding(.vertical, 5)
-                        ForEach(communityStore.communitys) { community in
+                        ForEach(communityStore.communitysNotJoined(), id: \.id) { community in
                             Button(action: {
                                 print("我是社群")
                                 postCommunity(community:community) { verify, error in
