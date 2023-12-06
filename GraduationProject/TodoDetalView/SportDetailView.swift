@@ -138,58 +138,57 @@ struct DetailSportView: View {
                             sport.todoNote = newValue
                         }
                 }
-               
+                
                 if(isError) {
                     Text(messenge)
                         .foregroundColor(.red)
                 }
                 Section {
-                                    VStack(spacing: 10) {
-                                        // 刪除按鈕
-                                        Button(action: {
-                                            self.showAlert = true
-                                        }) {
-                                            Text("刪除")
-                                                .foregroundColor(.white)
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.vertical, 10)
-                                                .background(Color.red)
-                                                .cornerRadius(8)
-                                        }
-                                        .alert(isPresented: $showAlert) {
-                                            Alert(
-                                                title: Text("重要提醒："),
-                                                message: Text("您即將刪除此任務及其所有相關資料，包含所有習慣追蹤指標的歷史紀錄。\n請注意，此操作一旦執行將無法復原。\n您確定要繼續進行嗎？"),
-                                                primaryButton: .destructive(Text("確定")) {
-                                                    // 添加刪除功能在這裡，寶貝加油
-                                                },
-                                                secondaryButton: .cancel(Text("取消"))
-                                            )
-                                        }
-                                        
-                                        Button(action: {
-                                            reviseSport{_ in }
+                    // 刪除按鈕
+                    Button(action: {
+                        self.showAlert = true
+                    }) {
+                        Text("刪除")
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.red)
+                            .cornerRadius(8)
+                    }
+                    .alert(isPresented: $showAlert) {
+                        Alert(
+                            title: Text("重要提醒："),
+                            message: Text("您即將刪除此任務及其所有相關資料，包含所有習慣追蹤指標的歷史紀錄。\n請注意，此操作一旦執行將無法復原。\n您確定要繼續進行嗎？"),
+                            primaryButton: .destructive(Text("確定")) {
+                                // 添加刪除功能在這裡，寶貝加油
+                                deleteTodo{_ in }
+                            },
+                            secondaryButton: .cancel(Text("取消"))
+                        )
+                    }
+                    
+                    Button(action: {
+                        reviseSport{_ in }
                         if sport.label == "" {
                             sport.label = "notSet"
                         }
-                                        }) {
-                                            Text("完成")
-                                                .foregroundColor(.white)
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.vertical, 10)
-                                                .background(Color.blue)
-                                                .cornerRadius(8)
-                                        }
-                                    }
-                                    .padding(.horizontal)
-                                }
-                                .listRowBackground(Color.clear)
-                            }
-                            .navigationBarTitle("一般學習修改")
-                            .navigationBarItems(trailing: EmptyView())
+                    }) {
+                        Text("完成")
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                    }
+                }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+            }
+            .navigationBarTitle("一般學習修改")
+            .navigationBarItems(trailing: EmptyView())
         }
     }
-
+    
     func reviseSport(completion: @escaping (String) -> Void) {
         let body: [String: Any] = [
             "id": sport.id,
@@ -209,8 +208,32 @@ struct DetailSportView: View {
                     self.presentationMode.wrappedValue.dismiss() // 確保在主線程關閉視圖
                 } else {
                     self.isError = true
-                    self.messenge = "習慣建立錯誤 請聯繫管理員"
+                    self.messenge = "習慣修改錯誤 請聯繫管理員"
                     print("修改運動回傳：\(String(describing: message["message"]))")
+                }
+                completion(message["message"]!)
+            }
+        }
+    }
+    
+    func deleteTodo(completion: @escaping (String) -> Void) {
+        let body: [String: Any] = [
+            "id": sport.id,
+            "type": "Sport",
+        ]
+        
+        phpUrl(php: "deleteTodo", type: "reviseTask", body: body, store: nil) { message in
+            DispatchQueue.main.async {
+                // 確保在主線程執行 UI 相關操作
+                if message["message"] == "Success" {
+                    self.isError = false
+                    self.messenge = ""
+                    self.sportStore.deleteTodo(withID: self.sport.id)
+                    self.presentationMode.wrappedValue.dismiss() // 確保在主線程關閉視圖
+                } else {
+                    self.isError = true
+                    self.messenge = "習慣刪除錯誤 請聯繫管理員"
+                    print("刪除一般學習回傳：\(String(describing: message["message"]))")
                 }
                 completion(message["message"]!)
             }

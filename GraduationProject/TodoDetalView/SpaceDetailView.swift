@@ -10,6 +10,7 @@ import SwiftUI
 struct SpaceDetailView: View {
     @Binding var task: Task
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var taskStore: TaskStore
     @State var title = ""
     @State var description = ""
     @State var nextReviewTime = Date()
@@ -96,47 +97,49 @@ struct SpaceDetailView: View {
                         }
                     }
                 }
-                Text(messenge)
-                    .foregroundColor(.red)
+                if(isError) {
+                    Text(messenge)
+                        .foregroundColor(.red)
+                }
                 
                 Section {
-                    VStack(spacing: 10) {
-                        // 刪除按鈕
-                        Button(action: {
-                            self.showAlert = true
-                        }) {
-                            Text("刪除")
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
-                                .background(Color.red)
-                                .cornerRadius(8)
-                        }
-                        .alert(isPresented: $showAlert) {
-                            Alert(
-                                title: Text("重要提醒："),
-                                message: Text("您即將刪除此任務及其所有相關資料，包含所有習慣追蹤指標的歷史紀錄。\n請注意，此操作一旦執行將無法復原。\n您確定要繼續進行嗎？"),
-                                primaryButton: .destructive(Text("確定")) {
-                                    // 添加刪除功能在這裡，寶貝加油
-                                },
-                                secondaryButton: .cancel(Text("取消"))
-                            )
-                        }
-                        
-                        Button(action: { reviseStudySpaced{_ in }}) {
-                            Text("完成")
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
-                                .background(Color.blue)
-                                .cornerRadius(8)
-                        }
+                    // 刪除按鈕
+                    Button(action: {
+                        self.showAlert = true
+                    }) {
+                        Text("刪除")
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.red)
+                            .cornerRadius(8)
                     }
-                    .padding(.horizontal)
+                    .alert(isPresented: $showAlert) {
+                        Alert(
+                            title: Text("重要提醒："),
+                            message: Text("您即將刪除此任務及其所有相關資料，包含所有習慣追蹤指標的歷史紀錄。\n請注意，此操作一旦執行將無法復原。\n您確定要繼續進行嗎？"),
+                            primaryButton: .destructive(Text("確定")) {
+                                // 添加刪除功能在這裡，寶貝加油
+                                deleteTodo{_ in }
+
+                            },
+                            secondaryButton: .cancel(Text("取消"))
+                        )
+                    }
+                    
+                    Button(action: { reviseStudySpaced{_ in }}) {
+                        Text("完成")
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                    }
                 }
+                .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             }
-                .navigationTitle("間隔學習修改")
+            .navigationTitle("間隔學習修改")
         }
         .onAppear() {
             task.title = task.title
@@ -144,7 +147,7 @@ struct SpaceDetailView: View {
             task.nextReviewTime = task.nextReviewTime
         }
     }
-        
+    
     func formattedInterval(_ index: Int) -> Int {
         let intervals = [1, 3, 7, 14]
         return intervals[index]
@@ -156,7 +159,7 @@ struct SpaceDetailView: View {
                      "label": task.label,
                      "description": task.description,
                      "reminderTime": formattedTime(task.nextReviewTime)] as [String : Any]
-
+        
         phpUrl(php: "reviseSpace" ,type: "reviseTask",body:body, store: nil){ message in
             DispatchQueue.main.async {
                 // 確保在主線程執行 UI 相關操作
@@ -166,8 +169,32 @@ struct SpaceDetailView: View {
                     self.presentationMode.wrappedValue.dismiss() // 確保在主線程關閉視圖
                 } else {
                     self.isError = true
-                    self.messenge = "習慣建立錯誤 請聯繫管理員"
+                    self.messenge = "習慣修改錯誤 請聯繫管理員"
                     print("修改間隔學習回傳：\(String(describing: message["message"]))")
+                }
+                completion(message["message"]!)
+            }
+        }
+    }
+    
+    func deleteTodo(completion: @escaping (String) -> Void) {
+        let body: [String: Any] = [
+            "id": task.id,
+            "type": "StudySpacedRepetition",
+        ]
+        
+        phpUrl(php: "deleteTodo", type: "reviseTask", body: body, store: nil) { message in
+            DispatchQueue.main.async {
+                // 確保在主線程執行 UI 相關操作
+                if message["message"] == "Success" {
+                    self.isError = false
+                    self.messenge = ""
+                    self.taskStore.deleteTodo(withID: self.task.id)
+                    self.presentationMode.wrappedValue.dismiss() // 確保在主線程關閉視圖
+                } else {
+                    self.isError = true
+                    self.messenge = "習慣刪除錯誤 請聯繫管理員"
+                    print("刪除一般學習回傳：\(String(describing: message["message"]))")
                 }
                 completion(message["message"]!)
             }

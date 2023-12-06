@@ -29,6 +29,7 @@ enum Message: String {
     case newCommunity = "User New Community successfully"
     case reCommunity = "The Community is repeated"
     
+    case deleteTask = "Todo data deleted successfully"
     case reviseTask = "User revise Task successfully"
     case reviseSpace = "User revise Space successfully"
     case reviseProfile = "User reviseProfile successfully"

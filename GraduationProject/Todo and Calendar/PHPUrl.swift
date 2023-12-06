@@ -194,6 +194,8 @@ func handleDataForPHP(php: String, data: Data,store: (any ObservableObject)? = n
     case "autoAdd":
         handleAutoAdd(data: data, completion: completion)
         
+    case "deleteTodo":
+        handleDeleteTodo(data: data, completion: completion)
     case "reviseSpace":
         handleStudySpaceRevise(data: data, completion: completion)
     case "reviseStudy","reviseSport","reviseDiet":

@@ -36,7 +36,10 @@ struct ReviseData: Decodable {
     var todoNote: String?
     var message: String
 }
-
+struct DeleteData: Decodable {
+    var todo_id: Int
+    var message: String
+}
 struct UpdateValueData: Decodable {
     var todo_id: Int
     var status: String?
@@ -358,6 +361,12 @@ class TodoStore: ObservableObject {
             todos[index].completeValue = newValue
         }
     }
+    func deleteTodo(withID id: Int) {
+        if let index = todos.firstIndex(where: { $0.id == id }) {
+            todos.remove(at: index)
+        }
+    }
+
 }
 
 
@@ -390,6 +399,13 @@ class TaskStore: ObservableObject {
         var date: Date
         var isChecked: Bool
     }
+    
+    func deleteTodo(withID id: Int) {
+        if let index = tasks.firstIndex(where: { $0.id == id }) {
+            tasks.remove(at: index)
+        }
+    }
+
     func updateCompleteValue(withID id: Int) {
         
         let today = formattedDate(Date())
@@ -459,6 +475,12 @@ class SportStore: ObservableObject {
             sports[index].completeValue = newValue
         }
     }
+    func deleteTodo(withID id: Int) {
+        if let index = sports.firstIndex(where: { $0.id == id }) {
+            sports.remove(at: index)
+        }
+    }
+
 }
 
 class DietStore: ObservableObject {
@@ -490,6 +512,12 @@ class DietStore: ObservableObject {
             diets[index].completeValue = Float(newValue)
         }
     }
+    func deleteTodo(withID id: Int) {
+        if let index = diets.firstIndex(where: { $0.id == id }) {
+            diets.remove(at: index)
+        }
+    }
+
 }
 
 class RoutineStore: ObservableObject {
@@ -551,29 +579,15 @@ class RoutineStore: ObservableObject {
             } else if type == 3 {
                 // 睡眠時長 - 起來
                 routines[index].wakeUpTime = newTime
-//                duplicateRoutineWithID(id, newID: 0)
                 updateOrCreateRoutineFromID(id, to: 0)
 
-//                routines[index].RecurringStartDate = newDate ?? Date()
-//                let currentDate = Date() // 假设这是你要操作的日期
-//                let calendar = Calendar.current // 使用当前用户的日历
-//                if let nextDate = calendar.date(byAdding: .day, value: 0, to: newDate ?? Date()) {
-//                    print(nextDate) // nextDate 是一个 Date 对象，已经加上了一天
-//                    routines[index].RecurringEndDate = nextDate
-//                }
                 routines[index].sleepTime = nil
                 routines[index].wakeUpTime = nil
             }
             print("我是檢查 routines[index] ： \(routines[index])")
         }
     }
-//    func duplicateRoutineWithID(_ id: Int, newID: Int) {
-//        if let index = routines.firstIndex(where: { $0.id == id }) {
-//            var newRoutine = routines[index]
-//            newRoutine.id = newID
-//            routines.append(newRoutine)
-//        }
-//    }
+
     func updateOrCreateRoutineFromID(_ sourceID: Int, to targetID: Int) {
         guard let sourceIndex = routines.firstIndex(where: { $0.id == sourceID }) else {
             print("錯誤：找不到源 ID \(sourceID) 的 Routine。")
@@ -596,6 +610,11 @@ class RoutineStore: ObservableObject {
                 routines[sourceIndex].sleepTime = nil
                 routines[sourceIndex].wakeUpTime = nil
             }
+        }
+    }
+    func deleteTodo(withID id: Int) {
+        if let index = routines.firstIndex(where: { $0.id == id }) {
+            routines.remove(at: index)
         }
     }
 
