@@ -13,7 +13,7 @@ struct TodayTasksView: View {
     @State private var previousCompletionStatus: [Int: Bool] = [:]
     @State private var remainingValues: [Int: Float] = [:]
     @ObservedObject private var taskService = TaskService.shared
-//    @ObservedObject var sleepTracker = SleepActionTracker()
+    //    @ObservedObject var sleepTracker = SleepActionTracker()
     @State private var selectedTaskId: Int?
     
     @State private var playAnimation1: Bool = false //完成
@@ -61,8 +61,8 @@ struct TodayTasksView: View {
             ZStack {
                 ScrollView {
                     LazyVStack(spacing: cardSpacing) {
-//                        ForEach(taskStore.tasksForDate(Date()), id: \.id) { task in
-//                        ForEach(Array(taskStore.tasksForDate(Date()).enumerated()), id: \.element.id) { index, task in
+                        //                        ForEach(taskStore.tasksForDate(Date()), id: \.id) { task in
+                        //                        ForEach(Array(taskStore.tasksForDate(Date()).enumerated()), id: \.element.id) { index, task in
                         ForEach(Array(tasksForToday.enumerated()), id: \.element.id) { index, task in
                             //                        ForEach(filteredSports, id: \.id) { task in
                             HStack{
@@ -130,7 +130,7 @@ struct TodayTasksView: View {
                                     .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
                                     .cornerRadius(10)
                                     .onReceive(CheckDietView.remainingValuePublisher) { isCompleted,isFail,dietType in
-      
+                                        
                                         switch dietType {
                                         case "減糖", "少油炸":
                                             if isCompleted == true {
@@ -161,7 +161,7 @@ struct TodayTasksView: View {
                                     .frame(width: UIScreen.main.bounds.width * 0.9, height: 200)  // Adjusted size here
                                     .cornerRadius(10)
                                     .onReceive(CheckSleepView.remainingValuePublisher) { isCompleted,routineType in
-      
+                                        
                                         switch routineType {
                                         case 0:
                                             if isCompleted == true {
@@ -205,7 +205,7 @@ struct TodayTasksView: View {
                         }
                     }
                     .onAppear() {
-                    tasksForToday = taskStore.tasksForDate(Date())
+                        tasksForToday = taskStore.tasksForDate(Date())
                     }
                     .padding(.horizontal, 15)
                 }
@@ -225,10 +225,12 @@ struct TodayTasksView: View {
                             .padding()
                         
                         LottieView(animation: .named(animation1))
-                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
-                                   .animationDidFinish { _ in
-                                       withAnimation {
-                                    playAnimation1 = false
+                            .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
+                            .animationDidFinish { _ in
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                    withAnimation {
+                                        playAnimation1 = false
+                                    }
                                 }
                             }
                             .frame(width: 200, height: 200)
@@ -246,8 +248,8 @@ struct TodayTasksView: View {
                         
                         LottieView(animation: .named(animation2))
                             .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
-                                   .animationDidFinish { _ in
-                                       withAnimation {
+                            .animationDidFinish { _ in
+                                withAnimation {
                                     playAnimation2 = false
                                 }
                             }
@@ -266,8 +268,8 @@ struct TodayTasksView: View {
                         
                         LottieView(animation: .named(animation3))
                             .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
-                                   .animationDidFinish { _ in
-                                       withAnimation {
+                            .animationDidFinish { _ in
+                                withAnimation {
                                     playAnimation3 = false
                                 }
                             }
@@ -286,8 +288,8 @@ struct TodayTasksView: View {
                         
                         LottieView(animation: .named(animation4))
                             .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
-                                   .animationDidFinish { _ in
-                                       withAnimation {
+                            .animationDidFinish { _ in
+                                withAnimation {
                                     playAnimation4 = false
                                 }
                             }
@@ -306,8 +308,8 @@ struct TodayTasksView: View {
                         
                         LottieView(animation: .named(animation5))
                             .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) // Updated line
-                                   .animationDidFinish { _ in
-                                       withAnimation {
+                            .animationDidFinish { _ in
+                                withAnimation {
                                     playAnimation5 = false
                                 }
                             }
@@ -368,7 +370,7 @@ struct TodayTasksView: View {
     }
     
     private func List() {
-//        list(taskStore: taskStore, todoStore: todoStore, sportStore: sportStore, dietStore: dietStore, routineStore: routineStore)
+        //        list(taskStore: taskStore, todoStore: todoStore, sportStore: sportStore, dietStore: dietStore, routineStore: routineStore)
         RoutineList { dietListMessage in
             printResultMessage(for: dietListMessage, withOperationName: "RoutineList")
         }
@@ -387,7 +389,7 @@ struct TodayTasksView: View {
     }
     
     func StudySpaceList(completion: @escaping (String) -> Void) {
-       let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudySpaceList" ,type: "list",body:body,store: taskStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -396,7 +398,7 @@ struct TodayTasksView: View {
     }
     
     func StudyGeneralList(completion: @escaping (String) -> Void) {
-       let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = ["uid": uid]
         phpUrl(php: "StudyGeneralList",type: "list",body:body,store: todoStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -405,7 +407,7 @@ struct TodayTasksView: View {
     }
     
     func SportList(completion: @escaping (String) -> Void) {
-       let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = ["uid": uid]
         phpUrl(php: "SportList",type: "list",body:body,store: sportStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -414,7 +416,7 @@ struct TodayTasksView: View {
     }
     
     func DietList(completion: @escaping (String) -> Void) {
-       let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = ["uid": uid]
         phpUrl(php: "DietList",type: "list",body:body,store: dietStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
@@ -423,7 +425,7 @@ struct TodayTasksView: View {
     }
     
     func RoutineList(completion: @escaping (String) -> Void) {
-       let body: [String: Any] = ["uid": uid]
+        let body: [String: Any] = ["uid": uid]
         phpUrl(php: "RoutineList",type: "list",body:body,store: routineStore){ message in
             // 在此处调用回调闭包，将 messenge 值传递给调用者
             // completion(message[0])
