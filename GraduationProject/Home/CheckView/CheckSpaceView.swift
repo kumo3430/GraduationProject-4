@@ -38,7 +38,7 @@ struct CheckSpaceView: View {
                     .foregroundColor(titleColor)
                     .padding(.bottom, 1)
                 
-                Text("習慣類型：\(habitType)")
+                Text("內容：\(task.description)")
                     .font(.system(size: 13, weight: .medium, design: .default))
                     .foregroundColor(Color.secondary)
                     .padding(.bottom, 1)

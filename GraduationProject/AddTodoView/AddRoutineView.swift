@@ -214,7 +214,19 @@ struct AddRoutineView: View {
                                         Text("返回")
                                             .foregroundColor(.blue)
                                                 },
-                                trailing: Button("完成"){addRoutine {_ in }}
+                                trailing: Button("完成"){
+                
+            
+                if routineStore.checkForSelectedRoutine(named: selectedRoutines) {
+                    print("存在'早起'的Routine")
+                    isError = true
+                    messenge = "不可重複建立同類型作息習慣"
+                } else {
+                    print("不存在'早起'的Routine")
+                    addRoutine {_ in }
+                }
+                                    
+                                }
                 .disabled(todoTitle.isEmpty && todoIntroduction.isEmpty))
         }
         .onAppear {

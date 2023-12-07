@@ -192,6 +192,13 @@ struct HabitTrackingIndicatorView: View {
                         .foregroundColor(Color(hex: "#6B6B6B"))
                         .padding([.top, .bottom, .trailing], 15)
                         .frame(maxWidth: .infinity, alignment: .leading)
+//                    Spacer()
+                    Text(taskDescription(for: task))
+                        .fontWeight(.thin)
+                        .foregroundColor(Color(hex: "#6B6B6B"))
+                        .padding([.top, .bottom, .trailing], 10)
+                        .frame( alignment: .trailing)
+
                 }
                 .background(Color.white)
                 .cornerRadius(10)
@@ -214,6 +221,12 @@ struct HabitTrackingIndicatorView: View {
                 return diet.title
             } else if let routine = task as? Routine {
                 return routine.title
+            }
+            return ""
+        }
+        func taskDescription(for task: Any) -> String {
+            if let task = task as? Task {
+                return task.description
             }
             return ""
         }

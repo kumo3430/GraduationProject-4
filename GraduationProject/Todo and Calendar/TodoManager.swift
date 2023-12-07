@@ -544,6 +544,9 @@ class RoutineStore: ObservableObject {
     func clearTodos() {
         routines = []
     }
+    func checkForSelectedRoutine(named routineName: String) -> Bool {
+            return routines.contains { $0.selectedRoutines == routineName }
+        }
     
     func updateCompleteValue(withID id: Int, newValue: Date,type: Int) {
         if let index = routines.firstIndex(where: { $0.id == id }) {
