@@ -55,7 +55,8 @@ func handleRecurringCheckList(data: Data,store: CompletionRatesViewModel, messag
             var dictionary1: [String: Double] = [:]
             var dictionary2: [String: Double] = [:]
             
-            let completeValue = userData.completeValue.compactMap { (Double($0) )/(Double(userData.targetvalue) ) }
+//            let completeValue = userData.completeValue.compactMap { (Double($0) )/(Double(userData.targetvalue) ) }
+            let completeValue = userData.completeValue.compactMap { (Double($0) )/(Double(userData.targetvalue) ) }.map { $0 > 1 ? 1 : $0 }
             let checkDate = userData.checkDate.compactMap { $0 }
             // 使用 zip 将两个数组合并成元组的数组
             if completeValue.count == checkDate.count {

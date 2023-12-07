@@ -85,7 +85,7 @@ if ($data['routineType'] == 2 && $data['RecurringStartDate'] != $checkDate) {
         $wakeUpTime = null;
         $stmt->bind_param("isiss", $Instance_id, $checkDate, $data['completeValue'], $sleepTime, $wakeUpTime);
     // } elseif ($data['routineType'] == 0 || $data['routineType'] == 2) {
-    } elseif ($data['routineType'] == 0) {
+    } elseif ($data['routineType'] == 0 || $data['routineType'] == 2) {
         // 早睡、區間睡覺
         $data['completeValue'] = null;
         $wakeUpTime = null;

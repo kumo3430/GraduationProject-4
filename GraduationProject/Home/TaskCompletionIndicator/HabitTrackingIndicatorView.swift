@@ -39,7 +39,7 @@ enum TaskCategory: String, CaseIterable {
     case spacedLearning = "間隔學習"
     case sport = "運動"
     case diet = "飲食"
-//    case habits = "習慣"
+    case routine = "作息"
 }
 
 struct HabitTask: Identifiable {
@@ -62,6 +62,7 @@ struct HabitTrackingIndicatorView: View {
     @EnvironmentObject var todoStore: TodoStore
     @EnvironmentObject var sportStore: SportStore
     @EnvironmentObject var dietStore: DietStore
+    @EnvironmentObject var routineStore: RoutineStore
     @State private var tasks: [HabitTask] = [
         HabitTask(name: "背英文單字"),
         HabitTask(name: "游泳"),
@@ -127,8 +128,8 @@ struct HabitTrackingIndicatorView: View {
             return sportStore.sports // Replace with the actual property from your data store
         case .diet:
             return dietStore.diets // Replace with the actual property from your data store
-//        case .habits:
-//            return tasks // Replace with your habit tasks array
+        case .routine:
+            return routineStore.routines // Replace with your habit tasks array
         }
     }
     
@@ -211,8 +212,8 @@ struct HabitTrackingIndicatorView: View {
                 return sport.title
             } else if let diet = task as? Diet {
                 return diet.title
-            } else if let habit = task as? HabitTask {
-                return habit.name
+            } else if let routine = task as? Routine {
+                return routine.title
             }
             return ""
         }
@@ -228,8 +229,8 @@ struct HabitTrackingIndicatorView: View {
                 return ((store as! Sport).id, (store as! Sport).title, (store as! Sport).sportValue, "", [], [])
             case .diet:
                 return ((store as! Diet).id, (store as! Diet).title, Float((store as! Diet).dietsValue), (store as! Diet).selectedDiets, [], [])
-//            case .habits:
-//                return (0, "", 0.0, "", [], [])
+            case .routine:
+                return ((store as! Routine).id, (store as! Routine).title, Float((store as! Routine).routineValue), "", [], [])
             }
             
         }
