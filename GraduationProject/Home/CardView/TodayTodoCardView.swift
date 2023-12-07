@@ -52,22 +52,8 @@ struct TodayTodoCardView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Spacer()
-                    Group {
-                        if formattedDate(Date()) == formattedDate(task.nextReviewDate) {
-                            Text("設定日期")
-                        } else if formattedDate(Date()) == formattedDate(task.repetition1Count) {
-                            Text("第一天")
-                        } else if formattedDate(Date()) == formattedDate(task.repetition2Count) {
-                            Text("第三天")
-                        } else if formattedDate(Date()) == formattedDate(task.repetition3Count) {
-                            Text("第七天")
-                        } else if formattedDate(Date()) == formattedDate(task.repetition4Count) {
-                            Text("第十四天")
-                        } else {
-                            Text(formattedDate(task.nextReviewDate))
-                        }
-                    }
-                    .font(.caption)
+                    Text(task.description)
+                        .font(.caption)
                 }
             }
             
@@ -84,13 +70,8 @@ struct TodayTodoCardView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Spacer()
-                    if formattedDate(Date()) == formattedDate(todo.startDateTime) {
-                        Text("設定日期")
-                            .font(.caption)
-                    } else {
-                        Text(formattedDate(todo.startDateTime))
-                            .font(.caption)
-                    }
+                    Text(todo.description)
+                        .font(.caption)
                 }
             }
             HStack {
@@ -106,13 +87,8 @@ struct TodayTodoCardView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Spacer()
-                    if formattedDate(Date()) == formattedDate(todo.startDateTime) {
-                        Text("開始日期")
-                            .font(.caption)
-                    } else {
-                        Text(todo.description)
-                            .font(.caption)
-                    }
+                    Text(todo.description)
+                        .font(.caption)
                 }
             }
             
@@ -129,13 +105,8 @@ struct TodayTodoCardView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Spacer()
-                    if formattedDate(Date()) == formattedDate(todo.startDateTime) {
-                        Text("開始日期")
-                            .font(.caption)
-                    } else {
-                        Text(todo.description)
-                            .font(.caption)
-                    }
+                    Text(todo.description)
+                        .font(.caption)
                 }
             }
             HStack {
@@ -151,13 +122,8 @@ struct TodayTodoCardView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Spacer()
-                    if formattedDate(Date()) == formattedDate(todo.startDateTime) {
-                        Text("開始日期")
-                            .font(.caption)
-                    } else {
-                        Text(todo.description)
-                            .font(.caption)
-                    }
+                    Text(todo.description)
+                        .font(.caption)
                 }
             }
         }
